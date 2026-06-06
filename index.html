@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OdontoFicha | Odontograma Digital Inteligente</title>
+  <style>
+    :root {
+      --bg: #f6f9fc;
+      --surface: #ffffff;
+      --surface-soft: #eef6ff;
+      --text: #102033;
+      --muted: #64748b;
+      --primary: #2f80ed;
+      --primary-dark: #1d5fbf;
+      --line: #dbe7f3;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(47, 128, 237, 0.16), transparent 32rem),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 48%, #ffffff 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.78);
+      border-bottom: 1px solid rgba(219, 231, 243, 0.75);
+    }
+
+    .nav-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 1.25rem;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), #6bb7ff);
+      color: white;
+      box-shadow: 0 12px 30px rgba(47, 128, 237, 0.35);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 16px 34px rgba(47, 128, 237, 0.32);
+    }
+
+    .button-secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--line);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 48px;
+      align-items: center;
+      padding: 84px 0 64px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      font-weight: 750;
+      font-size: 0.86rem;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5.7rem);
+      line-height: 0.94;
+      letter-spacing: -0.075em;
+      margin-bottom: 24px;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 1.18rem;
+      max-width: 620px;
+      margin-bottom: 30px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .hero-proof {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      max-width: 620px;
+    }
+
+    .proof-card {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .proof-card strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .proof-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-visual img,
+    .screen-image img {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(219, 231, 243, 0.85);
+    }
+
+    .floating-card {
+      position: absolute;
+      right: -8px;
+      bottom: -26px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px 20px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      width: min(300px, 72%);
+    }
+
+    .floating-card strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .floating-card span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 34px;
+    }
+
+    .section-head.center {
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .kicker {
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.35rem);
+      line-height: 1.04;
+      letter-spacing: -0.055em;
+      margin-bottom: 16px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .problem-grid,
+    .solution-grid,
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-soft);
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      font-size: 1.12rem;
+      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .screens {
+      display: grid;
+      gap: 30px;
+    }
+
+    .screen-card {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 34px;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      padding: 30px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.09);
+    }
+
+    .screen-card:nth-child(even) {
+      grid-template-columns: 1.08fr 0.92fr;
+    }
+
+    .screen-card:nth-child(even) .screen-text {
+      order: 2;
+    }
+
+    .screen-card:nth-child(even) .screen-image {
+      order: 1;
+    }
+
+    .screen-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-soft);
+      color: var(--primary);
+      margin-bottom: 18px;
+    }
+
+    .screen-text h3 {
+      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+      margin-bottom: 12px;
+    }
+
+    .screen-text p {
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-size: 1.02rem;
+    }
+
+    .screen-list {
+      display: grid;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .screen-list span {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--success);
+      flex: none;
+      position: relative;
+    }
+
+    .check::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 4px;
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transform: rotate(-45deg);
+      left: 5px;
+      top: 5px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      counter-reset: flow;
+    }
+
+    .flow-step {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+    }
+
+    .flow-step::before {
+      counter-increment: flow;
+      content: counter(flow);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .flow-step h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .flow-step p {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .inventory {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .inventory-panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .stock-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stock-row:last-child {
+      border-bottom: 0;
+    }
+
+    .bar {
+      margin-top: 8px;
+      height: 9px;
+      background: #e6edf5;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .status {
+      font-size: 0.82rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    .status.warning {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    .cta {
+      text-align: center;
+      background:
+        radial-gradient(circle at top, rgba(47, 128, 237, 0.18), transparent 32rem),
+        #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 54px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    footer {
+      padding: 44px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 920px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero,
+      .inventory,
+      .screen-card,
+      .screen-card:nth-child(even) {
+        grid-template-columns: 1fr;
+      }
+
+      .screen-card:nth-child(even) .screen-text,
+      .screen-card:nth-child(even) .screen-image {
+        order: unset;
+      }
+
+      .hero-proof,
+      .problem-grid,
+      .solution-grid,
+      .benefit-grid,
+      .flow {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .nav-inner {
+        width: min(100% - 22px, 1180px);
+      }
+
+      .hero {
+        padding-top: 46px;
+      }
+
+      .hero-proof,
+      .problem-grid,
+      .solution-grid,
+      .benefit-grid,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .screen-card {
+        padding: 20px;
+        border-radius: 26px;
+      }
+
+      .floating-card {
+        position: static;
+        width: 100%;
+        margin-top: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <span class="logo">OF</span>
+        <span>OdontoFicha</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#problema">Problema</a>
+        <a href="#solucao">Solução</a>
+        <a href="#telas">Telas</a>
+        <a href="#estoque">Estoque</a>
+      </nav>
+      <a class="button button-primary" href="#telas">Ver telas</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page hero">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> Odontograma digital inteligente</div>
+        <h1>A ficha clínica odontológica que saiu do papel</h1>
+        <p class="hero-copy">
+          Digitalize o odontograma, monte planos de tratamento, gere orçamentos e acompanhe o histórico clínico em uma interface simples, visual e parecida com a ficha que o dentista já usa.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#telas">Conhecer as telas</a>
+          <a class="button button-secondary" href="#fluxo">Como funciona</a>
+        </div>
+        <div class="hero-proof">
+          <div class="proof-card">
+            <strong>Odontograma</strong>
+            <span>Dentes e faces clicáveis</span>
+          </div>
+          <div class="proof-card">
+            <strong>Orçamento</strong>
+            <span>Valores automáticos</span>
+          </div>
+          <div class="proof-card">
+            <strong>Estoque</strong>
+            <span>Consumo por procedimento</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <img src="assets/a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Interface do OdontoFicha com odontograma digital e painel de tratamento" />
+        <div class="floating-card">
+          <strong>Dente 16 selecionado</strong>
+          <span>Escolha a face, defina o procedimento, veja o valor e adicione ao plano de tratamento.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="problema" class="page">
+      <div class="section-head center">
+        <div class="kicker">O problema</div>
+        <h2>Seu consultório ainda depende de papel para planejar tratamentos?</h2>
+        <p>
+          O fluxo clínico tradicional funciona, mas gera retrabalho, dificulta consultas futuras e separa informações que deveriam estar no mesmo lugar.
+        </p>
+      </div>
+
+      <div class="problem-grid">
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <rect x="14" y="10" width="36" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="5"/>  <rect x="23" y="6" width="18" height="10" rx="4" fill="currentColor"/>  <path d="M24 28h16M24 39h12" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+          <h3>Odontograma preenchido à mão</h3>
+          <p>Marcações manuais dificultam atualização, leitura e padronização do histórico.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M18 6h22l10 10v42H18V6Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>  <path d="M40 6v12h10M24 32h16M24 43h16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+          <h3>Histórico clínico disperso</h3>
+          <p>Fichas, observações e orçamentos ficam separados e difíceis de consultar.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M10 18h38a6 6 0 0 1 6 6v26a6 6 0 0 1-6 6H16a6 6 0 0 1-6-6V18Z" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="M10 22 43 10a6 6 0 0 1 8 5v5" fill="none" stroke="currentColor" stroke-width="5"/>  <circle cx="44" cy="37" r="4" fill="currentColor"/></svg></div>
+          <h3>Orçamento manual</h3>
+          <p>O dentista precisa calcular valores, consultas e etapas fora da ficha clínica.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="solucao" class="page">
+      <div class="section-head">
+        <div class="kicker">A solução</div>
+        <h2>Tudo o que importa em uma única ficha clínica digital</h2>
+        <p>
+          O OdontoFicha preserva o modelo mental da ficha física, mas adiciona automação para plano de tratamento, orçamento, cronograma e estoque.
+        </p>
+      </div>
+
+      <div class="solution-grid">
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M22.4 6.5c4.1 0 6.1 2.1 9.6 2.1s5.5-2.1 9.6-2.1c8.3 0 13.2 6.8 12.1 16.2-.8 7.3-3.9 13.1-5.1 22.1-1 7.6-3.3 13.2-7.4 13.2-3.1 0-3.9-3.5-5.1-9.1-1-4.8-1.9-8.1-4.1-8.1s-3.1 3.3-4.1 8.1c-1.2 5.6-2 9.1-5.1 9.1-4.1 0-6.4-5.6-7.4-13.2-1.2-9-4.3-14.8-5.1-22.1C9.2 13.3 14.1 6.5 22.4 6.5Z" fill="currentColor"/></svg></div>
+          <h3>Odontograma interativo</h3>
+          <p>Clique no dente, selecione a face e registre o procedimento sem sair da tela clínica.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <rect x="14" y="10" width="36" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="5"/>  <rect x="23" y="6" width="18" height="10" rx="4" fill="currentColor"/>  <path d="M24 28h16M24 39h12" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+          <h3>Histórico organizado</h3>
+          <p>Todos os procedimentos planejados e realizados ficam vinculados ao paciente.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M10 18h38a6 6 0 0 1 6 6v26a6 6 0 0 1-6 6H16a6 6 0 0 1-6-6V18Z" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="M10 22 43 10a6 6 0 0 1 8 5v5" fill="none" stroke="currentColor" stroke-width="5"/>  <circle cx="44" cy="37" r="4" fill="currentColor"/></svg></div>
+          <h3>Orçamento instantâneo</h3>
+          <p>Valores, etapas e número estimado de consultas entram automaticamente no plano.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <rect x="10" y="14" width="44" height="40" rx="7" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="M20 8v12M44 8v12M10 26h44" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>  <path d="M22 38h20" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+          <h3>Cronograma de tratamento</h3>
+          <p>O paciente entende a sequência do tratamento e a quantidade prevista de consultas.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <rect x="10" y="8" width="44" height="48" rx="8" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="M20 44V32M32 44V22M44 44V28" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+          <h3>Indicadores financeiros</h3>
+          <p>KPIs simples mostram orçamento, faturamento, procedimentos e desempenho por consultório.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M12 22 32 10l20 12v24L32 58 12 46V22Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>  <path d="M12 22 32 34l20-12M32 34v24" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></svg></div>
+          <h3>Estoque inteligente</h3>
+          <p>Os insumos são abatidos conforme os procedimentos confirmados pelo dentista.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="telas" class="page">
+      <div class="section-head center">
+        <div class="kicker">Telas do produto</div>
+        <h2>Conheça as telas do OdontoFicha</h2>
+        <p>
+          Prints conceituais das telas pensadas para reproduzir o fluxo real do consultório, substituindo a ficha em papel por uma experiência digital simples e objetiva.
+        </p>
+      </div>
+
+      <div class="screens">
+        <article class="screen-card">
+          <div class="screen-text">
+            <div class="screen-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <circle cx="28" cy="28" r="16" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="m40 40 12 12" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+            <h3>Localize o paciente e abra o histórico em segundos</h3>
+            <p>
+              A entrada do sistema começa pela busca do paciente. Se ele já existir, a ficha é aberta com o histórico completo. Se for novo, o cadastro é criado rapidamente.
+            </p>
+            <div class="screen-list">
+              <span><i class="check"></i>Busca por nome ou telefone</span>
+              <span><i class="check"></i>Ficha do paciente em uma única tela</span>
+              <span><i class="check"></i>Histórico clínico sempre acessível</span>
+            </div>
+          </div>
+          <div class="screen-image">
+            <img src="assets/a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual com telas de busca, ficha clínica e dashboard do OdontoFicha" />
+          </div>
+        </article>
+
+        <article class="screen-card">
+          <div class="screen-text">
+            <div class="screen-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M22.4 6.5c4.1 0 6.1 2.1 9.6 2.1s5.5-2.1 9.6-2.1c8.3 0 13.2 6.8 12.1 16.2-.8 7.3-3.9 13.1-5.1 22.1-1 7.6-3.3 13.2-7.4 13.2-3.1 0-3.9-3.5-5.1-9.1-1-4.8-1.9-8.1-4.1-8.1s-3.1 3.3-4.1 8.1c-1.2 5.6-2 9.1-5.1 9.1-4.1 0-6.4-5.6-7.4-13.2-1.2-9-4.3-14.8-5.1-22.1C9.2 13.3 14.1 6.5 22.4 6.5Z" fill="currentColor"/></svg></div>
+            <h3>Clique diretamente no dente e registre o tratamento</h3>
+            <p>
+              O odontograma é o centro da experiência. O dentista escolhe o dente, define a face, seleciona o procedimento e visualiza o valor de forma imediata.
+            </p>
+            <div class="screen-list">
+              <span><i class="check"></i>Dentes e faces clicáveis</span>
+              <span><i class="check"></i>Procedimentos configuráveis</span>
+              <span><i class="check"></i>Valor e consultas preenchidos automaticamente</span>
+            </div>
+          </div>
+          <div class="screen-image">
+            <img src="assets/a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Print conceitual do odontograma interativo com seleção de dente e procedimento" />
+          </div>
+        </article>
+
+        <article class="screen-card">
+          <div class="screen-text">
+            <div class="screen-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <rect x="14" y="10" width="36" height="46" rx="7" fill="none" stroke="currentColor" stroke-width="5"/>  <rect x="23" y="6" width="18" height="10" rx="4" fill="currentColor"/>  <path d="M24 28h16M24 39h12" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></div>
+            <h3>Transforme a avaliação em plano de tratamento</h3>
+            <p>
+              Cada item selecionado entra automaticamente no plano do paciente, com dente, face, procedimento, valor e número previsto de consultas.
+            </p>
+            <div class="screen-list">
+              <span><i class="check"></i>Plano organizado por etapas</span>
+              <span><i class="check"></i>Cronograma estimado de consultas</span>
+              <span><i class="check"></i>Status por procedimento</span>
+            </div>
+          </div>
+          <div class="screen-image">
+            <img src="assets/a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do plano de tratamento com lista de procedimentos e valores" />
+          </div>
+        </article>
+
+        <article class="screen-card">
+          <div class="screen-text">
+            <div class="screen-icon"><svg viewBox="0 0 64 64" aria-hidden="true">  <path d="M10 18h38a6 6 0 0 1 6 6v26a6 6 0 0 1-6 6H16a6 6 0 0 1-6-6V18Z" fill="none" stroke="currentColor" stroke-width="5"/>  <path d="M10 22 43 10a6 6 0 0 1 8 5v5" fill="none" stroke="currentColor" stroke-width="5"/>  <circle cx="44" cy="37" r="4" fill="currentColor"/></svg></div>
+            <h3>Apresente orçamento e cronograma com clareza</h3>
+            <p>
+              A versão para paciente mostra procedimentos, etapas, quantidade estimada de consultas e valor total, sem expor observações internas do dentista.
+            </p>
+            <div class="screen-list">
+              <span><i class="check"></i>Orçamento exportável</span>
+              <span><i class="check"></i>Versão do dentista e versão do paciente</span>
+              <span><i class="check"></i>Apresentação clara do tratamento</span>
+            </div>
+          </div>
+          <div class="screen-image">
+            <img src="assets/a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do orçamento e cronograma do tratamento para paciente" />
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="fluxo" class="page">
+      <div class="section-head center">
+        <div class="kicker">Como funciona</div>
+        <h2>Do exame clínico ao orçamento em poucos passos</h2>
+        <p>
+          O sistema acompanha o fluxo natural do atendimento, sem tentar substituir agenda, convênio ou rotinas que o consultório já resolveu.
+        </p>
+      </div>
+
+      <div class="flow">
+        <article class="flow-step">
+          <h3>Localize o paciente</h3>
+          <p>Busque pelo nome ou telefone e abra a ficha clínica.</p>
+        </article>
+        <article class="flow-step">
+          <h3>Clique no dente</h3>
+          <p>Use o odontograma para escolher o dente e a face.</p>
+        </article>
+        <article class="flow-step">
+          <h3>Selecione o procedimento</h3>
+          <p>O preço e o número de consultas aparecem automaticamente.</p>
+        </article>
+        <article class="flow-step">
+          <h3>Monte o plano</h3>
+          <p>Os itens entram no plano de tratamento do paciente.</p>
+        </article>
+        <article class="flow-step">
+          <h3>Gere o orçamento</h3>
+          <p>Exporte uma versão clara para envio ao paciente.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="estoque" class="page">
+      <div class="inventory">
+        <div>
+          <div class="kicker">Estoque inteligente</div>
+          <h2>O estoque acompanha os tratamentos</h2>
+          <p class="hero-copy">
+            Cada procedimento pode ter uma receita de consumo. Quando o dentista confirma o tratamento, o sistema calcula os insumos utilizados, atualiza o saldo e sinaliza itens críticos.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#telas">Ver telas</a>
+          </div>
+        </div>
+
+        <div class="inventory-panel">
+          <div class="stock-row">
+            <div>
+              <strong>Resina composta</strong>
+              <div class="bar"><span style="width: 38%"></span></div>
+            </div>
+            <span class="status warning">Baixo</span>
+          </div>
+          <div class="stock-row">
+            <div>
+              <strong>Adesivo odontológico</strong>
+              <div class="bar"><span style="width: 64%"></span></div>
+            </div>
+            <span class="status">Ok</span>
+          </div>
+          <div class="stock-row">
+            <div>
+              <strong>Microbrush</strong>
+              <div class="bar"><span style="width: 72%"></span></div>
+            </div>
+            <span class="status">Ok</span>
+          </div>
+          <div class="stock-row">
+            <div>
+              <strong>Anestésico</strong>
+              <div class="bar"><span style="width: 24%"></span></div>
+            </div>
+            <span class="status warning">Reposição</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="cta">
+        <div class="kicker">OdontoFicha</div>
+        <h2>Planeje tratamentos com mais agilidade e menos papel</h2>
+        <p class="hero-copy" style="margin-left:auto;margin-right:auto">
+          Transforme o odontograma tradicional em uma experiência digital simples, visual e eficiente para pequenos consultórios odontológicos.
+        </p>
+        <a class="button button-primary" href="#telas">Rever telas</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    OdontoFicha · Odontograma Digital Inteligente
+  </footer>
+</body>
+</html>
