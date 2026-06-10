@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OdontoFicha | Odontograma Digital Inteligente</title>
+  <meta name="description" content="OdontoFicha é uma landing page para validar um odontograma digital com ficha clínica, plano de tratamento, orçamento e estoque para consultórios odontológicos." />
   <style>
     :root {
       --bg: #f6f9fc;
@@ -104,6 +105,68 @@
       font-size: 0.94rem;
     }
 
+    .mobile-menu {
+      display: none;
+      position: relative;
+    }
+
+    .mobile-menu summary {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .mobile-menu summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .mobile-menu summary span,
+    .mobile-menu summary::before,
+    .mobile-menu summary::after {
+      content: "";
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--text);
+      display: block;
+    }
+
+    .mobile-menu summary {
+      gap: 4px;
+    }
+
+    .mobile-menu-panel {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: min(280px, calc(100vw - 32px));
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .mobile-menu-panel a {
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .mobile-menu-panel a:hover {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
     .button {
       display: inline-flex;
       align-items: center;
@@ -127,6 +190,12 @@
       background: white;
       color: var(--primary);
       border: 1px solid var(--line);
+    }
+
+    .button-ghost {
+      background: transparent;
+      color: var(--primary-dark);
+      border: 1px solid rgba(47, 128, 237, 0.22);
     }
 
     .button:hover {
@@ -187,6 +256,13 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
       max-width: 620px;
+    }
+
+    .hero-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: -14px;
+      margin-bottom: 24px;
     }
 
     .proof-card {
@@ -280,7 +356,8 @@
 
     .problem-grid,
     .solution-grid,
-    .benefit-grid {
+    .benefit-grid,
+    .pilot-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
@@ -457,6 +534,76 @@
       box-shadow: var(--shadow);
     }
 
+    .pilot {
+      background: #0f172a;
+      color: white;
+      border-radius: 34px;
+      padding: 42px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pilot::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(47, 128, 237, 0.28);
+      filter: blur(10px);
+    }
+
+    .pilot-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .pilot .kicker {
+      color: #93c5fd;
+    }
+
+    .pilot h2 {
+      max-width: 620px;
+    }
+
+    .pilot p {
+      color: #cbd5e1;
+    }
+
+    .pilot-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .pilot-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .pilot-card p {
+      font-size: 0.94rem;
+    }
+
+    .pilot-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .pilot .button-secondary {
+      color: white;
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
     .stock-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -510,6 +657,22 @@
       box-shadow: var(--shadow);
     }
 
+    .contact-strip {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .contact-card {
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px dashed rgba(47, 128, 237, 0.35);
+      border-radius: var(--radius-md);
+      background: rgba(238, 246, 255, 0.58);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
     footer {
       padding: 44px 0;
       color: var(--muted);
@@ -522,8 +685,13 @@
         display: none;
       }
 
+      .mobile-menu {
+        display: block;
+      }
+
       .hero,
       .inventory,
+      .pilot-content,
       .screen-card,
       .screen-card:nth-child(even) {
         grid-template-columns: 1fr;
@@ -538,6 +706,7 @@
       .problem-grid,
       .solution-grid,
       .benefit-grid,
+      .pilot-grid,
       .flow {
         grid-template-columns: 1fr 1fr;
       }
@@ -557,6 +726,7 @@
       .problem-grid,
       .solution-grid,
       .benefit-grid,
+      .pilot-grid,
       .flow {
         grid-template-columns: 1fr;
       }
@@ -570,6 +740,11 @@
         position: static;
         width: 100%;
         margin-top: 14px;
+      }
+
+      .pilot {
+        padding: 26px 18px;
+        border-radius: 26px;
       }
     }
   </style>
@@ -587,7 +762,17 @@
         <a href="#telas">Telas</a>
         <a href="#estoque">Estoque</a>
       </nav>
-      <a class="button button-primary" href="#telas">Ver telas</a>
+      <a class="button button-primary" href="#piloto">Quero testar</a>
+      <details class="mobile-menu">
+        <summary aria-label="Abrir menu"><span></span></summary>
+        <div class="mobile-menu-panel">
+          <a href="#problema">Problema</a>
+          <a href="#solucao">Solução</a>
+          <a href="#telas">Telas</a>
+          <a href="#estoque">Estoque</a>
+          <a href="#piloto">Quero testar</a>
+        </div>
+      </details>
     </div>
   </header>
 
@@ -597,12 +782,13 @@
         <div class="eyebrow"><span class="eyebrow-dot"></span> Odontograma digital inteligente</div>
         <h1>A ficha clínica odontológica que saiu do papel</h1>
         <p class="hero-copy">
-          Digitalize o odontograma, monte planos de tratamento, gere orçamentos e acompanhe o histórico clínico em uma interface simples, visual e parecida com a ficha que o dentista já usa.
+          Uma proposta de sistema para pequenos consultórios: digitalize o odontograma, monte planos de tratamento, gere orçamentos e acompanhe o histórico clínico em uma interface parecida com a ficha que o dentista já usa.
         </p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#telas">Conhecer as telas</a>
+          <a class="button button-primary" href="#piloto">Entrar na validação</a>
           <a class="button button-secondary" href="#fluxo">Como funciona</a>
         </div>
+        <p class="hero-note">Produto em desenvolvimento. Esta página apresenta o conceito, fluxo e telas planejadas para validação com dentistas.</p>
         <div class="hero-proof">
           <div class="proof-card">
             <strong>Odontograma</strong>
@@ -620,7 +806,7 @@
       </div>
 
       <div class="hero-visual">
-        <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Interface do OdontoFicha com odontograma digital e painel de tratamento" />
+        <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Interface do OdontoFicha com odontograma digital e painel de tratamento" decoding="async" fetchpriority="high" />
         <div class="floating-card">
           <strong>Dente 16 selecionado</strong>
           <span>Escolha a face, defina o procedimento, veja o valor e adicione ao plano de tratamento.</span>
@@ -723,7 +909,7 @@
             </div>
           </div>
           <div class="screen-image">
-            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual com telas de busca, ficha clínica e dashboard do OdontoFicha" />
+            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual com telas de busca, ficha clínica e dashboard do OdontoFicha" loading="lazy" decoding="async" />
           </div>
         </article>
 
@@ -741,7 +927,7 @@
             </div>
           </div>
           <div class="screen-image">
-            <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Print conceitual do odontograma interativo com seleção de dente e procedimento" />
+            <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Print conceitual do odontograma interativo com seleção de dente e procedimento" loading="lazy" decoding="async" />
           </div>
         </article>
 
@@ -759,7 +945,7 @@
             </div>
           </div>
           <div class="screen-image">
-            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do plano de tratamento com lista de procedimentos e valores" />
+            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do plano de tratamento com lista de procedimentos e valores" loading="lazy" decoding="async" />
           </div>
         </article>
 
@@ -777,7 +963,7 @@
             </div>
           </div>
           <div class="screen-image">
-            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do orçamento e cronograma do tratamento para paciente" />
+            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Print conceitual do orçamento e cronograma do tratamento para paciente" loading="lazy" decoding="async" />
           </div>
         </article>
       </div>
@@ -862,14 +1048,49 @@
       </div>
     </section>
 
-    <section class="page">
+    <section id="piloto" class="page">
+      <div class="pilot">
+        <div class="pilot-content">
+          <div>
+            <div class="kicker">Validação com dentistas</div>
+            <h2>Ajude a moldar a primeira versão do OdontoFicha</h2>
+            <p>
+              A landing page existe para descobrir se o fluxo resolve uma dor real antes de construir um sistema grande. A próxima etapa é conversar com dentistas, entender a rotina de atendimento e priorizar o MVP.
+            </p>
+            <div class="pilot-actions">
+              <a class="button button-primary" href="#contato">Quero participar</a>
+              <a class="button button-secondary" href="#telas">Ver conceito</a>
+            </div>
+          </div>
+          <div class="pilot-grid">
+            <article class="pilot-card">
+              <h3>1. Conversa rápida</h3>
+              <p>Mapear como o consultório usa ficha, odontograma, orçamento e retorno do paciente.</p>
+            </article>
+            <article class="pilot-card">
+              <h3>2. Protótipo guiado</h3>
+              <p>Validar as telas principais antes de investir em cadastro, login e banco de dados.</p>
+            </article>
+            <article class="pilot-card">
+              <h3>3. MVP enxuto</h3>
+              <p>Construir primeiro paciente, odontograma, plano de tratamento e orçamento exportável.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contato" class="page">
       <div class="cta">
         <div class="kicker">OdontoFicha</div>
-        <h2>Planeje tratamentos com mais agilidade e menos papel</h2>
+        <h2>Planeje tratamentos com mais clareza e menos papel</h2>
         <p class="hero-copy" style="margin-left:auto;margin-right:auto">
-          Transforme o odontograma tradicional em uma experiência digital simples, visual e eficiente para pequenos consultórios odontológicos.
+          O objetivo é simples: manter a lógica da ficha clínica tradicional, mas reduzir retrabalho, cálculo manual e perda de histórico.
         </p>
-        <a class="button button-primary" href="#telas">Rever telas</a>
+        <a class="button button-primary" href="#piloto">Entrar na validação</a>
+        <a class="button button-ghost" href="#fluxo">Rever fluxo</a>
+        <div class="contact-strip">Primeira versão pensada para pequenos consultórios e profissionais que ainda dependem de ficha em papel.</div>
+        <div class="contact-card">Canal de contato pronto para conectar: e-mail, WhatsApp ou formulário quando você escolher o melhor caminho.</div>
       </div>
     </section>
   </main>
