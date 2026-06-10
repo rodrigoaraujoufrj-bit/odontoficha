@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OdontoFicha | Odontograma Digital Inteligente</title>
-  <meta name="description" content="OdontoFicha é uma landing page para validar um odontograma digital com ficha clínica, plano de tratamento, orçamento e estoque para consultórios odontológicos." />
+  <title>OdontoFlow | Fluxo clínico odontológico</title>
+  <meta name="description" content="OdontoFlow é uma landing page para validar um fluxo clínico odontológico com ficha, odontograma, plano de tratamento, orçamento e estoque." />
   <style>
     :root {
-      --bg: #f6f9fc;
+      --bg: #f6fafc;
       --surface: #ffffff;
-      --surface-soft: #eef6ff;
+      --surface-soft: #e8f7f5;
       --text: #102033;
-      --muted: #64748b;
-      --primary: #2f80ed;
-      --primary-dark: #1d5fbf;
-      --line: #dbe7f3;
+      --muted: #647781;
+      --primary: #14b8a6;
+      --primary-dark: #0f3d5e;
+      --line: #d8e7ea;
       --success: #16a34a;
       --warning: #f59e0b;
-      --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+      --shadow: 0 24px 70px rgba(15, 61, 94, 0.12);
       --radius-xl: 28px;
       --radius-lg: 20px;
       --radius-md: 14px;
@@ -36,7 +36,7 @@
     body {
       font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(47, 128, 237, 0.16), transparent 32rem),
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 32rem),
         linear-gradient(180deg, #ffffff 0%, var(--bg) 48%, #ffffff 100%);
       color: var(--text);
       line-height: 1.6;
@@ -64,7 +64,7 @@
       z-index: 30;
       backdrop-filter: blur(18px);
       background: rgba(255, 255, 255, 0.78);
-      border-bottom: 1px solid rgba(219, 231, 243, 0.75);
+      border-bottom: 1px solid rgba(216, 231, 234, 0.75);
     }
 
     .nav-inner {
@@ -91,9 +91,9 @@
       border-radius: 14px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--primary), #6bb7ff);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       color: white;
-      box-shadow: 0 12px 30px rgba(47, 128, 237, 0.35);
+      box-shadow: 0 12px 30px rgba(20, 184, 166, 0.28);
       font-weight: 900;
     }
 
@@ -183,7 +183,7 @@
     .button-primary {
       background: var(--primary);
       color: white;
-      box-shadow: 0 16px 34px rgba(47, 128, 237, 0.32);
+      box-shadow: 0 16px 34px rgba(20, 184, 166, 0.28);
     }
 
     .button-secondary {
@@ -195,7 +195,7 @@
     .button-ghost {
       background: transparent;
       color: var(--primary-dark);
-      border: 1px solid rgba(47, 128, 237, 0.22);
+      border: 1px solid rgba(20, 184, 166, 0.24);
     }
 
     .button:hover {
@@ -293,7 +293,7 @@
       display: block;
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow);
-      border: 1px solid rgba(219, 231, 243, 0.85);
+      border: 1px solid rgba(216, 231, 234, 0.88);
     }
 
     .floating-card {
@@ -304,7 +304,7 @@
       border: 1px solid var(--line);
       border-radius: 22px;
       padding: 18px 20px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      box-shadow: 0 18px 45px rgba(15, 61, 94, 0.14);
       width: min(300px, 72%);
     }
 
@@ -368,7 +368,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       padding: 24px;
-      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+      box-shadow: 0 14px 38px rgba(15, 61, 94, 0.055);
     }
 
     .card-icon {
@@ -407,7 +407,7 @@
       border: 1px solid var(--line);
       border-radius: 34px;
       padding: 30px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.09);
+      box-shadow: 0 24px 70px rgba(15, 61, 94, 0.09);
     }
 
     .screen-card:nth-child(even) {
@@ -535,7 +535,7 @@
     }
 
     .pilot {
-      background: #0f172a;
+      background: #0f3d5e;
       color: white;
       border-radius: 34px;
       padding: 42px;
@@ -550,7 +550,7 @@
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      background: rgba(47, 128, 237, 0.28);
+      background: rgba(20, 184, 166, 0.28);
       filter: blur(10px);
     }
 
@@ -564,7 +564,7 @@
     }
 
     .pilot .kicker {
-      color: #93c5fd;
+      color: #9af0e4;
     }
 
     .pilot h2 {
@@ -572,7 +572,7 @@
     }
 
     .pilot p {
-      color: #cbd5e1;
+      color: #d7eef2;
     }
 
     .pilot-card {
@@ -620,7 +620,7 @@
     .bar {
       margin-top: 8px;
       height: 9px;
-      background: #e6edf5;
+      background: #e3edf0;
       border-radius: 999px;
       overflow: hidden;
     }
@@ -649,7 +649,7 @@
     .cta {
       text-align: center;
       background:
-        radial-gradient(circle at top, rgba(47, 128, 237, 0.18), transparent 32rem),
+        radial-gradient(circle at top, rgba(20, 184, 166, 0.18), transparent 32rem),
         #ffffff;
       border: 1px solid var(--line);
       border-radius: 36px;
@@ -666,9 +666,9 @@
     .contact-card {
       margin-top: 22px;
       padding: 18px;
-      border: 1px dashed rgba(47, 128, 237, 0.35);
+      border: 1px dashed rgba(20, 184, 166, 0.38);
       border-radius: var(--radius-md);
-      background: rgba(238, 246, 255, 0.58);
+      background: rgba(232, 247, 245, 0.68);
       color: var(--primary-dark);
       font-weight: 700;
     }
@@ -754,7 +754,7 @@
     <div class="nav-inner">
       <a class="brand" href="#">
         <span class="logo">OF</span>
-        <span>OdontoFicha</span>
+        <span>OdontoFlow</span>
       </a>
       <nav class="nav-links">
         <a href="#problema">Problema</a>
@@ -782,9 +782,9 @@
     <section class="page hero">
       <div>
         <div class="eyebrow"><span class="eyebrow-dot"></span> Odontograma digital inteligente</div>
-        <h1>A ficha clínica odontológica que saiu do papel</h1>
+        <h1>OdontoFlow organiza o fluxo clínico do consultório</h1>
         <p class="hero-copy">
-          Uma proposta de sistema para pequenos consultórios: digitalize o odontograma, monte planos de tratamento, gere orçamentos e acompanhe o histórico clínico em uma interface parecida com a ficha que o dentista já usa.
+          Uma proposta de sistema para pequenos consultórios: conecte ficha clínica, odontograma, plano de tratamento e orçamento em uma interface parecida com o fluxo que o dentista já usa.
         </p>
         <div class="hero-actions">
           <a class="button button-primary" href="#piloto">Entrar na validação</a>
@@ -808,7 +808,7 @@
       </div>
 
       <div class="hero-visual">
-        <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Interface do OdontoFicha com odontograma digital e painel de tratamento" decoding="async" fetchpriority="high" />
+        <img src="a_clean_modern_ui_screenshot_of_a_dental_clinic_s.png" alt="Interface do OdontoFlow com odontograma digital e painel de tratamento" decoding="async" fetchpriority="high" />
         <div class="floating-card">
           <strong>Dente 16 selecionado</strong>
           <span>Escolha a face, defina o procedimento, veja o valor e adicione ao plano de tratamento.</span>
@@ -849,7 +849,7 @@
         <div class="kicker">A solução</div>
         <h2>Tudo o que importa em uma única ficha clínica digital</h2>
         <p>
-          O OdontoFicha preserva o modelo mental da ficha física, mas adiciona automação para plano de tratamento, orçamento, cronograma e estoque.
+          O OdontoFlow preserva o modelo mental da ficha física, mas adiciona automação para plano de tratamento, orçamento, cronograma e estoque.
         </p>
       </div>
 
@@ -890,7 +890,7 @@
     <section id="telas" class="page">
       <div class="section-head center">
         <div class="kicker">Telas do produto</div>
-        <h2>Veja como o MVP do OdontoFicha pode funcionar</h2>
+        <h2>Veja como o MVP do OdontoFlow pode funcionar</h2>
         <p>
           Uma visão geral do produto e quatro telas individuais para explicar a primeira versão: paciente, odontograma, plano de tratamento e orçamento para envio.
         </p>
@@ -911,7 +911,7 @@
             </div>
           </div>
           <div class="screen-image">
-            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Collage conceitual com várias telas do OdontoFicha" loading="lazy" decoding="async" />
+            <img src="a_clean_ui_mockup_collage_dashboard_screenshot_i.png" alt="Collage conceitual com várias telas do OdontoFlow" loading="lazy" decoding="async" />
           </div>
         </article>
 
@@ -1073,7 +1073,7 @@
         <div class="pilot-content">
           <div>
             <div class="kicker">Validação com dentistas</div>
-            <h2>Ajude a moldar a primeira versão do OdontoFicha</h2>
+            <h2>Ajude a moldar a primeira versão do OdontoFlow</h2>
             <p>
               A landing page existe para descobrir se o fluxo resolve uma dor real antes de construir um sistema grande. A próxima etapa é conversar com dentistas, entender a rotina de atendimento e priorizar o MVP.
             </p>
@@ -1103,7 +1103,7 @@
 
     <section id="contato" class="page">
       <div class="cta">
-        <div class="kicker">OdontoFicha</div>
+        <div class="kicker">OdontoFlow</div>
         <h2>Planeje tratamentos com mais clareza e menos papel</h2>
         <p class="hero-copy" style="margin-left:auto;margin-right:auto">
           O objetivo é simples: manter a lógica da ficha clínica tradicional, mas reduzir retrabalho, cálculo manual e perda de histórico.
@@ -1117,7 +1117,7 @@
   </main>
 
   <footer>
-    OdontoFicha · Odontograma Digital Inteligente
+    OdontoFlow · Fluxo clínico odontológico
   </footer>
 </body>
 </html>
