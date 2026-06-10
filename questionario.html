@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Questionario OdontoFicha | Validacao do MVP</title>
+  <meta name="description" content="Questionario de validacao do MVP OdontoFicha para entender a rotina de consultorios odontologicos." />
+  <style>
+    :root {
+      --bg: #f6f9fc;
+      --surface: #ffffff;
+      --surface-soft: #eef6ff;
+      --text: #102033;
+      --muted: #64748b;
+      --primary: #2f80ed;
+      --primary-dark: #1d5fbf;
+      --line: #dbe7f3;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(47, 128, 237, 0.16), transparent 30rem),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 46%, #ffffff 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(219, 231, 243, 0.8);
+    }
+
+    .nav-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 850;
+      font-size: 1.2rem;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), #0fbaa8);
+      color: white;
+      box-shadow: 0 12px 30px rgba(47, 128, 237, 0.32);
+      font-weight: 900;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      background: white;
+      color: var(--primary-dark);
+      border: 1px solid var(--line);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 16px 34px rgba(47, 128, 237, 0.28);
+    }
+
+    .button-success {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+
+    .hero {
+      padding: 64px 0 34px;
+      display: grid;
+      grid-template-columns: 1fr 0.82fr;
+      gap: 34px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 0.86rem;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5.4vw, 5rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+      margin-bottom: 22px;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 1.12rem;
+      max-width: 740px;
+      margin-bottom: 18px;
+    }
+
+    .notice {
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-weight: 700;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 1.05rem;
+    }
+
+    .summary-card span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 24px;
+      align-items: start;
+      padding-bottom: 72px;
+    }
+
+    .toc {
+      position: sticky;
+      top: 92px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+    }
+
+    .toc a {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 0.94rem;
+    }
+
+    .toc a:hover {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    form {
+      display: grid;
+      gap: 22px;
+    }
+
+    .section {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.055);
+    }
+
+    .section-head {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kicker {
+      color: var(--primary);
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.76rem;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label,
+    .label {
+      font-weight: 780;
+      color: var(--text);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfdff;
+      color: var(--text);
+      font: inherit;
+      padding: 12px 14px;
+      outline: 0;
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(47, 128, 237, 0.72);
+      box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.1);
+    }
+
+    .checks {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .check-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 12px;
+      background: #fbfdff;
+      font-weight: 700;
+    }
+
+    .check-option input {
+      width: auto;
+      margin-top: 5px;
+      flex: none;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      padding: 0;
+    }
+
+    .score {
+      min-width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      font-weight: 900;
+    }
+
+    .procedure-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .procedure-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .remove-row {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid #fecaca;
+      background: #fff1f2;
+      color: #be123c;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 15;
+      background: rgba(246, 249, 252, 0.88);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(219, 231, 243, 0.8);
+      padding: 16px 0;
+      margin-top: 18px;
+    }
+
+    .actions-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .save-state {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .download-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer {
+      padding: 34px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.94rem;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+
+      .toc nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .nav-inner,
+      .actions-inner {
+        width: min(100% - 22px, 1120px);
+      }
+
+      .nav-inner,
+      .actions-inner {
+        align-items: stretch;
+      }
+
+      .nav-actions,
+      .download-actions {
+        width: 100%;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .grid,
+      .checks,
+      .toc nav,
+      .procedure-row {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html">
+        <span class="logo">OF</span>
+        <span>OdontoFicha</span>
+      </a>
+      <div class="nav-actions">
+        <a class="button" href="index.html">Voltar para a landing</a>
+        <button class="button button-primary" type="button" data-download="json">Baixar JSON</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page hero">
+      <div>
+        <div class="eyebrow">Validacao do MVP</div>
+        <h1>Questionario para entender a rotina do consultorio</h1>
+        <p class="hero-copy">
+          As respostas ajudam a decidir o que entra primeiro no OdontoFicha: ficha clinica, odontograma, tabela de procedimentos, agenda, plano de tratamento, orcamento e estoque.
+        </p>
+        <div class="notice">
+          Nao coloque dados reais de pacientes aqui. O objetivo e mapear processos do consultorio, nao coletar informacoes clinicas sensiveis.
+        </div>
+      </div>
+      <aside class="summary-card">
+        <div>
+          <strong>Como usar</strong>
+          <span>Responda com calma. O navegador salva um rascunho neste aparelho enquanto voce preenche.</span>
+        </div>
+        <div>
+          <strong>No final</strong>
+          <span>Baixe o arquivo JSON ou TXT e envie para quem vai analisar o MVP.</span>
+        </div>
+        <div>
+          <strong>Tempo estimado</strong>
+          <span>10 a 15 minutos, dependendo do nivel de detalhe.</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="page layout">
+      <aside class="toc">
+        <nav aria-label="Secoes do questionario">
+          <a href="#perfil">Perfil</a>
+          <a href="#rotina">Rotina</a>
+          <a href="#ficha">Ficha clinica</a>
+          <a href="#odontograma">Odontograma</a>
+          <a href="#procedimentos">Procedimentos</a>
+          <a href="#orcamento">Orcamento</a>
+          <a href="#agenda">Agenda</a>
+          <a href="#estoque">Estoque</a>
+          <a href="#mvp">Prioridades</a>
+        </nav>
+      </aside>
+
+      <form id="questionnaire">
+        <section class="section" id="perfil">
+          <div class="section-head">
+            <div class="kicker">1. Perfil do consultorio</div>
+            <h2>Contexto para entender o tamanho do problema</h2>
+            <p>Essas respostas ajudam a calibrar o MVP para a realidade do consultorio, sem supor que todo dentista trabalha do mesmo jeito.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="nome_profissional">Nome do profissional</label>
+              <input id="nome_profissional" name="nome_profissional" type="text" placeholder="Ex.: Dr. Rodrigo" />
+            </div>
+            <div class="field">
+              <label for="especialidade">Especialidade principal</label>
+              <input id="especialidade" name="especialidade" type="text" placeholder="Ex.: clinico geral, ortodontia, implantodontia" />
+            </div>
+            <div class="field">
+              <label for="tipo_consultorio">Tipo de atendimento</label>
+              <select id="tipo_consultorio" name="tipo_consultorio">
+                <option value="">Selecione</option>
+                <option>Consultorio proprio</option>
+                <option>Clinica compartilhada</option>
+                <option>Rede/clinica maior</option>
+                <option>Atendimento em mais de um local</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pacientes_semana">Media de pacientes por semana</label>
+              <input id="pacientes_semana" name="pacientes_semana" type="text" placeholder="Ex.: 25 a 40" />
+            </div>
+            <div class="field full">
+              <label for="equipe">Quem participa da rotina administrativa?</label>
+              <textarea id="equipe" name="equipe" placeholder="Ex.: dentista, secretaria, auxiliar, socio, financeiro..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="rotina">
+          <div class="section-head">
+            <div class="kicker">2. Rotina atual</div>
+            <h2>Onde o tempo esta sendo gasto hoje?</h2>
+            <p>Queremos separar dor real de funcionalidade bonita que talvez nao seja essencial agora.</p>
+          </div>
+          <div class="grid">
+            <div class="field full">
+              <label class="label">Quais ferramentas voce usa hoje?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="Papel" /> Papel</label>
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="WhatsApp" /> WhatsApp</label>
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="Google Agenda" /> Google Agenda</label>
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="Planilha" /> Planilha</label>
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="Sistema odontologico" /> Sistema odontologico</label>
+                <label class="check-option"><input type="checkbox" name="ferramentas_atuais" value="Outro" /> Outro</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="maior_retrabalho">O que mais gera retrabalho no consultorio?</label>
+              <textarea id="maior_retrabalho" name="maior_retrabalho" placeholder="Ex.: procurar historico, refazer orcamento, confirmar agenda, calcular valores..."></textarea>
+            </div>
+            <div class="field">
+              <label for="tempo_perdido">Onde voce sente que mais perde tempo?</label>
+              <select id="tempo_perdido" name="tempo_perdido">
+                <option value="">Selecione</option>
+                <option>Agenda e confirmacao</option>
+                <option>Ficha clinica e historico</option>
+                <option>Odontograma</option>
+                <option>Orcamento</option>
+                <option>Controle financeiro</option>
+                <option>Estoque</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="dor_nota">Nota da dor operacional hoje</label>
+              <div class="range-row">
+                <input id="dor_nota" name="dor_nota" type="range" min="1" max="10" value="5" />
+                <span class="score" data-score-for="dor_nota">5</span>
+              </div>
+              <span class="hint">1 = tranquilo, 10 = atrapalha muito</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="ficha">
+          <div class="section-head">
+            <div class="kicker">3. Ficha clinica</div>
+            <h2>O que precisa existir na ficha digital?</h2>
+            <p>A primeira versao precisa guardar o essencial, sem virar um cadastro gigante que ninguem preenche.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="ficha_atual">Como voce registra ficha clinica hoje?</label>
+              <select id="ficha_atual" name="ficha_atual">
+                <option value="">Selecione</option>
+                <option>Papel</option>
+                <option>Planilha/documento</option>
+                <option>Sistema odontologico</option>
+                <option>Misto: papel e digital</option>
+                <option>Nao tenho padrao claro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="historico_consulta">Com que frequencia consulta historico antigo?</label>
+              <select id="historico_consulta" name="historico_consulta">
+                <option value="">Selecione</option>
+                <option>Em quase todo atendimento</option>
+                <option>Algumas vezes por semana</option>
+                <option>Raramente</option>
+                <option>Quase nunca</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">Campos indispensaveis na ficha</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Anamnese" /> Anamnese</label>
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Alergias" /> Alergias</label>
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Medicamentos" /> Medicamentos</label>
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Observacoes clinicas" /> Observacoes clinicas</label>
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Imagens/anexos" /> Imagens/anexos</label>
+                <label class="check-option"><input type="checkbox" name="campos_ficha" value="Assinatura/termos" /> Assinatura/termos</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="ficha_outros_campos">Que outros campos deveriam existir?</label>
+              <textarea id="ficha_outros_campos" name="ficha_outros_campos"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="odontograma">
+          <div class="section-head">
+            <div class="kicker">4. Odontograma</div>
+            <h2>Como voce usa odontograma na pratica?</h2>
+            <p>Essa parte define se o MVP deve registrar por dente, face, condicao, procedimento e evolucao.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="usa_odontograma">Voce usa odontograma hoje?</label>
+              <select id="usa_odontograma" name="usa_odontograma">
+                <option value="">Selecione</option>
+                <option>Sim, em papel</option>
+                <option>Sim, em sistema</option>
+                <option>Uso pouco</option>
+                <option>Nao uso</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="registro_face">Precisa registrar face do dente?</label>
+              <select id="registro_face" name="registro_face">
+                <option value="">Selecione</option>
+                <option>Sempre</option>
+                <option>As vezes</option>
+                <option>Raramente</option>
+                <option>Nao</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">O que o odontograma precisa marcar?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Dente higido" /> Dente higido</label>
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Caries" /> Caries</label>
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Restauracao" /> Restauracao</label>
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Ausente" /> Ausente</label>
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Tratamento planejado" /> Tratamento planejado</label>
+                <label class="check-option"><input type="checkbox" name="marcacoes_odontograma" value="Tratamento realizado" /> Tratamento realizado</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="odontograma_observacoes">Como seria o odontograma ideal para voce?</label>
+              <textarea id="odontograma_observacoes" name="odontograma_observacoes"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="procedimentos">
+          <div class="section-head">
+            <div class="kicker">5. Procedimentos e valores</div>
+            <h2>Base inicial para montar tabela no Supabase</h2>
+            <p>Se voce souber alguns procedimentos comuns, preencha. Nao precisa ser completo; isso serve para desenhar o banco de dados.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="tem_tabela">Voce ja tem tabela de procedimentos?</label>
+              <select id="tem_tabela" name="tem_tabela">
+                <option value="">Selecione</option>
+                <option>Sim, bem organizada</option>
+                <option>Sim, mas precisa atualizar</option>
+                <option>Tenho valores soltos</option>
+                <option>Nao tenho tabela</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="valor_varia">O valor varia por dente/face/material?</label>
+              <select id="valor_varia" name="valor_varia">
+                <option value="">Selecione</option>
+                <option>Sim, com frequencia</option>
+                <option>As vezes</option>
+                <option>Quase nunca</option>
+                <option>Nao sei</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">Procedimentos mais comuns</label>
+              <span class="hint">Preencha nome, valor aproximado e numero medio de consultas.</span>
+              <div class="procedure-list" id="procedureList"></div>
+              <button class="button" type="button" id="addProcedure">Adicionar procedimento</button>
+            </div>
+            <div class="field full">
+              <label for="procedimentos_observacoes">Observacoes sobre valores e regras</label>
+              <textarea id="procedimentos_observacoes" name="procedimentos_observacoes" placeholder="Ex.: valor muda por material, depende da complexidade, valor e passado depois da avaliacao..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="orcamento">
+          <div class="section-head">
+            <div class="kicker">6. Plano de tratamento e orcamento</div>
+            <h2>Como o paciente recebe a proposta hoje?</h2>
+            <p>Essa etapa define se precisamos gerar PDF, WhatsApp, etapas, assinatura, aprovacao ou controle de status.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="orcamento_atual">Como voce monta orcamento hoje?</label>
+              <select id="orcamento_atual" name="orcamento_atual">
+                <option value="">Selecione</option>
+                <option>Manual em papel</option>
+                <option>WhatsApp</option>
+                <option>Planilha/documento</option>
+                <option>Sistema</option>
+                <option>Verbalmente</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="envio_orcamento">Como envia para o paciente?</label>
+              <select id="envio_orcamento" name="envio_orcamento">
+                <option value="">Selecione</option>
+                <option>WhatsApp</option>
+                <option>PDF</option>
+                <option>Impresso</option>
+                <option>E-mail</option>
+                <option>Nao envio formalmente</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">O que precisa aparecer no orcamento?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Procedimentos" /> Procedimentos</label>
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Dente/regiao" /> Dente/regiao</label>
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Etapas" /> Etapas</label>
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Consultas previstas" /> Consultas previstas</label>
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Formas de pagamento" /> Formas de pagamento</label>
+                <label class="check-option"><input type="checkbox" name="campos_orcamento" value="Validade da proposta" /> Validade da proposta</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="orcamento_observacoes">O que costuma dar problema na aprovacao do orcamento?</label>
+              <textarea id="orcamento_observacoes" name="orcamento_observacoes"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="agenda">
+          <div class="section-head">
+            <div class="kicker">7. Agenda</div>
+            <h2>Agenda entra no MVP ou fica para depois?</h2>
+            <p>Agenda pode ser essencial ou pode ser integracao futura. A resposta evita construir uma parte grande antes da hora.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="agenda_atual">Qual agenda voce usa hoje?</label>
+              <input id="agenda_atual" name="agenda_atual" type="text" placeholder="Ex.: Google Agenda, WhatsApp, agenda de papel, sistema..." />
+            </div>
+            <div class="field">
+              <label for="agenda_importancia">Importancia da agenda no MVP</label>
+              <div class="range-row">
+                <input id="agenda_importancia" name="agenda_importancia" type="range" min="1" max="10" value="5" />
+                <span class="score" data-score-for="agenda_importancia">5</span>
+              </div>
+            </div>
+            <div class="field full">
+              <label class="label">O que a agenda deveria fazer?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Marcar consulta" /> Marcar consulta</label>
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Confirmar por WhatsApp" /> Confirmar por WhatsApp</label>
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Vincular ao plano" /> Vincular ao plano</label>
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Lembretes" /> Lembretes</label>
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Retornos" /> Retornos</label>
+                <label class="check-option"><input type="checkbox" name="funcoes_agenda" value="Integrar com Google Agenda" /> Integrar com Google Agenda</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="agenda_observacoes">Observacoes sobre agenda</label>
+              <textarea id="agenda_observacoes" name="agenda_observacoes"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="estoque">
+          <div class="section-head">
+            <div class="kicker">8. Estoque</div>
+            <h2>Controle de materiais e insumos e dor real agora?</h2>
+            <p>O estoque pode ser diferencial, mas talvez seja segunda fase. Aqui a gente mede prioridade.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="controle_estoque">Como controla estoque hoje?</label>
+              <select id="controle_estoque" name="controle_estoque">
+                <option value="">Selecione</option>
+                <option>Nao controlo</option>
+                <option>Visualmente/manual</option>
+                <option>Planilha</option>
+                <option>Sistema</option>
+                <option>Outra pessoa controla</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="estoque_importancia">Importancia do estoque no MVP</label>
+              <div class="range-row">
+                <input id="estoque_importancia" name="estoque_importancia" type="range" min="1" max="10" value="4" />
+                <span class="score" data-score-for="estoque_importancia">4</span>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="estoque_observacoes">Quais materiais mais geram falta, desperdicio ou preocupacao?</label>
+              <textarea id="estoque_observacoes" name="estoque_observacoes"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="mvp">
+          <div class="section-head">
+            <div class="kicker">9. Prioridade do MVP</div>
+            <h2>O que faria voce realmente usar o OdontoFicha?</h2>
+            <p>Essa e a parte mais importante para transformar conversa em decisao de produto.</p>
+          </div>
+          <div class="grid">
+            <div class="field full">
+              <label class="label">Escolha ate 5 itens indispensaveis</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Cadastro de pacientes" /> Cadastro de pacientes</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Ficha clinica" /> Ficha clinica</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Odontograma" /> Odontograma</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Tabela de procedimentos" /> Tabela de procedimentos</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Plano de tratamento" /> Plano de tratamento</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Orcamento para paciente" /> Orcamento para paciente</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Agenda" /> Agenda</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Estoque" /> Estoque</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Financeiro" /> Financeiro</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Relatorios" /> Relatorios</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="primeira_versao">Se so pudesse ter 3 coisas na primeira versao, quais seriam?</label>
+              <textarea id="primeira_versao" name="primeira_versao"></textarea>
+            </div>
+            <div class="field full">
+              <label for="bloqueio_adocao">O que impediria voce de usar um sistema desses?</label>
+              <textarea id="bloqueio_adocao" name="bloqueio_adocao" placeholder="Ex.: dificuldade de uso, migracao de dados, preco, seguranca, internet, tempo para cadastrar..."></textarea>
+            </div>
+            <div class="field full">
+              <label for="comentario_final">Comentarios finais</label>
+              <textarea id="comentario_final" name="comentario_final" placeholder="Qualquer detalhe que ajude a desenhar o produto certo."></textarea>
+            </div>
+          </div>
+        </section>
+      </form>
+    </section>
+  </main>
+
+  <div class="actions">
+    <div class="actions-inner">
+      <div class="save-state" id="saveState">Rascunho salvo neste navegador.</div>
+      <div class="download-actions">
+        <button class="button" type="button" id="clearDraft">Limpar rascunho</button>
+        <button class="button" type="button" data-download="txt">Baixar TXT</button>
+        <button class="button button-success" type="button" data-download="json">Baixar JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    OdontoFicha · Questionario de validacao do MVP
+  </footer>
+
+  <script>
+    const form = document.querySelector("#questionnaire");
+    const saveState = document.querySelector("#saveState");
+    const storageKey = "odontoficha_questionario_v1";
+    const procedureList = document.querySelector("#procedureList");
+
+    const defaultProcedures = [
+      { nome: "", valor: "", consultas: "" },
+      { nome: "", valor: "", consultas: "" },
+      { nome: "", valor: "", consultas: "" }
+    ];
+
+    function createProcedureRow(value = {}) {
+      const row = document.createElement("div");
+      row.className = "procedure-row";
+      row.innerHTML = `
+        <div class="field">
+          <label>Procedimento</label>
+          <input type="text" data-procedure="nome" placeholder="Ex.: Restauracao em resina" value="${escapeAttribute(value.nome || "")}" />
+        </div>
+        <div class="field">
+          <label>Valor aproximado</label>
+          <input type="text" data-procedure="valor" placeholder="Ex.: R$ 350" value="${escapeAttribute(value.valor || "")}" />
+        </div>
+        <div class="field">
+          <label>Consultas</label>
+          <input type="text" data-procedure="consultas" placeholder="Ex.: 1" value="${escapeAttribute(value.consultas || "")}" />
+        </div>
+        <button class="remove-row" type="button" aria-label="Remover procedimento">X</button>
+      `;
+
+      row.querySelector(".remove-row").addEventListener("click", () => {
+        row.remove();
+        persist();
+      });
+
+      row.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("input", persist);
+      });
+
+      procedureList.appendChild(row);
+    }
+
+    function escapeAttribute(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function collectData() {
+      const data = {
+        metadata: {
+          projeto: "OdontoFicha",
+          tipo: "Questionario de validacao do MVP",
+          gerado_em: new Date().toISOString(),
+          aviso: "Nao deve conter dados reais de pacientes."
+        },
+        respostas: {},
+        procedimentos_comuns: []
+      };
+
+      const formData = new FormData(form);
+
+      for (const [key, value] of formData.entries()) {
+        if (data.respostas[key]) {
+          if (!Array.isArray(data.respostas[key])) {
+            data.respostas[key] = [data.respostas[key]];
+          }
+          data.respostas[key].push(value);
+        } else {
+          data.respostas[key] = value;
+        }
+      }
+
+      procedureList.querySelectorAll(".procedure-row").forEach((row) => {
+        const item = {};
+        row.querySelectorAll("[data-procedure]").forEach((input) => {
+          item[input.dataset.procedure] = input.value.trim();
+        });
+        if (item.nome || item.valor || item.consultas) {
+          data.procedimentos_comuns.push(item);
+        }
+      });
+
+      return data;
+    }
+
+    function fillData(data) {
+      if (!data || !data.respostas) return;
+
+      Object.entries(data.respostas).forEach(([name, value]) => {
+        const values = Array.isArray(value) ? value : [value];
+        const fields = form.querySelectorAll(`[name="${CSS.escape(name)}"]`);
+        fields.forEach((field) => {
+          if (field.type === "checkbox") {
+            field.checked = values.includes(field.value);
+          } else if (field.type === "radio") {
+            field.checked = values.includes(field.value);
+          } else {
+            field.value = values[0] || "";
+          }
+        });
+      });
+
+      procedureList.innerHTML = "";
+      const procedures = data.procedimentos_comuns && data.procedimentos_comuns.length
+        ? data.procedimentos_comuns
+        : defaultProcedures;
+      procedures.forEach(createProcedureRow);
+      updateScores();
+    }
+
+    function persist() {
+      const data = collectData();
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      saveState.textContent = "Rascunho salvo neste navegador.";
+    }
+
+    function updateScores() {
+      document.querySelectorAll("input[type='range']").forEach((range) => {
+        const score = document.querySelector(`[data-score-for="${range.id}"]`);
+        if (score) score.textContent = range.value;
+      });
+    }
+
+    function download(type) {
+      const data = collectData();
+      const date = new Date().toISOString().slice(0, 10);
+      const baseName = `odontoficha-questionario-${date}`;
+      let content;
+      let filename;
+      let mime;
+
+      if (type === "txt") {
+        content = toText(data);
+        filename = `${baseName}.txt`;
+        mime = "text/plain;charset=utf-8";
+      } else {
+        content = JSON.stringify(data, null, 2);
+        filename = `${baseName}.json`;
+        mime = "application/json;charset=utf-8";
+      }
+
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function toText(data) {
+      const lines = [
+        "ODONTOFICHA - QUESTIONARIO DE VALIDACAO DO MVP",
+        `Gerado em: ${data.metadata.gerado_em}`,
+        "",
+        "AVISO: este arquivo nao deve conter dados reais de pacientes.",
+        "",
+        "RESPOSTAS"
+      ];
+
+      Object.entries(data.respostas).forEach(([key, value]) => {
+        const answer = Array.isArray(value) ? value.join(", ") : value;
+        lines.push("");
+        lines.push(`${key}:`);
+        lines.push(answer || "-");
+      });
+
+      lines.push("");
+      lines.push("PROCEDIMENTOS COMUNS");
+      if (data.procedimentos_comuns.length === 0) {
+        lines.push("-");
+      } else {
+        data.procedimentos_comuns.forEach((item, index) => {
+          lines.push(`${index + 1}. ${item.nome || "-"} | Valor: ${item.valor || "-"} | Consultas: ${item.consultas || "-"}`);
+        });
+      }
+
+      return lines.join("\n");
+    }
+
+    document.querySelector("#addProcedure").addEventListener("click", () => {
+      createProcedureRow();
+      persist();
+    });
+
+    document.querySelector("#clearDraft").addEventListener("click", () => {
+      if (!confirm("Limpar o rascunho salvo neste navegador?")) return;
+      localStorage.removeItem(storageKey);
+      form.reset();
+      procedureList.innerHTML = "";
+      defaultProcedures.forEach(createProcedureRow);
+      updateScores();
+      saveState.textContent = "Rascunho limpo.";
+    });
+
+    document.querySelectorAll("[data-download]").forEach((button) => {
+      button.addEventListener("click", () => download(button.dataset.download));
+    });
+
+    form.addEventListener("input", () => {
+      updateScores();
+      persist();
+    });
+
+    form.addEventListener("change", persist);
+
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      try {
+        fillData(JSON.parse(saved));
+      } catch {
+        defaultProcedures.forEach(createProcedureRow);
+      }
+    } else {
+      defaultProcedures.forEach(createProcedureRow);
+    }
+
+    updateScores();
+  </script>
+</body>
+</html>
