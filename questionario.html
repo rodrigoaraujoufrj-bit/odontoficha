@@ -495,7 +495,7 @@
         <div class="eyebrow">Validacao do MVP</div>
         <h1>Questionario para entender a rotina do consultorio</h1>
         <p class="hero-copy">
-          As respostas ajudam a decidir o que entra primeiro no OdontoFlow: ficha clinica, odontograma, tabela de procedimentos, agenda, plano de tratamento, orcamento e estoque.
+          As respostas ajudam a decidir o que entra primeiro no OdontoFlow: um organizador de fluxo clinico para acompanhar pacientes, evolucoes, planos, orcamentos, laboratorio e proximos passos.
         </p>
         <div class="notice">
           Nao coloque dados reais de pacientes aqui. O objetivo e mapear processos do consultorio, nao coletar informacoes clinicas sensiveis.
@@ -522,12 +522,15 @@
         <nav aria-label="Secoes do questionario">
           <a href="#perfil">Perfil</a>
           <a href="#rotina">Rotina</a>
-          <a href="#ficha">Ficha clinica</a>
+          <a href="#locais">Locais</a>
+          <a href="#sistemas">Sistemas</a>
+          <a href="#ficha">Ficha/evolucao</a>
+          <a href="#casos">Casos</a>
           <a href="#odontograma">Odontograma</a>
           <a href="#procedimentos">Procedimentos</a>
           <a href="#orcamento">Orcamento</a>
           <a href="#agenda">Agenda</a>
-          <a href="#estoque">Estoque</a>
+          <a href="#laboratorio">Laboratorio</a>
           <a href="#mvp">Prioridades</a>
         </nav>
       </aside>
@@ -573,7 +576,7 @@
           <div class="section-head">
             <div class="kicker">2. Rotina atual</div>
             <h2>Onde o tempo esta sendo gasto hoje?</h2>
-            <p>Queremos separar dor real de funcionalidade bonita que talvez nao seja essencial agora.</p>
+            <p>Queremos separar dor real de funcionalidade bonita que talvez nao seja essencial agora. A ideia aqui nao e validar IA, e sim um organizador de fluxo clinico.</p>
           </div>
           <div class="grid">
             <div class="field full">
@@ -615,11 +618,101 @@
           </div>
         </section>
 
+        <section class="section" id="locais">
+          <div class="section-head">
+            <div class="kicker">3. Atendimento em locais diferentes</div>
+            <h2>As informacoes acompanham voce entre consultorios?</h2>
+            <p>Essa parte valida se o OdontoFlow deve funcionar como uma mesa clinica digital do dentista, inclusive quando ele atende em clinicas diferentes.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="atende_multiplos_locais">Voce atende em mais de um local?</label>
+              <select id="atende_multiplos_locais" name="atende_multiplos_locais">
+                <option value="">Selecione</option>
+                <option>Sim, em varios locais</option>
+                <option>Sim, em dois locais</option>
+                <option>Nao, apenas em um local</option>
+                <option>Atualmente nao, mas ja aconteceu</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fragmentacao_info">As informacoes ficam espalhadas?</label>
+              <select id="fragmentacao_info" name="fragmentacao_info">
+                <option value="">Selecione</option>
+                <option>Sim, bastante</option>
+                <option>Um pouco</option>
+                <option>Quase nada</option>
+                <option>Nao</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">Onde ficam suas informacoes de trabalho hoje?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="Sistema da clinica" /> Sistema da clinica</label>
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="Papel/caderno" /> Papel/caderno</label>
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="WhatsApp" /> WhatsApp</label>
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="Google Agenda" /> Google Agenda</label>
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="Planilha" /> Planilha</label>
+                <label class="check-option"><input type="checkbox" name="onde_ficam_infos" value="Memoria/anotacao solta" /> Memoria/anotacao solta</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="desafio_multilocais">Qual o maior problema quando voce atende em mais de um local ou depende de informacoes fora dali?</label>
+              <textarea id="desafio_multilocais" name="desafio_multilocais" placeholder="Ex.: lembrar proximo passo, achar historico, acompanhar laboratorio, fechar orcamento, controlar pagamento..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="sistemas">
+          <div class="section-head">
+            <div class="kicker">4. Sistemas da clinica e controle pessoal</div>
+            <h2>O sistema da clinica resolve sua rotina individual?</h2>
+            <p>Mesmo quando a clinica tem sistema, o dentista pode manter controles proprios por fora. Isso ajuda a definir o espaco real do OdontoFlow.</p>
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="clinica_tem_sistema">A clinica onde voce atende usa algum sistema?</label>
+              <select id="clinica_tem_sistema" name="clinica_tem_sistema">
+                <option value="">Selecione</option>
+                <option>Sim</option>
+                <option>Nao</option>
+                <option>Depende do local</option>
+                <option>Nao sei</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sistema_resolve_rotina">Esse sistema resolve sua rotina?</label>
+              <select id="sistema_resolve_rotina" name="sistema_resolve_rotina">
+                <option value="">Selecione</option>
+                <option>Resolve bem</option>
+                <option>Resolve parcialmente</option>
+                <option>Resolve pouco</option>
+                <option>Nao uso sistema</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label class="label">O que voce ainda controla por fora?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Evolucao clinica" /> Evolucao clinica</label>
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Plano de tratamento" /> Plano de tratamento</label>
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Orcamentos" /> Orcamentos</label>
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Retornos" /> Retornos</label>
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Laboratorio" /> Laboratorio</label>
+                <label class="check-option"><input type="checkbox" name="controle_por_fora" value="Financeiro proprio" /> Financeiro proprio</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="ferramenta_pessoal_valor">Uma ferramenta pessoal, independente do sistema da clinica, teria valor para voce? Por que?</label>
+              <textarea id="ferramenta_pessoal_valor" name="ferramenta_pessoal_valor"></textarea>
+            </div>
+          </div>
+        </section>
+
         <section class="section" id="ficha">
           <div class="section-head">
-            <div class="kicker">3. Ficha clinica</div>
-            <h2>O que precisa existir na ficha digital?</h2>
-            <p>A primeira versao precisa guardar o essencial, sem virar um cadastro gigante que ninguem preenche.</p>
+            <div class="kicker">5. Ficha clinica e evolucao</div>
+            <h2>O que precisa existir para nao perder o fio do atendimento?</h2>
+            <p>A primeira versao precisa guardar o essencial, com evolucao facil por consulta, sem virar um cadastro gigante que ninguem preenche.</p>
           </div>
           <div class="grid">
             <div class="field">
@@ -658,14 +751,62 @@
               <label for="ficha_outros_campos">Que outros campos deveriam existir?</label>
               <textarea id="ficha_outros_campos" name="ficha_outros_campos"></textarea>
             </div>
+            <div class="field full">
+              <label for="evolucao_ideal">Como voce gostaria de registrar a evolucao de cada atendimento?</label>
+              <textarea id="evolucao_ideal" name="evolucao_ideal" placeholder="Ex.: texto livre, fotos/anexos, procedimentos realizados, pendencias, proximo passo..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="casos">
+          <div class="section-head">
+            <div class="kicker">6. Casos em andamento</div>
+            <h2>Como voce acompanha o proximo passo de cada paciente?</h2>
+            <p>Essa parte valida se o produto deve organizar casos clinicos, pendencias, retornos e planos em andamento.</p>
+          </div>
+          <div class="grid">
+            <div class="field full">
+              <label class="label">O que costuma ficar pendente entre consultas?</label>
+              <div class="checks">
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando paciente decidir" /> Aguardando paciente decidir</label>
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando pagamento" /> Aguardando pagamento</label>
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando laboratorio" /> Aguardando laboratorio</label>
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando retorno" /> Aguardando retorno</label>
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando material" /> Aguardando material</label>
+                <label class="check-option"><input type="checkbox" name="pendencias_entre_consultas" value="Aguardando autorizacao/aprovacao" /> Aguardando autorizacao/aprovacao</label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="acompanha_casos_hoje">Como acompanha casos em andamento hoje?</label>
+              <select id="acompanha_casos_hoje" name="acompanha_casos_hoje">
+                <option value="">Selecione</option>
+                <option>Papel/caderno</option>
+                <option>WhatsApp</option>
+                <option>Sistema</option>
+                <option>Planilha</option>
+                <option>Memoria</option>
+                <option>Nao tenho controle claro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="risco_esquecer_passo">Risco de esquecer algum proximo passo</label>
+              <div class="range-row">
+                <input id="risco_esquecer_passo" name="risco_esquecer_passo" type="range" min="1" max="10" value="5" />
+                <span class="score" data-score-for="risco_esquecer_passo">5</span>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="casos_observacoes">O que voce precisa lembrar sobre um paciente entre uma consulta e outra?</label>
+              <textarea id="casos_observacoes" name="casos_observacoes"></textarea>
+            </div>
           </div>
         </section>
 
         <section class="section" id="odontograma">
           <div class="section-head">
-            <div class="kicker">4. Odontograma</div>
+            <div class="kicker">7. Odontograma</div>
             <h2>Como voce usa odontograma na pratica?</h2>
-            <p>Essa parte define se o MVP deve registrar por dente, face, condicao, procedimento e evolucao.</p>
+            <p>Essa parte define se o MVP deve registrar por dente, face, condicao, procedimento e evolucao, ou se isso pode ficar mais simples no inicio.</p>
           </div>
           <div class="grid">
             <div class="field">
@@ -708,7 +849,7 @@
 
         <section class="section" id="procedimentos">
           <div class="section-head">
-            <div class="kicker">5. Procedimentos e valores</div>
+            <div class="kicker">8. Procedimentos e valores</div>
             <h2>Base inicial para montar tabela no Supabase</h2>
             <p>Se voce souber alguns procedimentos comuns, preencha. Nao precisa ser completo; isso serve para desenhar o banco de dados.</p>
           </div>
@@ -748,7 +889,7 @@
 
         <section class="section" id="orcamento">
           <div class="section-head">
-            <div class="kicker">6. Plano de tratamento e orcamento</div>
+            <div class="kicker">9. Plano de tratamento e orcamento</div>
             <h2>Como o paciente recebe a proposta hoje?</h2>
             <p>Essa etapa define se precisamos gerar PDF, WhatsApp, etapas, assinatura, aprovacao ou controle de status.</p>
           </div>
@@ -795,7 +936,7 @@
 
         <section class="section" id="agenda">
           <div class="section-head">
-            <div class="kicker">7. Agenda</div>
+            <div class="kicker">10. Agenda</div>
             <h2>Agenda entra no MVP ou fica para depois?</h2>
             <p>Agenda pode ser essencial ou pode ser integracao futura. A resposta evita construir uma parte grande antes da hora.</p>
           </div>
@@ -829,13 +970,34 @@
           </div>
         </section>
 
-        <section class="section" id="estoque">
+        <section class="section" id="laboratorio">
           <div class="section-head">
-            <div class="kicker">8. Estoque</div>
-            <h2>Controle de materiais e insumos e dor real agora?</h2>
-            <p>O estoque pode ser diferencial, mas talvez seja segunda fase. Aqui a gente mede prioridade.</p>
+            <div class="kicker">11. Laboratorio e materiais</div>
+            <h2>Laboratorio, materiais e insumos sao dor real agora?</h2>
+            <p>Para alguns dentistas, principalmente protese, laboratorio pode ser mais importante que estoque. Aqui a gente mede essa prioridade.</p>
           </div>
           <div class="grid">
+            <div class="field">
+              <label for="usa_laboratorio">Voce depende de laboratorio em parte dos tratamentos?</label>
+              <select id="usa_laboratorio" name="usa_laboratorio">
+                <option value="">Selecione</option>
+                <option>Sim, com frequencia</option>
+                <option>As vezes</option>
+                <option>Raramente</option>
+                <option>Nao</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="laboratorio_importancia">Importancia de acompanhar laboratorio</label>
+              <div class="range-row">
+                <input id="laboratorio_importancia" name="laboratorio_importancia" type="range" min="1" max="10" value="5" />
+                <span class="score" data-score-for="laboratorio_importancia">5</span>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="laboratorio_observacoes">O que precisa ser acompanhado em laboratorio?</label>
+              <textarea id="laboratorio_observacoes" name="laboratorio_observacoes" placeholder="Ex.: prazo, etapa da protese, prova, cor, material, envio/retorno, custo..."></textarea>
+            </div>
             <div class="field">
               <label for="controle_estoque">Como controla estoque hoje?</label>
               <select id="controle_estoque" name="controle_estoque">
@@ -863,7 +1025,7 @@
 
         <section class="section" id="mvp">
           <div class="section-head">
-            <div class="kicker">9. Prioridade do MVP</div>
+            <div class="kicker">12. Prioridade do MVP</div>
             <h2>O que faria voce realmente usar o OdontoFlow?</h2>
             <p>Essa e a parte mais importante para transformar conversa em decisao de produto.</p>
           </div>
@@ -873,10 +1035,13 @@
               <div class="checks">
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Cadastro de pacientes" /> Cadastro de pacientes</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Ficha clinica" /> Ficha clinica</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Evolucao do atendimento" /> Evolucao do atendimento</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Acompanhamento de casos" /> Acompanhamento de casos</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Odontograma" /> Odontograma</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Tabela de procedimentos" /> Tabela de procedimentos</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Plano de tratamento" /> Plano de tratamento</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Orcamento para paciente" /> Orcamento para paciente</label>
+                <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Laboratorio" /> Laboratorio</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Agenda" /> Agenda</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Estoque" /> Estoque</label>
                 <label class="check-option"><input type="checkbox" name="mvp_indispensavel" value="Financeiro" /> Financeiro</label>
@@ -919,7 +1084,7 @@
   <script>
     const form = document.querySelector("#questionnaire");
     const saveState = document.querySelector("#saveState");
-    const storageKey = "odontoflow_questionario_v1";
+    const storageKey = "odontoflow_questionario_fluxo_clinico_v2";
     const procedureList = document.querySelector("#procedureList");
 
     const defaultProcedures = [
