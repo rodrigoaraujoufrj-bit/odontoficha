@@ -1,0 +1,9 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">OdontoFlow symbol</title>
+  <desc id="desc">Minimal tooth symbol with a flowing teal arrow around the root.</desc>
+  <rect width="96" height="96" rx="24" fill="#F6FAFC"/>
+  <path d="M31.7 21.6C37.9 18 42.3 22.9 48 22.9C53.7 22.9 58.1 18 64.3 21.6C73.2 26.8 74.1 40.3 68.7 52.1C65.4 59.4 64.9 72.1 58.6 73.2C54 74 53.1 66.2 51.6 59.8C50.8 56.4 49.8 54.4 48 54.4C46.2 54.4 45.2 56.4 44.4 59.8C42.9 66.2 42 74 37.4 73.2C31.1 72.1 30.6 59.4 27.3 52.1C21.9 40.3 22.8 26.8 31.7 21.6Z" fill="white" stroke="#0F3D5E" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M31.5 65.7C37.6 75.1 51.2 79.5 63.4 73.4C73.9 68.2 79.1 57.6 77.1 47.4" stroke="#14B8A6" stroke-width="7" stroke-linecap="round"/>
+  <path d="M78.8 39.9L84.8 51.8L71.5 51.1" fill="#14B8A6"/>
+  <path d="M78.8 39.9L84.8 51.8L71.5 51.1" stroke="#14B8A6" stroke-width="2" stroke-linejoin="round"/>
+</svg>

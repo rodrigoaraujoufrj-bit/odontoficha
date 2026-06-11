@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Questionario OdontoFlow | Validacao do MVP</title>
   <meta name="description" content="Questionario de validacao do MVP OdontoFlow para entender a rotina de consultorios odontologicos." />
+  <link rel="icon" href="assets/odontoflow-mark.svg" type="image/svg+xml" />
   <style>
     :root {
       --bg: #f6fafc;
@@ -73,21 +74,14 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
       font-weight: 850;
       font-size: 1.2rem;
     }
 
     .logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-      color: white;
-      box-shadow: 0 12px 30px rgba(20, 184, 166, 0.28);
-      font-weight: 900;
+      width: 190px;
+      height: auto;
+      display: block;
     }
 
     .nav-actions {
@@ -486,8 +480,7 @@
   <header class="nav">
     <div class="nav-inner">
       <a class="brand" href="index.html">
-        <span class="logo">OF</span>
-        <span>OdontoFlow</span>
+        <img class="logo" src="assets/odontoflow-logo-horizontal.svg" alt="OdontoFlow" />
       </a>
       <div class="nav-actions">
         <a class="button" href="index.html">Voltar para a landing</a>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OdontoFlow | Fluxo clínico odontológico</title>
   <meta name="description" content="OdontoFlow é uma landing page para validar um fluxo clínico odontológico com ficha, odontograma, plano de tratamento, orçamento e estoque." />
+  <link rel="icon" href="assets/odontoflow-mark.svg" type="image/svg+xml" />
   <style>
     :root {
       --bg: #f6fafc;
@@ -79,22 +80,15 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
       font-weight: 800;
       letter-spacing: -0.03em;
       font-size: 1.25rem;
     }
 
     .logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-      color: white;
-      box-shadow: 0 12px 30px rgba(20, 184, 166, 0.28);
-      font-weight: 900;
+      width: 190px;
+      height: auto;
+      display: block;
     }
 
     .nav-links {
@@ -753,8 +747,7 @@
   <header class="nav">
     <div class="nav-inner">
       <a class="brand" href="#">
-        <span class="logo">OF</span>
-        <span>OdontoFlow</span>
+        <img class="logo" src="assets/odontoflow-logo-horizontal.svg" alt="OdontoFlow" />
       </a>
       <nav class="nav-links">
         <a href="#problema">Problema</a>

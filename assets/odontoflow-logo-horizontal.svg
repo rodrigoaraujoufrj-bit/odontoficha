@@ -1,0 +1,14 @@
+<svg width="304" height="72" viewBox="0 0 304 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">OdontoFlow logo</title>
+  <desc id="desc">OdontoFlow horizontal logo with tooth and flow arrow symbol.</desc>
+  <g>
+    <rect x="2" y="2" width="68" height="68" rx="18" fill="#F6FAFC"/>
+    <path d="M24.9 16.5C29.8 13.7 33.2 17.5 37.7 17.5C42.2 17.5 45.6 13.7 50.5 16.5C57.5 20.6 58.2 31.2 54 40.5C51.4 46.2 51 56.2 46.1 57.1C42.5 57.7 41.8 51.6 40.6 46.6C40 43.9 39.2 42.3 37.7 42.3C36.2 42.3 35.4 43.9 34.8 46.6C33.6 51.6 32.9 57.7 29.3 57.1C24.4 56.2 24 46.2 21.4 40.5C17.2 31.2 17.9 20.6 24.9 16.5Z" fill="white" stroke="#0F3D5E" stroke-width="4.8" stroke-linejoin="round"/>
+    <path d="M24.7 51.2C29.5 58.6 40.1 62 49.7 57.3C57.9 53.2 62 44.9 60.4 36.9" stroke="#14B8A6" stroke-width="5.6" stroke-linecap="round"/>
+    <path d="M61.8 31L66.5 40.3L56.1 39.7" fill="#14B8A6"/>
+    <path d="M61.8 31L66.5 40.3L56.1 39.7" stroke="#14B8A6" stroke-width="1.6" stroke-linejoin="round"/>
+  </g>
+  <text x="86" y="44" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-1.4">
+    <tspan fill="#0F3D5E">Odonto</tspan><tspan fill="#14B8A6">Flow</tspan>
+  </text>
+</svg>
