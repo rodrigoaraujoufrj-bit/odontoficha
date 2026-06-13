@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OdontoFlow | Primeiro acesso</title>
+  <meta name="description" content="Primeiro acesso do profissional no OdontoFlow." />
+  <link rel="icon" href="assets/odontoflow-mark.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #f6fafc;
+      --surface: #ffffff;
+      --surface-soft: #e8f7f5;
+      --text: #102033;
+      --muted: #647781;
+      --primary: #14b8a6;
+      --primary-dark: #0f3d5e;
+      --line: #d8e7ea;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --shadow: 0 24px 70px rgba(15, 61, 94, 0.12);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 30rem),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 52%, #ffffff 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(216, 231, 234, 0.82);
+    }
+
+    .nav-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .logo {
+      width: 190px;
+      height: auto;
+      display: block;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 18px;
+      background: white;
+      color: var(--primary-dark);
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 16px 34px rgba(20, 184, 166, 0.26);
+    }
+
+    .button-danger {
+      color: #991b1b;
+      border-color: #fecaca;
+      background: #fff1f2;
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .app-shell {
+      padding: 48px 0 72px;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
+      padding: 26px;
+    }
+
+    .hero-panel {
+      position: sticky;
+      top: 92px;
+      overflow: hidden;
+    }
+
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -120px;
+      bottom: -120px;
+      border-radius: 50%;
+      background: rgba(20, 184, 166, 0.16);
+    }
+
+    .kicker {
+      color: var(--primary);
+      font-size: 0.76rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h1,
+    h2 {
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.35rem);
+      margin-bottom: 10px;
+    }
+
+    .lead,
+    .muted {
+      color: var(--muted);
+    }
+
+    .lead {
+      font-size: 1.05rem;
+      margin-bottom: 24px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .step-index {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .form-section {
+      display: grid;
+      gap: 16px;
+      padding-top: 18px;
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfdff;
+      color: var(--text);
+      padding: 12px 14px;
+      outline: 0;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(20, 184, 166, 0.72);
+      box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .status {
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      font-weight: 760;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.info {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      border: 1px solid rgba(20, 184, 166, 0.28);
+    }
+
+    .status.error {
+      background: #fff1f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .status.success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .summary-item {
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .summary-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .loading {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    @media (max-width: 880px) {
+      .app-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        position: static;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page,
+      .nav-inner {
+        width: min(100% - 22px, 1120px);
+      }
+
+      .nav-inner,
+      .nav-actions {
+        align-items: stretch;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+      }
+
+      .button,
+      .nav-actions {
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html" aria-label="Voltar para a landing OdontoFlow">
+        <img class="logo" src="assets/odontoflow-logo-horizontal.svg" alt="OdontoFlow" />
+      </a>
+      <div class="nav-actions">
+        <a class="button" href="index.html">Landing</a>
+        <a class="button" href="questionario.html">Questionário</a>
+        <button class="button button-danger" id="signOutButton" type="button" hidden>Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page app-shell">
+    <div class="app-grid">
+      <aside class="panel hero-panel">
+        <div class="kicker">Primeiro acesso</div>
+        <h1>Configure o profissional antes dos pacientes</h1>
+        <p class="lead">
+          O OdontoFlow precisa saber quem atende e em qual consultório antes de abrir ficha, anamnese e cadastro de paciente.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <span class="step-index">1</span>
+            <span>Entrar com uma conta autenticada no Supabase.</span>
+          </div>
+          <div class="step">
+            <span class="step-index">2</span>
+            <span>Cadastrar profissional com telefone, e-mail e CRO.</span>
+          </div>
+          <div class="step">
+            <span class="step-index">3</span>
+            <span>Criar o primeiro consultório e vincular ao profissional.</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div id="loadingView" class="view active">
+          <div class="loading">Carregando sessão...</div>
+        </div>
+
+        <div id="loginView" class="view">
+          <div class="kicker">Acesso</div>
+          <h2>Entrar no OdontoFlow</h2>
+          <p class="lead">Use o usuário de teste criado no Supabase.</p>
+          <form class="form" id="loginForm">
+            <div class="field">
+              <label for="loginEmail">E-mail</label>
+              <input id="loginEmail" name="email" type="email" autocomplete="email" required placeholder="teste1@odontoflow.com" />
+            </div>
+            <div class="field">
+              <label for="loginPassword">Senha</label>
+              <input id="loginPassword" name="password" type="password" autocomplete="current-password" required />
+            </div>
+            <div id="loginStatus" class="status" role="status"></div>
+            <button class="button button-primary" type="submit">Entrar</button>
+          </form>
+        </div>
+
+        <div id="onboardingView" class="view">
+          <div class="kicker">Cadastro inicial</div>
+          <h2>Perfil profissional e consultório</h2>
+          <p class="lead">Esses dados criam a base para vincular pacientes ao local certo.</p>
+          <form class="form" id="onboardingForm">
+            <div class="form-section">
+              <div>
+                <span class="badge">Profissional</span>
+              </div>
+              <div class="grid">
+                <div class="field full">
+                  <label for="profissionalNome">Nome</label>
+                  <input id="profissionalNome" name="profissionalNome" type="text" autocomplete="name" required placeholder="Dra. Patricia" />
+                </div>
+                <div class="field">
+                  <label for="profissionalTelefone">Telefone</label>
+                  <input id="profissionalTelefone" name="profissionalTelefone" type="tel" inputmode="numeric" maxlength="15" required placeholder="(21) 99999-9999" />
+                  <span class="hint">DDD + 9 dígitos.</span>
+                </div>
+                <div class="field">
+                  <label for="profissionalEmail">E-mail</label>
+                  <input id="profissionalEmail" name="profissionalEmail" type="email" required placeholder="nome@email.com" />
+                </div>
+                <div class="field">
+                  <label for="profissionalCro">CRO</label>
+                  <input id="profissionalCro" name="profissionalCro" type="text" required placeholder="12345" />
+                </div>
+                <div class="field">
+                  <label for="profissionalCroUf">UF do CRO</label>
+                  <select id="profissionalCroUf" name="profissionalCroUf" required>
+                    <option value="">UF</option>
+                    <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div>
+                <span class="badge">Consultório</span>
+              </div>
+              <div class="grid">
+                <div class="field full">
+                  <label for="consultorioNome">Nome do consultório</label>
+                  <input id="consultorioNome" name="consultorioNome" type="text" required placeholder="Consultório principal" />
+                </div>
+                <div class="field">
+                  <label for="consultorioTelefone">Telefone</label>
+                  <input id="consultorioTelefone" name="consultorioTelefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(21) 99999-9999" />
+                </div>
+                <div class="field">
+                  <label for="consultorioEmail">E-mail</label>
+                  <input id="consultorioEmail" name="consultorioEmail" type="email" placeholder="consultorio@email.com" />
+                </div>
+                <div class="field">
+                  <label for="consultorioCidade">Cidade</label>
+                  <input id="consultorioCidade" name="consultorioCidade" type="text" placeholder="Rio de Janeiro" />
+                </div>
+                <div class="field">
+                  <label for="consultorioUf">UF</label>
+                  <select id="consultorioUf" name="consultorioUf">
+                    <option value="">UF</option>
+                    <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="consultorioObservacoes">Observações</label>
+                  <textarea id="consultorioObservacoes" name="consultorioObservacoes" placeholder="Sala, unidade, referência interna..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="onboardingStatus" class="status" role="status"></div>
+            <button class="button button-primary" type="submit">Salvar primeiro acesso</button>
+          </form>
+        </div>
+
+        <div id="dashboardView" class="view">
+          <div class="kicker">OdontoFlow</div>
+          <h2 id="dashboardTitle">Perfil configurado</h2>
+          <p class="lead" id="dashboardSubtitle">O ambiente inicial está pronto.</p>
+          <div class="summary">
+            <div class="summary-item">
+              <strong id="summaryProfissional">-</strong>
+              <span class="muted">Profissional</span>
+            </div>
+            <div class="summary-item">
+              <strong id="summaryCro">-</strong>
+              <span class="muted">CRO</span>
+            </div>
+            <div class="summary-item">
+              <strong id="summaryConsultorios">0</strong>
+              <span class="muted">Consultórios vinculados</span>
+            </div>
+          </div>
+          <div class="dashboard-actions">
+            <button class="button button-primary" type="button" disabled>Cadastrar paciente</button>
+            <button class="button" type="button" disabled>Anamnese</button>
+            <button class="button" type="button" disabled>Agenda</button>
+          </div>
+          <p class="hint" style="margin-top: 14px;">Próxima tela do MVP: cadastro de paciente vinculado ao profissional e consultório.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://wnpezdxwrdesrbqvtuwu.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Sb-zvR48C-9YbifnDEnweQ_D89W6Xgq";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const views = {
+      loading: document.querySelector("#loadingView"),
+      login: document.querySelector("#loginView"),
+      onboarding: document.querySelector("#onboardingView"),
+      dashboard: document.querySelector("#dashboardView")
+    };
+
+    const loginForm = document.querySelector("#loginForm");
+    const onboardingForm = document.querySelector("#onboardingForm");
+    const signOutButton = document.querySelector("#signOutButton");
+    const loginStatus = document.querySelector("#loginStatus");
+    const onboardingStatus = document.querySelector("#onboardingStatus");
+    let currentUser = null;
+    let currentProfissional = null;
+
+    function showView(name) {
+      Object.values(views).forEach((view) => view.classList.remove("active"));
+      views[name].classList.add("active");
+      signOutButton.hidden = name === "login" || name === "loading";
+    }
+
+    function setStatus(element, type, message) {
+      element.className = `status show ${type}`;
+      element.textContent = message;
+    }
+
+    function clearStatus(element) {
+      element.className = "status";
+      element.textContent = "";
+    }
+
+    function onlyDigits(value) {
+      return String(value || "").replace(/\D/g, "");
+    }
+
+    function normalizeEmail(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function validatePhone(value, label, required = false) {
+      const digits = onlyDigits(value);
+      if (!digits && !required) return null;
+      if (digits.length !== 11) {
+        throw new Error(`${label} deve ter 11 dígitos, incluindo DDD.`);
+      }
+      return digits;
+    }
+
+    function validateEmail(value, label, required = false) {
+      const email = normalizeEmail(value);
+      if (!email && !required) return null;
+      if (!email.includes("@") || email.includes(" ")) {
+        throw new Error(`${label} deve ser um e-mail válido.`);
+      }
+      return email;
+    }
+
+    async function loadSession() {
+      showView("loading");
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        showView("login");
+        setStatus(loginStatus, "error", error.message);
+        return;
+      }
+
+      currentUser = data.session?.user || null;
+      if (!currentUser) {
+        showView("login");
+        return;
+      }
+
+      await loadProfile();
+    }
+
+    async function loadProfile() {
+      const { data: profissional, error } = await supabase
+        .from("profissionais")
+        .select("id, nome, telefone, email, cro, cro_uf")
+        .eq("usuario_id", currentUser.id)
+        .maybeSingle();
+
+      if (error) {
+        showView("login");
+        setStatus(loginStatus, "error", error.message);
+        return;
+      }
+
+      currentProfissional = profissional;
+      if (!profissional) {
+        document.querySelector("#profissionalEmail").value = currentUser.email || "";
+        showView("onboarding");
+        return;
+      }
+
+      await showDashboard(profissional);
+    }
+
+    async function showDashboard(profissional) {
+      const { count } = await supabase
+        .from("profissional_consultorios")
+        .select("id", { count: "exact", head: true })
+        .eq("profissional_id", profissional.id)
+        .eq("ativo", true);
+
+      document.querySelector("#dashboardTitle").textContent = `Bem-vindo, ${profissional.nome}`;
+      document.querySelector("#dashboardSubtitle").textContent = "Seu perfil profissional já está configurado.";
+      document.querySelector("#summaryProfissional").textContent = profissional.nome;
+      document.querySelector("#summaryCro").textContent = `${profissional.cro}/${profissional.cro_uf}`;
+      document.querySelector("#summaryConsultorios").textContent = String(count || 0);
+      showView("dashboard");
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus(loginStatus);
+      const submit = loginForm.querySelector("button[type='submit']");
+      submit.disabled = true;
+      submit.textContent = "Entrando...";
+
+      const formData = new FormData(loginForm);
+      const email = normalizeEmail(formData.get("email"));
+      const password = String(formData.get("password") || "");
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      submit.disabled = false;
+      submit.textContent = "Entrar";
+
+      if (error) {
+        setStatus(loginStatus, "error", error.message);
+        return;
+      }
+
+      currentUser = data.user;
+      await loadProfile();
+    });
+
+    onboardingForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus(onboardingStatus);
+      const submit = onboardingForm.querySelector("button[type='submit']");
+      submit.disabled = true;
+      submit.textContent = "Salvando...";
+
+      try {
+        if (!currentUser) throw new Error("Sessão expirada. Entre novamente.");
+        const formData = new FormData(onboardingForm);
+        const profissionalPayload = {
+          usuario_id: currentUser.id,
+          nome: String(formData.get("profissionalNome") || "").trim(),
+          telefone: validatePhone(formData.get("profissionalTelefone"), "Telefone do profissional", true),
+          email: validateEmail(formData.get("profissionalEmail"), "E-mail do profissional", true),
+          cro: String(formData.get("profissionalCro") || "").trim(),
+          cro_uf: String(formData.get("profissionalCroUf") || "").trim().toUpperCase()
+        };
+
+        const consultorioPayload = {
+          criado_por_usuario_id: currentUser.id,
+          nome: String(formData.get("consultorioNome") || "").trim(),
+          telefone: validatePhone(formData.get("consultorioTelefone"), "Telefone do consultório"),
+          email: validateEmail(formData.get("consultorioEmail"), "E-mail do consultório"),
+          cidade: String(formData.get("consultorioCidade") || "").trim() || null,
+          uf: String(formData.get("consultorioUf") || "").trim().toUpperCase() || null,
+          observacoes: String(formData.get("consultorioObservacoes") || "").trim() || null
+        };
+
+        if (!profissionalPayload.nome) throw new Error("Nome do profissional é obrigatório.");
+        if (!profissionalPayload.cro) throw new Error("CRO é obrigatório.");
+        if (!profissionalPayload.cro_uf) throw new Error("UF do CRO é obrigatória.");
+        if (!consultorioPayload.nome) throw new Error("Nome do consultório é obrigatório.");
+
+        const { data: profissional, error: profissionalError } = await supabase
+          .from("profissionais")
+          .insert(profissionalPayload)
+          .select("id, nome, telefone, email, cro, cro_uf")
+          .single();
+        if (profissionalError) throw profissionalError;
+
+        const { data: consultorio, error: consultorioError } = await supabase
+          .from("consultorios")
+          .insert(consultorioPayload)
+          .select("id")
+          .single();
+        if (consultorioError) throw consultorioError;
+
+        const { error: vinculoError } = await supabase
+          .from("profissional_consultorios")
+          .insert({
+            profissional_id: profissional.id,
+            consultorio_id: consultorio.id,
+            ativo: true
+          });
+        if (vinculoError) throw vinculoError;
+
+        currentProfissional = profissional;
+        setStatus(onboardingStatus, "success", "Primeiro acesso configurado.");
+        await showDashboard(profissional);
+      } catch (error) {
+        setStatus(onboardingStatus, "error", error.message || "Nao foi possivel salvar o cadastro.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Salvar primeiro acesso";
+      }
+    });
+
+    signOutButton.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      currentUser = null;
+      currentProfissional = null;
+      loginForm.reset();
+      onboardingForm.reset();
+      showView("login");
+    });
+
+    document.querySelectorAll("input[type='tel']").forEach((input) => {
+      input.addEventListener("input", () => {
+        const digits = onlyDigits(input.value).slice(0, 11);
+        if (digits.length <= 2) {
+          input.value = digits;
+        } else if (digits.length <= 7) {
+          input.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+        } else {
+          input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+        }
+      });
+    });
+
+    loadSession();
+  </script>
+</body>
+</html>
