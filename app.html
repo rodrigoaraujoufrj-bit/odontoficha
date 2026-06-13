@@ -555,6 +555,74 @@
       margin-top: 4px;
     }
 
+    .patient-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+      margin: 22px 0 16px;
+    }
+
+    .patient-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .patient-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fbfdff;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      text-align: left;
+    }
+
+    .patient-card strong,
+    .patient-summary strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .patient-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 650;
+    }
+
+    .patient-summary {
+      border: 1px solid rgba(20, 184, 166, 0.24);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+      padding: 16px;
+      display: none;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .patient-summary.active {
+      display: grid;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .summary-item {
+      border: 1px solid rgba(20, 184, 166, 0.18);
+      border-radius: 12px;
+      background: white;
+      padding: 11px;
+    }
+
     .linked-context {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -745,7 +813,13 @@
 
       .management-grid,
       .patient-flow-grid,
-      .check-grid {
+      .check-grid,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .patient-toolbar,
+      .patient-card {
         grid-template-columns: 1fr;
       }
     }
@@ -980,7 +1054,7 @@
                 <h2 id="dashboardTitle">Bem-vindo ao OdontoFlow</h2>
                 <p class="lead" id="dashboardSubtitle">Aqui você acompanha seu cadastro e inicia o fluxo dos pacientes.</p>
                 <div class="main-actions">
-                  <button class="button button-primary action-card" type="button" data-open-patient>
+                  <button class="button button-primary action-card" type="button" data-open-clinic data-new-patient>
                     <strong>Cadastrar paciente</strong>
                     <span>Dados básicos, contato e vínculo com o consultório atual.</span>
                   </button>
@@ -1010,9 +1084,9 @@
               </div>
 
               <div id="patientTab" class="dashboard-tab">
-                <div class="kicker">Paciente</div>
-                <h2>Cadastrar paciente</h2>
-                <p class="lead">Comece pelo essencial. A anamnese é opcional e pode ser completada depois.</p>
+                <div class="kicker">Atendimento</div>
+                <h2>Pacientes</h2>
+                <p class="lead">Busque quem já está cadastrado para abrir a ficha do atendimento.</p>
 
                 <div class="linked-context">
                   <div class="context-card">
@@ -1025,7 +1099,127 @@
                   </div>
                 </div>
 
+                <div class="patient-toolbar">
+                  <div class="field">
+                    <label for="patientSearch">Buscar paciente</label>
+                    <input id="patientSearch" type="search" autocomplete="off" placeholder="Digite nome, telefone, e-mail ou CPF" />
+                  </div>
+                  <button class="button button-primary" type="button" id="newPatientButton">Cadastrar em Meu consultório</button>
+                </div>
+
+                <div id="patientList" class="patient-list" aria-live="polite"></div>
+
+                <div id="patientSummary" class="patient-summary">
+                  <div>
+                    <div class="kicker">Ficha rápida</div>
+                    <strong id="summaryPatientName">-</strong>
+                    <span class="muted" id="summaryPatientMeta">-</span>
+                  </div>
+                  <div class="summary-grid">
+                    <div class="summary-item">
+                      <strong id="summaryPatientPhone">-</strong>
+                      <span class="muted">Telefone</span>
+                    </div>
+                    <div class="summary-item">
+                      <strong id="summaryPatientEmail">-</strong>
+                      <span class="muted">E-mail</span>
+                    </div>
+                    <div class="summary-item">
+                      <strong id="summaryPatientCpf">-</strong>
+                      <span class="muted">CPF</span>
+                    </div>
+                  </div>
+                  <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
+                  <div class="card-actions">
+                    <button class="mini-button" type="button" disabled>Editar contato</button>
+                    <button class="mini-button" type="button" disabled>Ver anamnese</button>
+                    <button class="mini-button" type="button" disabled>Plano / orçamento</button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div id="clinicTab" class="dashboard-tab">
+                <div class="kicker">Meu consultório</div>
+                <h2>Organize a base do OdontoFlow</h2>
+                <p class="lead">Aqui ficam os cadastros que sustentam o atendimento. O dentista não precisa procurar isso em configurações técnicas.</p>
+
+                <div class="management-grid">
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Profissional</h3>
+                      <span class="card-mark">P</span>
+                    </div>
+                    <p class="muted">Atualizar telefone e e-mail. CRO fica visível e pode ter edição mais controlada depois.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Editar contato</button>
+                    </div>
+                  </div>
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Consultórios</h3>
+                      <span class="card-mark">C</span>
+                    </div>
+                    <p class="muted">Adicionar locais de atendimento, editar contato/endereço e arquivar consultórios sem apagar histórico.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Adicionar</button>
+                      <button class="mini-button" type="button" disabled>Editar</button>
+                      <button class="mini-button" type="button" disabled>Arquivar</button>
+                    </div>
+                  </div>
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Pacientes</h3>
+                      <span class="card-mark">F</span>
+                    </div>
+                    <p class="muted">Gerenciar cadastro administrativo: corrigir contato, CPF e status. O atendimento continua na ficha do paciente.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" data-open-clinic data-new-patient>Novo paciente</button>
+                      <button class="mini-button" type="button" disabled>Editar</button>
+                      <button class="mini-button" type="button" disabled>Arquivar</button>
+                    </div>
+                  </div>
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Procedimentos</h3>
+                      <span class="card-mark">R$</span>
+                    </div>
+                    <p class="muted">Tabela de procedimentos, valores e categorias para montar plano de tratamento e orçamento.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Adicionar</button>
+                      <button class="mini-button" type="button" disabled>Editar valores</button>
+                    </div>
+                  </div>
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Modelos de anamnese</h3>
+                      <span class="card-mark">A</span>
+                    </div>
+                    <p class="muted">Perguntas padrão para acelerar o cadastro e reduzir esquecimento em atendimentos futuros.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Editar modelo</button>
+                    </div>
+                  </div>
+                  <div class="management-card">
+                    <div class="card-topline">
+                      <h3>Documentos</h3>
+                      <span class="card-mark">PDF</span>
+                    </div>
+                    <p class="muted">Base para resumo, plano de tratamento, orçamento em PDF e envio orientado pelo WhatsApp Web.</p>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Configurar PDF</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="section-divider" id="clinicPatientFormSection">
                 <form class="form" id="patientForm">
+                  <div class="section-heading">
+                    <div>
+                      <div class="kicker">Novo paciente</div>
+                      <h3>Cadastro inicial</h3>
+                    </div>
+                    <span class="badge">dados essenciais</span>
+                  </div>
                   <div class="grid">
                     <div class="field full">
                       <label for="pacienteNome">Nome do paciente</label>
@@ -1121,79 +1315,6 @@
                     <button class="button button-plain" type="button" id="cancelPatientForm">Voltar</button>
                   </div>
                 </form>
-              </div>
-
-              <div id="clinicTab" class="dashboard-tab">
-                <div class="kicker">Meu consultório</div>
-                <h2>Organize a base do OdontoFlow</h2>
-                <p class="lead">Aqui ficam os cadastros que sustentam o atendimento. O dentista não precisa procurar isso em configurações técnicas.</p>
-
-                <div class="management-grid">
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Profissional</h3>
-                      <span class="card-mark">P</span>
-                    </div>
-                    <p class="muted">Atualizar telefone e e-mail. CRO fica visível e pode ter edição mais controlada depois.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Editar contato</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Consultórios</h3>
-                      <span class="card-mark">C</span>
-                    </div>
-                    <p class="muted">Adicionar locais de atendimento, editar contato/endereço e arquivar consultórios sem apagar histórico.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Adicionar</button>
-                      <button class="mini-button" type="button" disabled>Editar</button>
-                      <button class="mini-button" type="button" disabled>Arquivar</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Pacientes</h3>
-                      <span class="card-mark">F</span>
-                    </div>
-                    <p class="muted">Gerenciar cadastro administrativo: corrigir contato, CPF e status. O atendimento continua na ficha do paciente.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" data-open-patient>Novo paciente</button>
-                      <button class="mini-button" type="button" disabled>Editar</button>
-                      <button class="mini-button" type="button" disabled>Arquivar</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Procedimentos</h3>
-                      <span class="card-mark">R$</span>
-                    </div>
-                    <p class="muted">Tabela de procedimentos, valores e categorias para montar plano de tratamento e orçamento.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Adicionar</button>
-                      <button class="mini-button" type="button" disabled>Editar valores</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Modelos de anamnese</h3>
-                      <span class="card-mark">A</span>
-                    </div>
-                    <p class="muted">Perguntas padrão para acelerar o cadastro e reduzir esquecimento em atendimentos futuros.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Editar modelo</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Documentos</h3>
-                      <span class="card-mark">PDF</span>
-                    </div>
-                    <p class="muted">Base para resumo, plano de tratamento, orçamento em PDF e envio orientado pelo WhatsApp Web.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Configurar PDF</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>
@@ -1224,6 +1345,10 @@
     const onboardingStatus = document.querySelector("#onboardingStatus");
     const patientForm = document.querySelector("#patientForm");
     const patientStatus = document.querySelector("#patientStatus");
+    const patientSearch = document.querySelector("#patientSearch");
+    const patientList = document.querySelector("#patientList");
+    const patientSummary = document.querySelector("#patientSummary");
+    const newPatientButton = document.querySelector("#newPatientButton");
     const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
     const patientTab = document.querySelector("#patientTab");
     const clinicTab = document.querySelector("#clinicTab");
@@ -1234,6 +1359,7 @@
     let currentUser = null;
     let currentProfissional = null;
     let currentConsultorio = null;
+    let currentPatients = [];
     let onboardingMode = "completo";
 
     function showView(name) {
@@ -1297,6 +1423,14 @@
         throw new Error("CPF deve ter 11 dígitos.");
       }
       return digits;
+    }
+
+    function normalizeText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
     }
 
     async function loadSession() {
@@ -1405,6 +1539,7 @@
       document.querySelector("#sidebarConsultoriosTotal").textContent = `${count || 0} consultório${count === 1 ? "" : "s"} vinculado${count === 1 ? "" : "s"}`;
       document.querySelector("#patientContextProfissional").textContent = profissional.nome;
       document.querySelector("#patientContextConsultorio").textContent = consultorio?.nome || "Consultório atual";
+      await loadPatients();
       showDashboardTab("home");
       showView("dashboard");
     }
@@ -1424,6 +1559,87 @@
       return consultorio || null;
     }
 
+    async function loadPatients() {
+      if (!currentProfissional?.id) return;
+      const { data, error } = await supabase
+        .from("pacientes")
+        .select("id, nome, telefone, email, cpf, data_nascimento, observacoes, criado_em")
+        .eq("criado_por_profissional_id", currentProfissional.id)
+        .is("arquivado_em", null)
+        .order("nome", { ascending: true });
+
+      if (error) {
+        patientList.innerHTML = `<div class="status show error">Não foi possível carregar pacientes.</div>`;
+        return;
+      }
+
+      currentPatients = data || [];
+      renderPatientList();
+    }
+
+    function renderPatientList() {
+      const query = normalizeText(patientSearch.value);
+      const digits = onlyDigits(patientSearch.value);
+      const filtered = currentPatients.filter((patient) => {
+        const haystack = normalizeText([
+          patient.nome,
+          patient.email,
+          formatPhone(patient.telefone || ""),
+          formatCpf(patient.cpf || "")
+        ].join(" "));
+        const numericHaystack = [patient.telefone, patient.cpf].map(onlyDigits).join(" ");
+        return !query || haystack.includes(query) || (digits && numericHaystack.includes(digits));
+      });
+
+      if (!currentPatients.length) {
+        patientList.innerHTML = `<div class="status show info">Nenhum paciente cadastrado ainda. Cadastre em Meu consultório.</div>`;
+        return;
+      }
+
+      if (!filtered.length) {
+        patientList.innerHTML = `<div class="status show info">Nenhum paciente encontrado para essa busca.</div>`;
+        return;
+      }
+
+      patientList.innerHTML = filtered.map((patient) => `
+        <button class="patient-card" type="button" data-patient-id="${patient.id}">
+          <span>
+            <strong>${escapeHtml(patient.nome)}</strong>
+            <span class="patient-card-meta">
+              <span>${escapeHtml(formatPhone(patient.telefone || "") || "sem telefone")}</span>
+              <span>${escapeHtml(patient.email || "sem e-mail")}</span>
+              ${patient.cpf ? `<span>CPF ${escapeHtml(formatCpf(patient.cpf))}</span>` : ""}
+            </span>
+          </span>
+          <span class="mini-button">Abrir ficha</span>
+        </button>
+      `).join("");
+    }
+
+    function showPatientSummary(patientId) {
+      const patient = currentPatients.find((item) => item.id === patientId);
+      if (!patient) return;
+      document.querySelector("#summaryPatientName").textContent = patient.nome;
+      document.querySelector("#summaryPatientMeta").textContent = patient.data_nascimento
+        ? `Nascimento: ${formatDate(patient.data_nascimento)}`
+        : "Nascimento não informado";
+      document.querySelector("#summaryPatientPhone").textContent = formatPhone(patient.telefone || "") || "-";
+      document.querySelector("#summaryPatientEmail").textContent = patient.email || "-";
+      document.querySelector("#summaryPatientCpf").textContent = formatCpf(patient.cpf || "") || "-";
+      document.querySelector("#summaryPatientNotes").textContent = patient.observacoes || "Sem observações administrativas.";
+      patientSummary.classList.add("active");
+      patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function showDashboardTab(name) {
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
@@ -1431,6 +1647,14 @@
       if (name === "home") setActiveNav(".nav-item[data-open-home]", "Início");
       if (name === "patient") setActiveNav(".nav-item[data-open-patient]:not([data-focus-anamnese])", "Pacientes");
       if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
+    }
+
+    function openNewPatientForm() {
+      clearStatus(patientStatus);
+      showDashboardTab("clinic");
+      closeMobileMenu();
+      document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector("#pacienteNome").focus();
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -1543,6 +1767,7 @@
       currentUser = null;
       currentProfissional = null;
       currentConsultorio = null;
+      currentPatients = [];
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
@@ -1567,6 +1792,10 @@
         clearStatus(patientStatus);
         showDashboardTab("clinic");
         closeMobileMenu();
+        if (button.hasAttribute("data-new-patient")) {
+          document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+          document.querySelector("#pacienteNome").focus();
+        }
       });
     });
 
@@ -1580,16 +1809,32 @@
         closeMobileMenu();
         const target = button.hasAttribute("data-focus-anamnese")
           ? document.querySelector("#patientAnamneseBlock")
-          : document.querySelector("#pacienteNome");
+          : document.querySelector("#patientSearch");
         target.focus?.();
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
 
+    newPatientButton.addEventListener("click", () => {
+      openNewPatientForm();
+    });
+
+    patientSearch.addEventListener("input", () => {
+      patientSummary.classList.remove("active");
+      renderPatientList();
+    });
+
+    patientList.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-patient-id]");
+      if (!card) return;
+      showPatientSummary(card.dataset.patientId);
+    });
+
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {
       clearStatus(patientStatus);
       patientForm.reset();
-      showDashboardTab("home");
+      showDashboardTab("clinic");
+      document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     patientForm.addEventListener("submit", async (event) => {
@@ -1664,6 +1909,7 @@
         }
 
         patientForm.reset();
+        await loadPatients();
         setStatus(patientStatus, "success", hasAnamnese
           ? "Paciente cadastrado com anamnese inicial e vínculo ao consultório atual."
           : "Paciente cadastrado e vinculado ao consultório atual.");
@@ -1699,6 +1945,12 @@
       if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
       if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
       return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+    }
+
+    function formatDate(value) {
+      const [year, month, day] = String(value || "").split("-");
+      if (!year || !month || !day) return "-";
+      return `${day}/${month}/${year}`;
     }
 
     loadSession();
