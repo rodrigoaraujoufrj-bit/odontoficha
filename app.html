@@ -509,6 +509,57 @@
       font-size: 0.9rem;
     }
 
+    .week-overview {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .schedule-stack,
+    .quick-stack {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .schedule-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fbfdff;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .schedule-card.primary {
+      background: var(--surface-soft);
+      border-color: rgba(20, 184, 166, 0.24);
+    }
+
+    .schedule-card strong {
+      display: block;
+      font-size: 1.05rem;
+    }
+
+    .schedule-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 0.9rem;
+    }
+
+    .home-note {
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      background: #fbfdff;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
     .status-list {
       display: grid;
       gap: 10px;
@@ -563,6 +614,13 @@
       margin: 22px 0 16px;
     }
 
+    .patient-workspace {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+      gap: 16px;
+      align-items: start;
+    }
+
     .patient-list {
       display: grid;
       gap: 10px;
@@ -601,9 +659,11 @@
       border-radius: var(--radius-md);
       background: var(--surface-soft);
       padding: 16px;
-      display: none;
+      display: grid;
       gap: 12px;
       margin-bottom: 18px;
+      position: sticky;
+      top: 92px;
     }
 
     .patient-summary.active {
@@ -621,6 +681,27 @@
       border-radius: 12px;
       background: white;
       padding: 11px;
+    }
+
+    .patient-care-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .patient-care-card {
+      border: 1px solid rgba(20, 184, 166, 0.18);
+      border-radius: 12px;
+      background: white;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .patient-care-card h3 {
+      margin: 0;
+      font-size: 1rem;
     }
 
     .linked-context {
@@ -814,7 +895,10 @@
       .management-grid,
       .patient-flow-grid,
       .check-grid,
-      .summary-grid {
+      .summary-grid,
+      .patient-workspace,
+      .patient-care-grid,
+      .week-overview {
         grid-template-columns: 1fr;
       }
 
@@ -846,6 +930,10 @@
       .dashboard-panel {
         padding: 18px;
         min-height: auto;
+      }
+
+      .patient-summary {
+        position: static;
       }
 
       .button,
@@ -1014,7 +1102,6 @@
                   <div class="nav-group-title">Atendimento</div>
                   <button class="nav-item active" type="button" data-open-home><span>Início</span></button>
                   <button class="nav-item" type="button" data-open-patient><span>Pacientes</span></button>
-                  <button class="nav-item" type="button" data-open-clinic data-focus-anamnese><span>Anamnese</span></button>
                   <button class="nav-item" type="button" disabled><span>Agenda</span><small>em breve</small></button>
                   <button class="nav-item" type="button" disabled><span>Casos / Evolução</span><small>em breve</small></button>
                 </div>
@@ -1046,35 +1133,52 @@
 
             <section class="dashboard-panel">
               <div id="dashboardHomeTab" class="dashboard-tab active">
-                <div class="kicker">Área do profissional</div>
+                <div class="kicker">Resumo da semana</div>
                 <h2 id="dashboardTitle">Bem-vindo ao OdontoFlow</h2>
-                <p class="lead" id="dashboardSubtitle">Aqui você acompanha seu cadastro e inicia o fluxo dos pacientes.</p>
-                <div class="main-actions">
-                  <button class="button button-primary action-card" type="button" data-open-clinic data-new-patient>
-                    <strong>Cadastrar paciente</strong>
-                    <span>Dados básicos, contato e vínculo com o consultório atual.</span>
-                  </button>
-                  <button class="button action-card" type="button" disabled>
-                    <strong>Plano e orçamento</strong>
-                    <span>Resumo do tratamento, valores e próxima ação do paciente.</span>
-                  </button>
-                  <button class="button action-card" type="button" disabled>
-                    <strong>Enviar pelo WhatsApp</strong>
-                    <span>Gerar PDF, abrir mensagem pronta e registrar o envio no histórico.</span>
-                  </button>
-                </div>
-                <div class="status-list">
-                  <div class="status-row">
-                    <span class="status-dot">✓</span>
-                    <span>Perfil profissional configurado.</span>
+                <p class="lead" id="dashboardSubtitle">Abra o dia olhando o que precisa de atenção: agenda, pacientes e próximos passos.</p>
+                <div class="week-overview">
+                  <div class="schedule-stack">
+                    <div class="schedule-card primary">
+                      <div class="card-topline">
+                        <div>
+                          <div class="kicker">Hoje</div>
+                          <strong>Agenda ainda não conectada</strong>
+                        </div>
+                        <span class="card-mark">0</span>
+                      </div>
+                      <p class="muted">Quando a agenda entrar no MVP, aqui aparecem os pacientes do dia e o próximo horário.</p>
+                      <div class="schedule-meta">
+                        <span>Próximo passo: vincular agenda</span>
+                        <span>Atalho: buscar paciente</span>
+                      </div>
+                    </div>
+                    <div class="schedule-card">
+                      <div class="card-topline">
+                        <div>
+                          <div class="kicker">Próximos dias</div>
+                          <strong>Sem compromissos cadastrados no OdontoFlow</strong>
+                        </div>
+                        <span class="card-mark">7d</span>
+                      </div>
+                      <p class="muted">A visão semanal deve mostrar retornos, tratamentos em andamento e pacientes sem próximo agendamento.</p>
+                    </div>
+                    <div class="home-note">
+                      A tela inicial agora é preparada para ser um painel de rotina. Hoje ela mostra os blocos certos; quando a agenda existir, os dados entram aqui.
+                    </div>
                   </div>
-                  <div class="status-row">
-                    <span class="status-dot">✓</span>
-                    <span>Primeiro consultório vinculado.</span>
-                  </div>
-                  <div class="status-row">
-                    <span class="status-dot">1</span>
-                    <span>Próxima etapa: cadastrar o primeiro paciente.</span>
+                  <div class="quick-stack">
+                    <button class="button button-primary action-card" type="button" data-open-patient>
+                      <strong>Buscar paciente</strong>
+                      <span>Abrir ficha, revisar anamnese e acompanhar tratamento.</span>
+                    </button>
+                    <button class="button action-card" type="button" data-open-clinic data-new-patient>
+                      <strong>Cadastrar paciente</strong>
+                      <span>Cadastro administrativo em Meu consultório.</span>
+                    </button>
+                    <button class="button action-card" type="button" disabled>
+                      <strong>Orçamentos pendentes</strong>
+                      <span>Futuro: planos enviados e ainda não respondidos.</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1095,41 +1199,59 @@
                   </div>
                 </div>
 
-                <div class="patient-toolbar">
-                  <div class="field">
-                    <label for="patientSearch">Buscar paciente</label>
-                    <input id="patientSearch" type="search" autocomplete="off" placeholder="Digite nome, telefone, e-mail ou CPF" />
-                  </div>
-                  <button class="button button-primary" type="button" id="newPatientButton">Cadastrar em Meu consultório</button>
-                </div>
-
-                <div id="patientList" class="patient-list" aria-live="polite"></div>
-
-                <div id="patientSummary" class="patient-summary">
+                <div class="patient-workspace">
                   <div>
-                    <div class="kicker">Ficha rápida</div>
-                    <strong id="summaryPatientName">-</strong>
-                    <span class="muted" id="summaryPatientMeta">-</span>
+                    <div class="patient-toolbar">
+                      <div class="field">
+                        <label for="patientSearch">Buscar paciente</label>
+                        <input id="patientSearch" type="search" autocomplete="off" placeholder="Digite nome, telefone, e-mail ou CPF" />
+                      </div>
+                      <button class="button button-primary" type="button" id="newPatientButton">Cadastrar em Meu consultório</button>
+                    </div>
+
+                    <div id="patientList" class="patient-list" aria-live="polite"></div>
                   </div>
-                  <div class="summary-grid">
-                    <div class="summary-item">
-                      <strong id="summaryPatientPhone">-</strong>
-                      <span class="muted">Telefone</span>
+
+                  <div id="patientSummary" class="patient-summary">
+                    <div>
+                      <div class="kicker">Ficha do paciente</div>
+                      <strong id="summaryPatientName">Selecione um paciente</strong>
+                      <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
                     </div>
-                    <div class="summary-item">
-                      <strong id="summaryPatientEmail">-</strong>
-                      <span class="muted">E-mail</span>
+                    <div class="summary-grid">
+                      <div class="summary-item">
+                        <strong id="summaryPatientPhone">-</strong>
+                        <span class="muted">Telefone</span>
+                      </div>
+                      <div class="summary-item">
+                        <strong id="summaryPatientEmail">-</strong>
+                        <span class="muted">E-mail</span>
+                      </div>
+                      <div class="summary-item">
+                        <strong id="summaryPatientCpf">-</strong>
+                        <span class="muted">CPF</span>
+                      </div>
                     </div>
-                    <div class="summary-item">
-                      <strong id="summaryPatientCpf">-</strong>
-                      <span class="muted">CPF</span>
+                    <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
+                    <div class="patient-care-grid">
+                      <div class="patient-care-card">
+                        <h3>Anamnese</h3>
+                        <p class="muted">Resumo clínico inicial do paciente. O cadastro de nova anamnese fica em Meu consultório, junto do novo paciente.</p>
+                        <button class="mini-button" type="button" disabled>Abrir anamnese</button>
+                      </div>
+                      <div class="patient-care-card">
+                        <h3>Tratamento em andamento</h3>
+                        <p class="muted">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
+                        <div class="card-actions">
+                          <button class="mini-button" type="button" disabled>Novo tratamento</button>
+                          <button class="mini-button" type="button" disabled>Gerar orçamento</button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
-                  <div class="card-actions">
-                    <button class="mini-button" type="button" disabled>Editar contato</button>
-                    <button class="mini-button" type="button" disabled>Ver anamnese</button>
-                    <button class="mini-button" type="button" disabled>Plano / orçamento</button>
+                    <div class="card-actions">
+                      <button class="mini-button" type="button" disabled>Editar contato</button>
+                      <button class="mini-button" type="button" disabled>Enviar resumo</button>
+                    </div>
                   </div>
                 </div>
 
@@ -1526,7 +1648,7 @@
       const consultorio = await loadPrimaryConsultorio(profissional.id);
       currentConsultorio = consultorio;
       document.querySelector("#dashboardTitle").textContent = `Bem-vindo, ${profissional.nome}`;
-      document.querySelector("#dashboardSubtitle").textContent = "Seus dados ficam sempre visíveis na lateral. Para começar o atendimento, o próximo passo é cadastrar pacientes.";
+      document.querySelector("#dashboardSubtitle").textContent = "Abra o dia olhando o que precisa de atenção: agenda, pacientes e próximos passos.";
       document.querySelector("#sidebarProfissional").textContent = profissional.nome;
       document.querySelector("#sidebarCro").textContent = `CRO ${profissional.cro}/${profissional.cro_uf}`;
       document.querySelector("#sidebarTelefone").textContent = formatPhone(profissional.telefone || "") || "-";
@@ -1641,8 +1763,8 @@
       patientTab.classList.toggle("active", name === "patient");
       clinicTab.classList.toggle("active", name === "clinic");
       if (name === "home") setActiveNav(".nav-item[data-open-home]", "Início");
-      if (name === "patient") setActiveNav(".nav-item[data-open-patient]:not([data-focus-anamnese])", "Pacientes");
-      if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]:not([data-focus-anamnese])", "Meu consultório");
+      if (name === "patient") setActiveNav(".nav-item[data-open-patient]", "Pacientes");
+      if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
     }
 
     function openNewPatientForm() {
@@ -1787,12 +1909,6 @@
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("clinic");
-        if (button.hasAttribute("data-focus-anamnese")) {
-          setActiveNav(".nav-item[data-focus-anamnese]", "Anamnese");
-          document.querySelector("#patientAnamneseBlock").scrollIntoView({ behavior: "smooth", block: "start" });
-          closeMobileMenu();
-          return;
-        }
         closeMobileMenu();
         if (button.hasAttribute("data-new-patient")) {
           document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1805,15 +1921,9 @@
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("patient");
-        if (button.hasAttribute("data-focus-anamnese")) {
-          setActiveNav(".nav-item[data-focus-anamnese]", "Anamnese");
-        }
         closeMobileMenu();
-        const target = button.hasAttribute("data-focus-anamnese")
-          ? document.querySelector("#patientAnamneseBlock")
-          : document.querySelector("#patientSearch");
-        target.focus?.();
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        patientSearch.focus();
+        patientSearch.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
 
