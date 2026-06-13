@@ -52,10 +52,10 @@ O proprio profissional.
 ### Exemplo
 
 ```text
-nome: Dra. Patricia
+nome: Nome do profissional
 telefone: 21999999999
-email: patricia@example.com
-cro: 12345
+email: profissional@example.com
+cro: 00000
 cro_uf: RJ
 ```
 
