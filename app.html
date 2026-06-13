@@ -869,11 +869,6 @@
       <a href="index.html" aria-label="Voltar para a landing OdontoFlow">
         <img class="logo" src="assets/odontoflow-logo-horizontal.svg" alt="OdontoFlow" />
       </a>
-      <div class="nav-actions">
-        <a class="button" href="index.html">Landing</a>
-        <a class="button" href="questionario.html">Questionário</a>
-        <button class="button button-danger" id="signOutButton" type="button" hidden>Sair</button>
-      </div>
     </div>
   </header>
 
@@ -1019,7 +1014,7 @@
                   <div class="nav-group-title">Atendimento</div>
                   <button class="nav-item active" type="button" data-open-home><span>Início</span></button>
                   <button class="nav-item" type="button" data-open-patient><span>Pacientes</span></button>
-                  <button class="nav-item" type="button" data-open-patient data-focus-anamnese><span>Anamnese</span></button>
+                  <button class="nav-item" type="button" data-open-clinic data-focus-anamnese><span>Anamnese</span></button>
                   <button class="nav-item" type="button" disabled><span>Agenda</span><small>em breve</small></button>
                   <button class="nav-item" type="button" disabled><span>Casos / Evolução</span><small>em breve</small></button>
                 </div>
@@ -1045,6 +1040,7 @@
                   <strong id="sidebarConsultorio">-</strong>
                   <span class="muted" id="sidebarConsultoriosTotal">-</span>
                 </div>
+                <button class="button button-danger" id="signOutButton" type="button" hidden>Sair</button>
               </div>
             </aside>
 
@@ -1366,7 +1362,7 @@
       Object.values(views).forEach((view) => view.classList.remove("active"));
       views[name].classList.add("active");
       appGrid.classList.toggle("dashboard-mode", name === "dashboard");
-      signOutButton.hidden = name === "login" || name === "loading";
+      signOutButton.hidden = name !== "dashboard";
     }
 
     function closeMobileMenu() {
@@ -1646,7 +1642,7 @@
       clinicTab.classList.toggle("active", name === "clinic");
       if (name === "home") setActiveNav(".nav-item[data-open-home]", "Início");
       if (name === "patient") setActiveNav(".nav-item[data-open-patient]:not([data-focus-anamnese])", "Pacientes");
-      if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
+      if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]:not([data-focus-anamnese])", "Meu consultório");
     }
 
     function openNewPatientForm() {
@@ -1791,6 +1787,12 @@
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("clinic");
+        if (button.hasAttribute("data-focus-anamnese")) {
+          setActiveNav(".nav-item[data-focus-anamnese]", "Anamnese");
+          document.querySelector("#patientAnamneseBlock").scrollIntoView({ behavior: "smooth", block: "start" });
+          closeMobileMenu();
+          return;
+        }
         closeMobileMenu();
         if (button.hasAttribute("data-new-patient")) {
           document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
