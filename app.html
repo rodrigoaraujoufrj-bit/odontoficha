@@ -374,6 +374,34 @@
       align-content: space-between;
     }
 
+    .mobile-menu-toggle {
+      display: none;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: white;
+      color: var(--primary-dark);
+      padding: 12px 14px;
+      font-weight: 900;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .mobile-menu-toggle span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .menu-chevron {
+      transition: transform 0.18s ease;
+    }
+
     .app-nav {
       display: grid;
       gap: 5px;
@@ -690,6 +718,21 @@
         position: static;
         min-height: auto;
         align-content: start;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .mobile-menu-toggle {
+        display: flex;
+      }
+
+      .product-sidebar.menu-open .menu-chevron {
+        transform: rotate(180deg);
+      }
+
+      .product-sidebar:not(.menu-open) .app-nav,
+      .product-sidebar:not(.menu-open) .sidebar-profile {
+        display: none;
       }
 
       .main-actions {
@@ -720,6 +763,15 @@
 
       .nav-inner {
         flex-direction: column;
+      }
+
+      .page {
+        padding: 20px 0 42px;
+      }
+
+      .dashboard-panel {
+        padding: 18px;
+        min-height: auto;
       }
 
       .button,
@@ -883,7 +935,12 @@
         <div id="dashboardView" class="view">
           <div class="workspace">
             <aside class="panel product-sidebar">
-              <nav class="app-nav" aria-label="Navegação do OdontoFlow">
+              <button class="mobile-menu-toggle" type="button" id="mobileMenuToggle" aria-expanded="false" aria-controls="workspaceNavigation">
+                <span>Menu</span>
+                <strong id="mobileMenuCurrent">Início</strong>
+                <b class="menu-chevron" aria-hidden="true">⌄</b>
+              </button>
+              <nav class="app-nav" id="workspaceNavigation" aria-label="Navegação do OdontoFlow">
                 <div class="nav-group">
                   <div class="nav-group-title">Atendimento</div>
                   <button class="nav-item active" type="button" data-open-home><span>Início</span></button>
@@ -1171,6 +1228,9 @@
     const patientTab = document.querySelector("#patientTab");
     const clinicTab = document.querySelector("#clinicTab");
     const appGrid = document.querySelector(".app-grid");
+    const productSidebar = document.querySelector(".product-sidebar");
+    const mobileMenuToggle = document.querySelector("#mobileMenuToggle");
+    const mobileMenuCurrent = document.querySelector("#mobileMenuCurrent");
     let currentUser = null;
     let currentProfissional = null;
     let currentConsultorio = null;
@@ -1181,6 +1241,17 @@
       views[name].classList.add("active");
       appGrid.classList.toggle("dashboard-mode", name === "dashboard");
       signOutButton.hidden = name === "login" || name === "loading";
+    }
+
+    function closeMobileMenu() {
+      productSidebar.classList.remove("menu-open");
+      mobileMenuToggle.setAttribute("aria-expanded", "false");
+    }
+
+    function setActiveNav(selector, label) {
+      document.querySelectorAll(".nav-item").forEach((button) => button.classList.remove("active"));
+      document.querySelectorAll(selector).forEach((button) => button.classList.add("active"));
+      mobileMenuCurrent.textContent = label;
     }
 
     function setStatus(element, type, message) {
@@ -1357,15 +1428,9 @@
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
       clinicTab.classList.toggle("active", name === "clinic");
-      document.querySelectorAll(".nav-item[data-open-home]").forEach((button) => {
-        button.classList.toggle("active", name === "home");
-      });
-      document.querySelectorAll(".nav-item[data-open-patient]").forEach((button) => {
-        button.classList.toggle("active", name === "patient");
-      });
-      document.querySelectorAll(".nav-item[data-open-clinic]").forEach((button) => {
-        button.classList.toggle("active", name === "clinic");
-      });
+      if (name === "home") setActiveNav(".nav-item[data-open-home]", "Início");
+      if (name === "patient") setActiveNav(".nav-item[data-open-patient]:not([data-focus-anamnese])", "Pacientes");
+      if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -1484,10 +1549,16 @@
       showView("login");
     });
 
+    mobileMenuToggle.addEventListener("click", () => {
+      const isOpen = productSidebar.classList.toggle("menu-open");
+      mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
     document.querySelectorAll("[data-open-home]").forEach((button) => {
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("home");
+        closeMobileMenu();
       });
     });
 
@@ -1495,6 +1566,7 @@
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("clinic");
+        closeMobileMenu();
       });
     });
 
@@ -1502,6 +1574,10 @@
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
         showDashboardTab("patient");
+        if (button.hasAttribute("data-focus-anamnese")) {
+          setActiveNav(".nav-item[data-focus-anamnese]", "Anamnese");
+        }
+        closeMobileMenu();
         const target = button.hasAttribute("data-focus-anamnese")
           ? document.querySelector("#patientAnamneseBlock")
           : document.querySelector("#pacienteNome");
