@@ -1236,8 +1236,9 @@
                     <div class="patient-care-grid">
                       <div class="patient-care-card">
                         <h3>Anamnese</h3>
-                        <p class="muted">Resumo clínico inicial do paciente. O cadastro de nova anamnese fica em Meu consultório, junto do novo paciente.</p>
-                        <button class="mini-button" type="button" disabled>Abrir anamnese</button>
+                        <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
+                        <p class="muted" id="summaryAnamneseDetails">Quando existir anamnese cadastrada, o resumo aparece aqui na ficha do paciente.</p>
+                        <button class="mini-button" type="button" disabled>Editar em Meu consultório</button>
                       </div>
                       <div class="patient-care-card">
                         <h3>Tratamento em andamento</h3>
@@ -1294,6 +1295,7 @@
                     <div class="card-actions">
                       <button class="mini-button" type="button" data-open-clinic data-new-patient>Novo paciente</button>
                       <button class="mini-button" type="button" disabled>Editar</button>
+                      <button class="mini-button" type="button" disabled>Anamnese</button>
                       <button class="mini-button" type="button" disabled>Arquivar</button>
                     </div>
                   </div>
@@ -1306,16 +1308,6 @@
                     <div class="card-actions">
                       <button class="mini-button" type="button" disabled>Adicionar</button>
                       <button class="mini-button" type="button" disabled>Editar valores</button>
-                    </div>
-                  </div>
-                  <div class="management-card">
-                    <div class="card-topline">
-                      <h3>Modelos de anamnese</h3>
-                      <span class="card-mark">A</span>
-                    </div>
-                    <p class="muted">Perguntas padrão para acelerar o cadastro e reduzir esquecimento em atendimentos futuros.</p>
-                    <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Editar modelo</button>
                     </div>
                   </div>
                   <div class="management-card">
@@ -1734,7 +1726,7 @@
       `).join("");
     }
 
-    function showPatientSummary(patientId) {
+    async function showPatientSummary(patientId) {
       const patient = currentPatients.find((item) => item.id === patientId);
       if (!patient) return;
       document.querySelector("#summaryPatientName").textContent = patient.nome;
@@ -1745,8 +1737,52 @@
       document.querySelector("#summaryPatientEmail").textContent = patient.email || "-";
       document.querySelector("#summaryPatientCpf").textContent = formatCpf(patient.cpf || "") || "-";
       document.querySelector("#summaryPatientNotes").textContent = patient.observacoes || "Sem observações administrativas.";
+      document.querySelector("#summaryAnamneseStatus").textContent = "Verificando anamnese...";
+      document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
+      await loadPatientAnamnese(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function loadPatientAnamnese(patientId) {
+      const { data, error } = await supabase
+        .from("anamneses")
+        .select("queixa_principal, alergias, medicamentos_uso_continuo, historico_medico, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, preenchida_em, atualizado_em")
+        .eq("paciente_id", patientId)
+        .order("preenchida_em", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
+        return;
+      }
+
+      if (!data) {
+        document.querySelector("#summaryAnamneseStatus").textContent = "Sem anamnese cadastrada";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Se o dentista quiser preencher depois, isso deve ficar em Meu consultório > Pacientes > Anamnese.";
+        return;
+      }
+
+      const conditions = [
+        data.possui_diabetes ? "diabetes" : "",
+        data.possui_hipertensao ? "hipertensão" : "",
+        data.possui_cardiopatia ? "cardiopatia" : "",
+        data.gestante ? "gestante" : "",
+        data.sangramento_excessivo ? "sangramento excessivo" : ""
+      ].filter(Boolean);
+      const details = [
+        data.queixa_principal ? `Queixa: ${data.queixa_principal}` : "",
+        data.alergias ? `Alergias: ${data.alergias}` : "",
+        data.medicamentos_uso_continuo ? `Medicamentos: ${data.medicamentos_uso_continuo}` : "",
+        conditions.length ? `Marcadores: ${conditions.join(", ")}` : ""
+      ].filter(Boolean);
+
+      document.querySelector("#summaryAnamneseStatus").textContent = "Anamnese cadastrada";
+      document.querySelector("#summaryAnamneseDetails").textContent = details.length
+        ? details.join(" · ")
+        : "Anamnese existe, mas sem observações de destaque.";
     }
 
     function escapeHtml(value) {
@@ -1936,10 +1972,10 @@
       renderPatientList();
     });
 
-    patientList.addEventListener("click", (event) => {
+    patientList.addEventListener("click", async (event) => {
       const card = event.target.closest("[data-patient-id]");
       if (!card) return;
-      showPatientSummary(card.dataset.patientId);
+      await showPatientSummary(card.dataset.patientId);
     });
 
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {
