@@ -53,7 +53,7 @@
     }
 
     .page {
-      width: min(1120px, calc(100% - 32px));
+      width: min(1240px, calc(100% - 32px));
       margin: 0 auto;
     }
 
@@ -67,7 +67,7 @@
     }
 
     .nav-inner {
-      width: min(1120px, calc(100% - 32px));
+      width: min(1240px, calc(100% - 32px));
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -138,6 +138,21 @@
       grid-template-columns: 0.85fr 1.15fr;
       gap: 24px;
       align-items: start;
+    }
+
+    .app-grid.dashboard-mode {
+      grid-template-columns: 1fr;
+    }
+
+    .app-grid.dashboard-mode .hero-panel {
+      display: none;
+    }
+
+    .app-grid.dashboard-mode > .panel {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
     .panel {
@@ -328,8 +343,8 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 20px;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 24px;
       align-items: start;
     }
 
@@ -337,7 +352,7 @@
       display: grid;
       gap: 16px;
       background: #fbfdff;
-      box-shadow: none;
+      box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
     }
 
     .profile-block {
@@ -379,8 +394,8 @@
     .main-actions {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 20px;
+      gap: 16px;
+      margin-top: 24px;
     }
 
     .action-card {
@@ -408,7 +423,17 @@
     .status-list {
       display: grid;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 22px;
+      max-width: 760px;
+    }
+
+    .dashboard-panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
+      padding: 30px;
+      min-height: 420px;
     }
 
     .status-row {
@@ -473,7 +498,7 @@
     @media (max-width: 640px) {
       .page,
       .nav-inner {
-        width: min(100% - 22px, 1120px);
+        width: min(100% - 22px, 1240px);
       }
 
       .nav-inner,
@@ -663,7 +688,7 @@
               </div>
             </aside>
 
-            <section>
+            <section class="dashboard-panel">
               <div class="kicker">Área do profissional</div>
               <h2 id="dashboardTitle">Bem-vindo ao OdontoFlow</h2>
               <p class="lead" id="dashboardSubtitle">Aqui você acompanha seu cadastro e inicia o fluxo dos pacientes.</p>
@@ -721,6 +746,7 @@
     const signOutButton = document.querySelector("#signOutButton");
     const loginStatus = document.querySelector("#loginStatus");
     const onboardingStatus = document.querySelector("#onboardingStatus");
+    const appGrid = document.querySelector(".app-grid");
     let currentUser = null;
     let currentProfissional = null;
     let onboardingMode = "completo";
@@ -728,6 +754,7 @@
     function showView(name) {
       Object.values(views).forEach((view) => view.classList.remove("active"));
       views[name].classList.add("active");
+      appGrid.classList.toggle("dashboard-mode", name === "dashboard");
       signOutButton.hidden = name === "login" || name === "loading";
     }
 
