@@ -16,6 +16,107 @@ Cada tabela deve ter:
 - regras de preenchimento
 - exemplo de registro
 
+## profissionais
+
+### Finalidade
+
+Guardar os dados basicos do profissional que usa o OdontoFlow.
+
+### Quando preencher
+
+Ao criar a conta ou completar o perfil profissional.
+
+### Quem preenche
+
+O proprio profissional.
+
+### Campos obrigatorios
+
+- `nome`
+- `telefone`
+- `email`
+- `cro`
+- `cro_uf`
+
+### Campos opcionais
+
+- `usuario_id` quando o login estiver integrado
+
+### Regras
+
+- E-mail deve conter `@` e ser salvo em minusculo.
+- Telefone principal deve ser salvo apenas com digitos.
+- Para WhatsApp/celular, exigir 11 digitos: 2 do DDD e 9 do numero.
+- CRO deve ser salvo separado da UF.
+
+### Exemplo
+
+```text
+nome: Dra. Patricia
+telefone: 21999999999
+email: patricia@example.com
+cro: 12345
+cro_uf: RJ
+```
+
+## consultorios
+
+### Finalidade
+
+Guardar os locais de atendimento do profissional.
+
+### Quando preencher
+
+Ao cadastrar o primeiro local de atendimento ou quando o profissional atender em novo local.
+
+### Quem preenche
+
+Dentista, recepcionista ou secretaria.
+
+### Campos obrigatorios
+
+- `nome`
+
+### Campos opcionais
+
+- `telefone`
+- `email`
+- `endereco`
+- `cidade`
+- `uf`
+- `observacoes`
+
+### Regras
+
+- Consultorio deve ser tabela separada do paciente.
+- Um paciente nao deve guardar o consultorio diretamente como texto livre.
+- Se o paciente for vinculado ao consultorio errado, corrigir o vinculo em `paciente_consultorios`.
+
+## profissional_consultorios
+
+### Finalidade
+
+Registrar em quais consultorios um profissional atende.
+
+### Quando preencher
+
+Ao vincular profissional a consultorio.
+
+### Quem preenche
+
+Dentista ou administrador.
+
+### Campos obrigatorios
+
+- `profissional_id`
+- `consultorio_id`
+- `ativo`
+
+### Regras
+
+- Nao apagar historico sem necessidade.
+- Para remover vinculo, preferir marcar `ativo = false`.
+
 ## pacientes
 
 ### Finalidade
@@ -47,6 +148,10 @@ Dentista, recepcionista ou secretaria.
 - O cadastro deve ser rapido.
 - CPF nao deve ser obrigatorio no MVP.
 - Evitar duplicidade por telefone e nome semelhante.
+- E-mail deve conter `@` quando preenchido.
+- Telefone deve ser salvo apenas com digitos.
+- CPF deve ser salvo apenas com digitos e ter 11 digitos quando preenchido.
+- Validacao de digitos verificadores do CPF deve ser implementada antes de uso real amplo.
 
 ### Exemplo
 
@@ -55,6 +160,42 @@ nome: Joao da Silva
 telefone: (21) 99999-9999
 data_nascimento: 1985-04-15
 observacoes: prefere contato por WhatsApp
+```
+
+## paciente_consultorios
+
+### Finalidade
+
+Vincular paciente a consultorio e profissional sem prender o cadastro principal a um local fixo.
+
+### Quando preencher
+
+Ao cadastrar um paciente em determinado local de atendimento.
+
+### Quem preenche
+
+Dentista, recepcionista ou secretaria.
+
+### Campos obrigatorios
+
+- `paciente_id`
+- `consultorio_id`
+- `profissional_id`
+- `ativo`
+
+### Regras
+
+- Se o paciente for cadastrado no consultorio errado, corrigir esta tabela.
+- Nao duplicar paciente apenas para trocar consultorio.
+- Um paciente pode ter mais de um vinculo se for atendido em mais de um local.
+
+### Exemplo
+
+```text
+paciente_id: <uuid>
+consultorio_id: <uuid>
+profissional_id: <uuid>
+ativo: true
 ```
 
 ## fichas_clinicas

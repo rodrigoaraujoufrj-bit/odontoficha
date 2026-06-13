@@ -23,6 +23,52 @@ Este documento descreve a proposta inicial de modelo de dados do OdontoFlow. Os 
 
 ## Tabelas Propostas Para MVP
 
+### profissionais
+
+Guarda os dados do dentista/profissional que usa o OdontoFlow.
+
+Campos provaveis:
+
+- `id`
+- `usuario_id`
+- `nome`
+- `telefone`
+- `email`
+- `cro`
+- `cro_uf`
+- `criado_em`
+- `atualizado_em`
+
+### consultorios
+
+Guarda os locais de atendimento.
+
+Campos provaveis:
+
+- `id`
+- `nome`
+- `telefone`
+- `email`
+- `endereco`
+- `cidade`
+- `uf`
+- `observacoes`
+- `criado_em`
+- `atualizado_em`
+
+### profissional_consultorios
+
+Vincula profissionais a consultorios.
+
+Campos provaveis:
+
+- `id`
+- `profissional_id`
+- `consultorio_id`
+- `ativo`
+- `criado_em`
+- `atualizado_em`
+
 ### pacientes
 
 Guarda dados basicos do paciente.
@@ -36,6 +82,20 @@ Campos provaveis:
 - `cpf`
 - `data_nascimento`
 - `observacoes`
+- `criado_em`
+- `atualizado_em`
+
+### paciente_consultorios
+
+Vincula pacientes a consultorios e profissionais.
+
+Campos provaveis:
+
+- `id`
+- `paciente_id`
+- `consultorio_id`
+- `profissional_id`
+- `ativo`
 - `criado_em`
 - `atualizado_em`
 
@@ -256,9 +316,7 @@ Campos provaveis:
 
 ## Tabelas Futuras
 
-- `profissionais`
 - `usuarios`
-- `clinicas`
 - `perfis_acesso`
 - `odontogramas`
 - `marcacoes_odontograma`
@@ -270,7 +328,12 @@ Campos provaveis:
 
 ## Relacionamentos Principais
 
+- Um `profissional` pode trabalhar em varios `consultorios`.
+- Um `consultorio` pode ter varios `profissionais`.
+- Um `profissional_consultorio` representa o vinculo entre profissional e consultorio.
 - Um `paciente` tem uma `ficha_clinica`.
+- Um `paciente` pode estar vinculado a um ou mais `consultorios`.
+- Um `paciente_consultorio` permite corrigir consultorio errado sem alterar o cadastro principal do paciente.
 - Um `paciente` tem muitas `evolucoes_clinicas`.
 - Um `paciente` tem muitos `agendamentos`.
 - Um `paciente` tem muitos `planos_tratamento`.
@@ -282,7 +345,6 @@ Campos provaveis:
 
 ## Questoes Em Aberto
 
-- Se o paciente deve pertencer ao profissional, a clinica ou ambos.
 - Como tratar dentistas que atendem em varios locais.
 - Se agenda sera nativa ou integracao com Google Agenda no MVP.
 - Se laboratorio entra no MVP completo ou apenas como controle simples de etapas.

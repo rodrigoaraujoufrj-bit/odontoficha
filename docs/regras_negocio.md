@@ -39,6 +39,53 @@ Organize ficha, evolucao, agenda, orcamento, financeiro e laboratorio em um flux
 - CPF nao deve ser obrigatorio no MVP.
 - O sistema deve alertar possivel duplicidade por nome e telefone.
 - O cadastro deve poder ser criado rapidamente e completado depois.
+- Paciente nao deve depender de um unico `consultorio_id` fixo na tabela principal.
+- Vinculo com consultorio deve ser controlado em `paciente_consultorios`.
+- Se o consultorio for informado errado, corrigir o vinculo, nao duplicar o paciente.
+
+## Regras De Cadastro Do Profissional
+
+- Profissional deve ter cadastro proprio.
+- Campos minimos:
+  - `nome`
+  - `telefone`
+  - `email`
+  - `cro`
+  - `cro_uf`
+- E-mail deve conter `@`.
+- E-mail deve ser normalizado para minusculo.
+- Telefone deve ser salvo apenas com digitos.
+- Para telefone principal/WhatsApp, exigir 11 digitos: 2 do DDD e 9 do numero.
+- CRO deve ser separado da UF para evitar texto livre inconsistente.
+
+## Regras De Consultorio
+
+- Consultorio deve ser uma tabela propria.
+- Profissional pode trabalhar em varios consultorios.
+- Consultorio pode ter varios profissionais no futuro.
+- O vinculo profissional-consultorio deve ficar em `profissional_consultorios`.
+- O vinculo paciente-consultorio-profissional deve ficar em `paciente_consultorios`.
+- Correcoes de local de atendimento devem alterar o vinculo, nao o cadastro base do paciente.
+
+## Regras De Validacao De Dados
+
+- CPF deve conter exatamente 11 digitos quando preenchido.
+- CPF deve ser salvo apenas com digitos.
+- Validacao de digitos verificadores do CPF deve ser implementada antes de uso real amplo.
+- Telefone principal deve conter exatamente 11 digitos quando usado como WhatsApp/celular.
+- Se futuramente existir telefone fixo, criar campo separado ou regra propria para 10 digitos.
+- E-mail deve conter `@` e nao pode ter espacos.
+- Campos formatados na tela devem ser salvos limpos no banco.
+
+Exemplos:
+
+```text
+telefone na tela: (21) 99999-9999
+telefone no banco: 21999999999
+
+cpf na tela: 123.456.789-09
+cpf no banco: 12345678909
+```
 
 ## Regras De Ficha Clinica
 
