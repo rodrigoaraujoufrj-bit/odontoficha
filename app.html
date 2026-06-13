@@ -122,6 +122,13 @@
       background: #fff1f2;
     }
 
+    .button-plain {
+      background: transparent;
+      border-color: transparent;
+      color: var(--muted);
+      box-shadow: none;
+    }
+
     .button:disabled {
       cursor: not-allowed;
       opacity: 0.62;
@@ -250,6 +257,14 @@
       display: block;
     }
 
+    .dashboard-tab {
+      display: none;
+    }
+
+    .dashboard-tab.active {
+      display: block;
+    }
+
     .form {
       display: grid;
       gap: 18px;
@@ -343,34 +358,39 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 24px;
+      grid-template-columns: 292px minmax(0, 1fr);
+      gap: 20px;
       align-items: start;
     }
 
-    .profile-sidebar {
+    .product-sidebar {
       display: grid;
-      gap: 16px;
+      gap: 18px;
       background: #fbfdff;
       box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
+      position: sticky;
+      top: 92px;
+      min-height: calc(100vh - 124px);
+      align-content: space-between;
     }
 
-    .profile-block {
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 14px;
+    .app-nav {
+      display: grid;
+      gap: 5px;
     }
 
-    .profile-block:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
+    .nav-group {
+      display: grid;
+      gap: 5px;
     }
 
-    .profile-block strong {
-      display: block;
-      margin-bottom: 3px;
-      line-height: 1.25;
+    .nav-group + .nav-group {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      margin-top: 4px;
     }
 
+    .nav-group-title,
     .profile-label {
       color: var(--muted);
       font-size: 0.82rem;
@@ -380,15 +400,56 @@
       margin-bottom: 8px;
     }
 
-    .sidebar-actions {
-      display: grid;
-      gap: 9px;
+    .nav-item {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      font-weight: 850;
+      cursor: pointer;
+      text-align: left;
     }
 
-    .sidebar-actions .button {
-      width: 100%;
-      justify-content: flex-start;
-      border-radius: 14px;
+    .nav-item:hover:not(:disabled),
+    .nav-item.active {
+      background: var(--surface-soft);
+      border-color: rgba(20, 184, 166, 0.24);
+    }
+
+    .nav-item:disabled {
+      color: #8ba0aa;
+      cursor: not-allowed;
+    }
+
+    .nav-item small {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .sidebar-profile {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .profile-block strong {
+      display: block;
+      margin-bottom: 3px;
+      line-height: 1.25;
+    }
+
+    .profile-block + .profile-block {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
     }
 
     .main-actions {
@@ -432,8 +493,8 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
-      padding: 30px;
-      min-height: 420px;
+      padding: clamp(24px, 3vw, 42px);
+      min-height: calc(100vh - 124px);
     }
 
     .status-row {
@@ -456,6 +517,33 @@
       font-size: 0.78rem;
       font-weight: 950;
       margin-top: 1px;
+    }
+
+    .patient-form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .linked-context {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .context-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fbfdff;
+      padding: 14px;
+    }
+
+    .context-card strong {
+      display: block;
+      margin-bottom: 3px;
     }
 
     .badge {
@@ -490,7 +578,17 @@
         grid-template-columns: 1fr;
       }
 
+      .product-sidebar {
+        position: static;
+        min-height: auto;
+        align-content: start;
+      }
+
       .main-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .linked-context {
         grid-template-columns: 1fr;
       }
     }
@@ -665,60 +763,134 @@
 
         <div id="dashboardView" class="view">
           <div class="workspace">
-            <aside class="panel profile-sidebar">
-              <div class="profile-block">
-                <div class="profile-label">Profissional</div>
-                <strong id="sidebarProfissional">-</strong>
-                <span class="muted" id="sidebarCro">-</span>
-              </div>
-              <div class="profile-block">
-                <div class="profile-label">Contato</div>
-                <strong id="sidebarTelefone">-</strong>
-                <span class="muted" id="sidebarEmail">-</span>
-              </div>
-              <div class="profile-block">
-                <div class="profile-label">Consultório atual</div>
-                <strong id="sidebarConsultorio">-</strong>
-                <span class="muted" id="sidebarConsultoriosTotal">-</span>
-              </div>
-              <div class="sidebar-actions">
-                <button class="button button-primary" type="button" disabled>Cadastrar paciente</button>
-                <button class="button" type="button" disabled>Meus dados</button>
-                <button class="button" type="button" disabled>Consultórios</button>
+            <aside class="panel product-sidebar">
+              <nav class="app-nav" aria-label="Navegação do OdontoFlow">
+                <div class="nav-group">
+                  <div class="nav-group-title">Atendimento</div>
+                  <button class="nav-item active" type="button" data-open-home><span>Início</span></button>
+                  <button class="nav-item" type="button" data-open-patient><span>Pacientes</span></button>
+                  <button class="nav-item" type="button" disabled><span>Agenda</span><small>em breve</small></button>
+                  <button class="nav-item" type="button" disabled><span>Casos / Evolução</span><small>em breve</small></button>
+                </div>
+                <div class="nav-group">
+                  <div class="nav-group-title">Operação</div>
+                  <button class="nav-item" type="button" disabled><span>Orçamentos</span><small>em breve</small></button>
+                  <button class="nav-item" type="button" disabled><span>Laboratório</span><small>em breve</small></button>
+                  <button class="nav-item" type="button" disabled><span>Financeiro</span><small>em breve</small></button>
+                  <button class="nav-item" type="button" disabled><span>Estoque</span><small>em breve</small></button>
+                </div>
+                <div class="nav-group">
+                  <div class="nav-group-title">Configurações</div>
+                  <button class="nav-item" type="button" disabled><span>Profissional</span><small>em breve</small></button>
+                  <button class="nav-item" type="button" disabled><span>Consultórios</span><small>em breve</small></button>
+                </div>
+              </nav>
+
+              <div class="sidebar-profile">
+                <div class="profile-block">
+                  <div class="profile-label">Profissional</div>
+                  <strong id="sidebarProfissional">-</strong>
+                  <span class="muted" id="sidebarCro">-</span>
+                </div>
+                <div class="profile-block">
+                  <div class="profile-label">Contato</div>
+                  <strong id="sidebarTelefone">-</strong>
+                  <span class="muted" id="sidebarEmail">-</span>
+                </div>
+                <div class="profile-block">
+                  <div class="profile-label">Consultório atual</div>
+                  <strong id="sidebarConsultorio">-</strong>
+                  <span class="muted" id="sidebarConsultoriosTotal">-</span>
+                </div>
               </div>
             </aside>
 
             <section class="dashboard-panel">
-              <div class="kicker">Área do profissional</div>
-              <h2 id="dashboardTitle">Bem-vindo ao OdontoFlow</h2>
-              <p class="lead" id="dashboardSubtitle">Aqui você acompanha seu cadastro e inicia o fluxo dos pacientes.</p>
-              <div class="main-actions">
-                <button class="button button-primary action-card" type="button" disabled>
-                  <strong>Cadastrar paciente</strong>
-                  <span>Próximo passo do MVP: dados básicos, contato e vínculo com consultório.</span>
-                </button>
-                <button class="button action-card" type="button" disabled>
-                  <strong>Ver meus dados</strong>
-                  <span>Conferir nome, telefone, e-mail e CRO cadastrados.</span>
-                </button>
-                <button class="button action-card" type="button" disabled>
-                  <strong>Consultórios</strong>
-                  <span>Gerenciar locais de atendimento vinculados ao profissional.</span>
-                </button>
+              <div id="dashboardHomeTab" class="dashboard-tab active">
+                <div class="kicker">Área do profissional</div>
+                <h2 id="dashboardTitle">Bem-vindo ao OdontoFlow</h2>
+                <p class="lead" id="dashboardSubtitle">Aqui você acompanha seu cadastro e inicia o fluxo dos pacientes.</p>
+                <div class="main-actions">
+                  <button class="button button-primary action-card" type="button" data-open-patient>
+                    <strong>Cadastrar paciente</strong>
+                    <span>Dados básicos, contato e vínculo com o consultório atual.</span>
+                  </button>
+                  <button class="button action-card" type="button" disabled>
+                    <strong>Ver meus dados</strong>
+                    <span>Conferir nome, telefone, e-mail e CRO na área de configurações.</span>
+                  </button>
+                  <button class="button action-card" type="button" disabled>
+                    <strong>Consultórios</strong>
+                    <span>Gerenciar locais de atendimento vinculados ao profissional.</span>
+                  </button>
+                </div>
+                <div class="status-list">
+                  <div class="status-row">
+                    <span class="status-dot">✓</span>
+                    <span>Perfil profissional configurado.</span>
+                  </div>
+                  <div class="status-row">
+                    <span class="status-dot">✓</span>
+                    <span>Primeiro consultório vinculado.</span>
+                  </div>
+                  <div class="status-row">
+                    <span class="status-dot">1</span>
+                    <span>Próxima etapa: cadastrar o primeiro paciente.</span>
+                  </div>
+                </div>
               </div>
-              <div class="status-list">
-                <div class="status-row">
-                  <span class="status-dot">✓</span>
-                  <span>Perfil profissional configurado.</span>
+
+              <div id="patientTab" class="dashboard-tab">
+                <div class="kicker">Paciente</div>
+                <h2>Cadastrar paciente</h2>
+                <p class="lead">Comece pelo essencial. A ficha clínica e a anamnese entram depois.</p>
+
+                <div class="linked-context">
+                  <div class="context-card">
+                    <strong id="patientContextProfissional">-</strong>
+                    <span class="muted">Profissional responsável</span>
+                  </div>
+                  <div class="context-card">
+                    <strong id="patientContextConsultorio">-</strong>
+                    <span class="muted">Consultório vinculado</span>
+                  </div>
                 </div>
-                <div class="status-row">
-                  <span class="status-dot">✓</span>
-                  <span>Primeiro consultório vinculado.</span>
-                </div>
-                <div class="status-row">
-                  <span class="status-dot">1</span>
-                  <span>Próxima etapa: liberar cadastro de paciente.</span>
-                </div>
+
+                <form class="form" id="patientForm">
+                  <div class="grid">
+                    <div class="field full">
+                      <label for="pacienteNome">Nome do paciente</label>
+                      <input id="pacienteNome" name="pacienteNome" type="text" autocomplete="off" required placeholder="Nome completo" />
+                    </div>
+                    <div class="field">
+                      <label for="pacienteTelefone">Telefone/WhatsApp</label>
+                      <input id="pacienteTelefone" name="pacienteTelefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(21) 99999-9999" />
+                      <span class="hint">Obrigatório se não informar e-mail.</span>
+                    </div>
+                    <div class="field">
+                      <label for="pacienteEmail">E-mail</label>
+                      <input id="pacienteEmail" name="pacienteEmail" type="email" placeholder="paciente@email.com" />
+                    </div>
+                    <div class="field">
+                      <label for="pacienteCpf">CPF</label>
+                      <input id="pacienteCpf" name="pacienteCpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" />
+                      <span class="hint">Opcional no MVP.</span>
+                    </div>
+                    <div class="field">
+                      <label for="pacienteNascimento">Data de nascimento</label>
+                      <input id="pacienteNascimento" name="pacienteNascimento" type="date" />
+                    </div>
+                    <div class="field full">
+                      <label for="pacienteObservacoes">Observações iniciais</label>
+                      <textarea id="pacienteObservacoes" name="pacienteObservacoes" placeholder="Preferência de contato, observação administrativa ou contexto inicial."></textarea>
+                    </div>
+                  </div>
+                  <div id="patientStatus" class="status" role="status"></div>
+                  <div class="patient-form-actions">
+                    <button class="button button-primary" type="submit">Salvar paciente</button>
+                    <button class="button button-plain" type="button" id="cancelPatientForm">Voltar</button>
+                  </div>
+                </form>
               </div>
             </section>
           </div>
@@ -746,9 +918,14 @@
     const signOutButton = document.querySelector("#signOutButton");
     const loginStatus = document.querySelector("#loginStatus");
     const onboardingStatus = document.querySelector("#onboardingStatus");
+    const patientForm = document.querySelector("#patientForm");
+    const patientStatus = document.querySelector("#patientStatus");
+    const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
+    const patientTab = document.querySelector("#patientTab");
     const appGrid = document.querySelector(".app-grid");
     let currentUser = null;
     let currentProfissional = null;
+    let currentConsultorio = null;
     let onboardingMode = "completo";
 
     function showView(name) {
@@ -792,6 +969,15 @@
         throw new Error(`${label} deve ser um e-mail válido.`);
       }
       return email;
+    }
+
+    function validateCpf(value) {
+      const digits = onlyDigits(value);
+      if (!digits) return null;
+      if (digits.length !== 11) {
+        throw new Error("CPF deve ter 11 dígitos.");
+      }
+      return digits;
     }
 
     async function loadSession() {
@@ -889,6 +1075,7 @@
     async function showDashboard(profissional, vinculosAtivos = null) {
       const count = vinculosAtivos === null ? await countConsultorios(profissional.id) : vinculosAtivos;
       const consultorio = await loadPrimaryConsultorio(profissional.id);
+      currentConsultorio = consultorio;
       document.querySelector("#dashboardTitle").textContent = `Bem-vindo, ${profissional.nome}`;
       document.querySelector("#dashboardSubtitle").textContent = "Seus dados ficam sempre visíveis na lateral. Para começar o atendimento, o próximo passo é cadastrar pacientes.";
       document.querySelector("#sidebarProfissional").textContent = profissional.nome;
@@ -897,20 +1084,36 @@
       document.querySelector("#sidebarEmail").textContent = profissional.email || "-";
       document.querySelector("#sidebarConsultorio").textContent = consultorio?.nome || "Consultório vinculado";
       document.querySelector("#sidebarConsultoriosTotal").textContent = `${count || 0} consultório${count === 1 ? "" : "s"} vinculado${count === 1 ? "" : "s"}`;
+      document.querySelector("#patientContextProfissional").textContent = profissional.nome;
+      document.querySelector("#patientContextConsultorio").textContent = consultorio?.nome || "Consultório atual";
+      showDashboardTab("home");
       showView("dashboard");
     }
 
     async function loadPrimaryConsultorio(profissionalId) {
       const { data, error } = await supabase
         .from("profissional_consultorios")
-        .select("consultorios(nome, cidade, uf)")
+        .select("consultorio_id, consultorios(id, nome, cidade, uf)")
         .eq("profissional_id", profissionalId)
         .eq("ativo", true)
         .limit(1)
         .maybeSingle();
 
       if (error) return null;
-      return data?.consultorios || null;
+      const consultorio = Array.isArray(data?.consultorios) ? data.consultorios[0] : data?.consultorios;
+      if (!consultorio && data?.consultorio_id) return { id: data.consultorio_id, nome: "Consultório atual" };
+      return consultorio || null;
+    }
+
+    function showDashboardTab(name) {
+      dashboardHomeTab.classList.toggle("active", name === "home");
+      patientTab.classList.toggle("active", name === "patient");
+      document.querySelectorAll("[data-open-home]").forEach((button) => {
+        button.classList.toggle("active", name === "home");
+      });
+      document.querySelectorAll("[data-open-patient]").forEach((button) => {
+        button.classList.toggle("active", name === "patient");
+      });
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -1021,9 +1224,89 @@
       await supabase.auth.signOut();
       currentUser = null;
       currentProfissional = null;
+      currentConsultorio = null;
       loginForm.reset();
       onboardingForm.reset();
+      patientForm.reset();
       showView("login");
+    });
+
+    document.querySelectorAll("[data-open-home]").forEach((button) => {
+      button.addEventListener("click", () => {
+        clearStatus(patientStatus);
+        showDashboardTab("home");
+      });
+    });
+
+    document.querySelectorAll("[data-open-patient]").forEach((button) => {
+      button.addEventListener("click", () => {
+        clearStatus(patientStatus);
+        showDashboardTab("patient");
+        document.querySelector("#pacienteNome").focus();
+      });
+    });
+
+    document.querySelector("#cancelPatientForm").addEventListener("click", () => {
+      clearStatus(patientStatus);
+      patientForm.reset();
+      showDashboardTab("home");
+    });
+
+    patientForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus(patientStatus);
+      const submit = patientForm.querySelector("button[type='submit']");
+      submit.disabled = true;
+      submit.textContent = "Salvando...";
+
+      try {
+        if (!currentProfissional) throw new Error("Profissional não encontrado. Entre novamente.");
+        if (!currentConsultorio?.id) throw new Error("Consultório não encontrado para vincular o paciente.");
+
+        const formData = new FormData(patientForm);
+        const nome = String(formData.get("pacienteNome") || "").trim();
+        const telefone = validatePhone(formData.get("pacienteTelefone"), "Telefone do paciente");
+        const email = validateEmail(formData.get("pacienteEmail"), "E-mail do paciente");
+        const cpf = validateCpf(formData.get("pacienteCpf"));
+        const dataNascimento = String(formData.get("pacienteNascimento") || "").trim() || null;
+        const observacoes = String(formData.get("pacienteObservacoes") || "").trim() || null;
+
+        if (!nome) throw new Error("Nome do paciente é obrigatório.");
+        if (!telefone && !email) throw new Error("Informe telefone ou e-mail do paciente.");
+
+        const pacienteId = crypto.randomUUID();
+        const { error: pacienteError } = await supabase
+          .from("pacientes")
+          .insert({
+            id: pacienteId,
+            criado_por_profissional_id: currentProfissional.id,
+            nome,
+            telefone,
+            email,
+            cpf,
+            data_nascimento: dataNascimento,
+            observacoes
+          });
+        if (pacienteError) throw pacienteError;
+
+        const { error: vinculoError } = await supabase
+          .from("paciente_consultorios")
+          .insert({
+            paciente_id: pacienteId,
+            consultorio_id: currentConsultorio.id,
+            profissional_id: currentProfissional.id,
+            ativo: true
+          });
+        if (vinculoError) throw vinculoError;
+
+        patientForm.reset();
+        setStatus(patientStatus, "success", "Paciente cadastrado e vinculado ao consultório atual.");
+      } catch (error) {
+        setStatus(patientStatus, "error", error.message || "Não foi possível salvar o paciente.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Salvar paciente";
+      }
     });
 
     document.querySelectorAll("input[type='tel']").forEach((input) => {
@@ -1033,11 +1316,23 @@
       });
     });
 
+    document.querySelector("#pacienteCpf").addEventListener("input", (event) => {
+      event.target.value = formatCpf(event.target.value);
+    });
+
     function formatPhone(value) {
       const digits = onlyDigits(value).slice(0, 11);
       if (digits.length <= 2) return digits;
       if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
       return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    }
+
+    function formatCpf(value) {
+      const digits = onlyDigits(value).slice(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+      if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
     }
 
     loadSession();
