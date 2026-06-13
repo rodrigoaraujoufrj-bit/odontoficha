@@ -478,8 +478,8 @@
 
         <div id="onboardingView" class="view">
           <div class="kicker">Cadastro inicial</div>
-          <h2>Perfil profissional e consultório</h2>
-          <p class="lead">Esses dados criam a base para vincular pacientes ao local certo.</p>
+          <h2 id="onboardingTitle">Perfil profissional e consultório</h2>
+          <p class="lead" id="onboardingSubtitle">Esses dados criam a base para vincular pacientes ao local certo.</p>
           <form class="form" id="onboardingForm">
             <div class="form-section">
               <div>
@@ -603,6 +603,7 @@
     const onboardingStatus = document.querySelector("#onboardingStatus");
     let currentUser = null;
     let currentProfissional = null;
+    let onboardingMode = "completo";
 
     function showView(name) {
       Object.values(views).forEach((view) => view.classList.remove("active"));
@@ -679,21 +680,67 @@
 
       currentProfissional = profissional;
       if (!profissional) {
-        document.querySelector("#profissionalEmail").value = currentUser.email || "";
-        showView("onboarding");
+        prepareOnboarding(null);
         return;
       }
 
-      await showDashboard(profissional);
+      const vinculosAtivos = await countConsultorios(profissional.id);
+      if (vinculosAtivos === 0) {
+        prepareOnboarding(profissional);
+        return;
+      }
+
+      await showDashboard(profissional, vinculosAtivos);
     }
 
-    async function showDashboard(profissional) {
+    async function countConsultorios(profissionalId) {
       const { count } = await supabase
         .from("profissional_consultorios")
         .select("id", { count: "exact", head: true })
-        .eq("profissional_id", profissional.id)
+        .eq("profissional_id", profissionalId)
         .eq("ativo", true);
+      return count || 0;
+    }
 
+    function prepareOnboarding(profissional) {
+      onboardingMode = profissional ? "consultorio" : "completo";
+      currentProfissional = profissional;
+      clearStatus(onboardingStatus);
+
+      const title = document.querySelector("#onboardingTitle");
+      const subtitle = document.querySelector("#onboardingSubtitle");
+      const emailField = document.querySelector("#profissionalEmail");
+      const profissionalFields = [
+        "#profissionalNome",
+        "#profissionalTelefone",
+        "#profissionalEmail",
+        "#profissionalCro",
+        "#profissionalCroUf"
+      ].map((selector) => document.querySelector(selector));
+
+      if (!profissional) {
+        title.textContent = "Perfil profissional e consultório";
+        subtitle.textContent = "Esses dados criam a base para vincular pacientes ao local certo.";
+        onboardingForm.reset();
+        emailField.value = currentUser.email || "";
+        profissionalFields.forEach((field) => field.disabled = false);
+      } else {
+        title.textContent = "Complete o primeiro consultório";
+        subtitle.textContent = "Seu profissional já foi salvo. Falta criar o consultório e concluir o vínculo.";
+        document.querySelector("#profissionalNome").value = profissional.nome || "";
+        document.querySelector("#profissionalTelefone").value = formatPhone(profissional.telefone || "");
+        emailField.value = profissional.email || currentUser.email || "";
+        document.querySelector("#profissionalCro").value = profissional.cro || "";
+        document.querySelector("#profissionalCroUf").value = profissional.cro_uf || "";
+        profissionalFields.forEach((field) => field.disabled = true);
+        setStatus(onboardingStatus, "info", "Detectei um cadastro iniciado. Vamos concluir criando o consultório.");
+      }
+
+      showView("onboarding");
+    }
+
+    async function showDashboard(profissional, vinculosAtivos = null) {
+      const count = vinculosAtivos === null ? await countConsultorios(profissional.id) : vinculosAtivos;
       document.querySelector("#dashboardTitle").textContent = `Bem-vindo, ${profissional.nome}`;
       document.querySelector("#dashboardSubtitle").textContent = "Seu perfil profissional já está configurado.";
       document.querySelector("#summaryProfissional").textContent = profissional.nome;
@@ -736,17 +783,7 @@
       try {
         if (!currentUser) throw new Error("Sessão expirada. Entre novamente.");
         const formData = new FormData(onboardingForm);
-        const profissionalPayload = {
-          usuario_id: currentUser.id,
-          nome: String(formData.get("profissionalNome") || "").trim(),
-          telefone: validatePhone(formData.get("profissionalTelefone"), "Telefone do profissional", true),
-          email: validateEmail(formData.get("profissionalEmail"), "E-mail do profissional", true),
-          cro: String(formData.get("profissionalCro") || "").trim(),
-          cro_uf: String(formData.get("profissionalCroUf") || "").trim().toUpperCase()
-        };
-
         const consultorioPayload = {
-          criado_por_usuario_id: currentUser.id,
           nome: String(formData.get("consultorioNome") || "").trim(),
           telefone: validatePhone(formData.get("consultorioTelefone"), "Telefone do consultório"),
           email: validateEmail(formData.get("consultorioEmail"), "E-mail do consultório"),
@@ -755,30 +792,52 @@
           observacoes: String(formData.get("consultorioObservacoes") || "").trim() || null
         };
 
-        if (!profissionalPayload.nome) throw new Error("Nome do profissional é obrigatório.");
-        if (!profissionalPayload.cro) throw new Error("CRO é obrigatório.");
-        if (!profissionalPayload.cro_uf) throw new Error("UF do CRO é obrigatória.");
         if (!consultorioPayload.nome) throw new Error("Nome do consultório é obrigatório.");
 
-        const { data: profissional, error: profissionalError } = await supabase
-          .from("profissionais")
-          .insert(profissionalPayload)
-          .select("id, nome, telefone, email, cro, cro_uf")
-          .single();
-        if (profissionalError) throw profissionalError;
+        let profissional = currentProfissional;
+        if (onboardingMode === "completo") {
+          const profissionalId = crypto.randomUUID();
+          const profissionalPayload = {
+            id: profissionalId,
+            usuario_id: currentUser.id,
+            nome: String(formData.get("profissionalNome") || "").trim(),
+            telefone: validatePhone(formData.get("profissionalTelefone"), "Telefone do profissional", true),
+            email: validateEmail(formData.get("profissionalEmail"), "E-mail do profissional", true),
+            cro: String(formData.get("profissionalCro") || "").trim(),
+            cro_uf: String(formData.get("profissionalCroUf") || "").trim().toUpperCase()
+          };
 
-        const { data: consultorio, error: consultorioError } = await supabase
+          if (!profissionalPayload.nome) throw new Error("Nome do profissional é obrigatório.");
+          if (!profissionalPayload.cro) throw new Error("CRO é obrigatório.");
+          if (!profissionalPayload.cro_uf) throw new Error("UF do CRO é obrigatória.");
+
+          const { error: profissionalError } = await supabase
+            .from("profissionais")
+            .insert(profissionalPayload);
+          if (profissionalError) throw profissionalError;
+          profissional = {
+            id: profissionalId,
+            nome: profissionalPayload.nome,
+            telefone: profissionalPayload.telefone,
+            email: profissionalPayload.email,
+            cro: profissionalPayload.cro,
+            cro_uf: profissionalPayload.cro_uf
+          };
+        }
+
+        if (!profissional) throw new Error("Cadastro profissional não encontrado para concluir o vínculo.");
+
+        const consultorioId = crypto.randomUUID();
+        const { error: consultorioError } = await supabase
           .from("consultorios")
-          .insert(consultorioPayload)
-          .select("id")
-          .single();
+          .insert({ id: consultorioId, ...consultorioPayload });
         if (consultorioError) throw consultorioError;
 
         const { error: vinculoError } = await supabase
           .from("profissional_consultorios")
           .insert({
             profissional_id: profissional.id,
-            consultorio_id: consultorio.id,
+            consultorio_id: consultorioId,
             ativo: true
           });
         if (vinculoError) throw vinculoError;
@@ -806,15 +865,16 @@
     document.querySelectorAll("input[type='tel']").forEach((input) => {
       input.addEventListener("input", () => {
         const digits = onlyDigits(input.value).slice(0, 11);
-        if (digits.length <= 2) {
-          input.value = digits;
-        } else if (digits.length <= 7) {
-          input.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-        } else {
-          input.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-        }
+        input.value = formatPhone(digits);
       });
     });
+
+    function formatPhone(value) {
+      const digits = onlyDigits(value).slice(0, 11);
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    }
 
     loadSession();
   </script>
