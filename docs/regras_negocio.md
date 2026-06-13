@@ -183,10 +183,13 @@ cpf no banco: 12345678909
 - Odontograma no MVP deve ser simples.
 - Deve permitir:
   - numero do dente
+  - face do dente quando informada
   - tratamento indicado
   - status basico
   - observacao
-- Interface visual completa por face pode ficar para depois, se nao aparecer como dor recorrente.
+- Suporte a faces do dente deve ficar no radar porque ajuda o dentista a se orientar rapidamente.
+- Interface visual completa por face pode ficar para depois, mas o modelo de dados nao deve impedir essa evolucao.
+- No MVP v1, aceitar face como campo estruturado opcional e avaliar interface visual em fase seguinte.
 
 ## Regras De Estoque
 
@@ -211,6 +214,7 @@ Hipotese inicial:
 - Agenda virar escopo grande demais.
 - Confundir OdontoFlow com IA/assistente virtual.
 - Odontograma complexo consumir tempo antes de validar ficha/evolucao/orcamento.
+- Ignorar faces do dente e depois precisar remodelar plano/orcamento/odontograma.
 
 ## Hipoteses A Validar Com Mais Questionarios
 

@@ -9,6 +9,7 @@ Este documento descreve a proposta inicial de modelo de dados do OdontoFlow. Os 
 - O OdontoFlow deve ser um organizador de fluxo clinico-operacional, nao apenas um odontograma digital.
 - O MVP deve priorizar cadastro rapido, ficha clinica, evolucao, agenda/retornos, orcamento, financeiro simples e laboratorio.
 - O odontograma deve comecar simples e evoluir conforme validacao.
+- O odontograma deve manter no radar suporte a faces do dente, pois isso ajuda o dentista a se orientar rapidamente.
 - O banco deve evitar cadastros obrigatorios longos.
 - Dados clinicos exigem cuidado com permissao, auditoria, backup e LGPD.
 
@@ -348,4 +349,5 @@ Campos provaveis:
 - Como tratar dentistas que atendem em varios locais.
 - Se agenda sera nativa ou integracao com Google Agenda no MVP.
 - Se laboratorio entra no MVP completo ou apenas como controle simples de etapas.
-- Nivel inicial do odontograma: texto por dente ou interface visual.
+- Nivel inicial do odontograma: texto por dente, selecao de face ou interface visual.
+- Como representar faces do dente sem atrasar o MVP v1.
