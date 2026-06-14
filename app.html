@@ -8,20 +8,21 @@
   <link rel="icon" href="assets/odontoflow-mark.svg" type="image/svg+xml" />
   <style>
     :root {
-      --bg: #f6fafc;
+      --bg: #f8fbfc;
       --surface: #ffffff;
-      --surface-soft: #e8f7f5;
+      --surface-soft: #eef9f7;
       --text: #102033;
-      --muted: #647781;
+      --muted: #71838d;
       --primary: #14b8a6;
       --primary-dark: #0f3d5e;
+      --accent: #14b8a6;
       --line: #d8e7ea;
       --danger: #dc2626;
       --success: #16a34a;
       --warning: #f59e0b;
-      --shadow: 0 24px 70px rgba(15, 61, 94, 0.12);
-      --radius-lg: 20px;
-      --radius-md: 14px;
+      --shadow: 0 18px 50px rgba(15, 61, 94, 0.07);
+      --radius-lg: 16px;
+      --radius-md: 12px;
     }
 
     * {
@@ -33,9 +34,7 @@
     body {
       min-height: 100vh;
       font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 30rem),
-        linear-gradient(180deg, #ffffff 0%, var(--bg) 52%, #ffffff 100%);
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 58%, #ffffff 100%);
       color: var(--text);
       line-height: 1.55;
     }
@@ -53,7 +52,7 @@
     }
 
     .page {
-      width: min(1240px, calc(100% - 32px));
+      width: min(1840px, calc(100% - 24px));
       margin: 0 auto;
     }
 
@@ -67,7 +66,7 @@
     }
 
     .nav-inner {
-      width: min(1240px, calc(100% - 32px));
+      width: min(1840px, calc(100% - 24px));
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -96,7 +95,7 @@
       padding: 11px 18px;
       background: white;
       color: var(--primary-dark);
-      font-weight: 800;
+      font-weight: 590;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -110,10 +109,10 @@
     }
 
     .button-primary {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-      box-shadow: 0 16px 34px rgba(20, 184, 166, 0.26);
+      background: #e7f8f5;
+      color: var(--primary-dark);
+      border-color: rgba(20, 184, 166, 0.28);
+      box-shadow: none;
     }
 
     .button-danger {
@@ -143,7 +142,7 @@
     .app-grid {
       display: grid;
       grid-template-columns: 0.85fr 1.15fr;
-      gap: 24px;
+      gap: 18px;
       align-items: start;
     }
 
@@ -167,7 +166,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
-      padding: 26px;
+      padding: 24px;
     }
 
     .hero-panel {
@@ -198,17 +197,20 @@
 
     h1,
     h2 {
-      line-height: 1.05;
-      letter-spacing: -0.045em;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
     }
 
     h1 {
-      font-size: clamp(2.4rem, 5vw, 4.4rem);
-      margin-bottom: 18px;
+      font-size: clamp(2rem, 3.2vw, 3.15rem);
+      font-weight: 620;
+      max-width: 12ch;
+      margin-bottom: 16px;
     }
 
     h2 {
-      font-size: clamp(1.6rem, 3vw, 2.35rem);
+      font-size: clamp(1.45rem, 2.35vw, 2rem);
+      font-weight: 650;
       margin-bottom: 10px;
     }
 
@@ -218,7 +220,7 @@
     }
 
     .lead {
-      font-size: 1.05rem;
+      font-size: 1rem;
       margin-bottom: 24px;
     }
 
@@ -358,29 +360,66 @@
 
     .workspace {
       display: grid;
-      grid-template-columns: 292px minmax(0, 1fr);
-      gap: 20px;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 18px;
       align-items: start;
     }
 
     .product-sidebar {
       display: grid;
       gap: 18px;
-      background: #fbfdff;
-      box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
+      background: linear-gradient(180deg, #073b57 0%, #042f49 100%);
+      color: #e9fbfb;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 45px rgba(4, 47, 73, 0.18);
       position: sticky;
       top: 92px;
       min-height: calc(100vh - 124px);
       align-content: space-between;
+      padding: 18px;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      font-weight: 850;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.12);
+      color: #5eead4;
+    }
+
+    .sidebar-brand-mark svg,
+    .nav-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sidebar-brand span span {
+      color: #21c7b7;
     }
 
     .mobile-menu-toggle {
       display: none;
       width: 100%;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: var(--radius-md);
-      background: white;
-      color: var(--primary-dark);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
       padding: 12px 14px;
       font-weight: 900;
       align-items: center;
@@ -391,7 +430,7 @@
 
     .mobile-menu-toggle span {
       display: block;
-      color: var(--muted);
+      color: rgba(233, 251, 251, 0.62);
       font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -413,14 +452,14 @@
     }
 
     .nav-group + .nav-group {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       padding-top: 12px;
       margin-top: 4px;
     }
 
     .nav-group-title,
     .profile-label {
-      color: var(--muted);
+      color: rgba(233, 251, 251, 0.64);
       font-size: 0.82rem;
       font-weight: 800;
       text-transform: uppercase;
@@ -434,39 +473,54 @@
       border: 1px solid transparent;
       border-radius: 12px;
       background: transparent;
-      color: var(--primary-dark);
+      color: rgba(233, 251, 251, 0.88);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 10px;
       padding: 10px 12px;
-      font-weight: 850;
+      font-weight: 780;
       cursor: pointer;
       text-align: left;
     }
 
     .nav-item:hover:not(:disabled),
     .nav-item.active {
-      background: var(--surface-soft);
-      border-color: rgba(20, 184, 166, 0.24);
+      background: #11b7aa;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 14px 30px rgba(17, 183, 170, 0.2);
     }
 
     .nav-item:disabled {
-      color: #8ba0aa;
+      color: rgba(233, 251, 251, 0.46);
       cursor: not-allowed;
     }
 
     .nav-item small {
-      color: var(--muted);
+      color: rgba(233, 251, 251, 0.58);
       font-size: 0.72rem;
       font-weight: 900;
+      margin-left: auto;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
     }
 
     .sidebar-profile {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       padding-top: 16px;
       display: grid;
       gap: 12px;
+    }
+
+    .sidebar-profile .muted {
+      color: rgba(233, 251, 251, 0.68);
     }
 
     .profile-block strong {
@@ -476,8 +530,22 @@
     }
 
     .profile-block + .profile-block {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       padding-top: 12px;
+    }
+
+    .clinic-switcher {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      background: rgba(2, 28, 45, 0.38);
+      padding: 12px;
+    }
+
+    .product-sidebar .button-danger {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+      color: #fecaca;
     }
 
     .main-actions {
@@ -572,7 +640,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       box-shadow: 0 14px 38px rgba(15, 61, 94, 0.06);
-      padding: clamp(24px, 3vw, 42px);
+      padding: clamp(24px, 2.4vw, 34px);
       min-height: calc(100vh - 124px);
     }
 
@@ -607,17 +675,14 @@
     }
 
     .patient-toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
-      align-items: end;
-      margin: 22px 0 16px;
+      display: block;
+      margin: 16px 0 12px;
     }
 
     .patient-workspace {
       display: grid;
-      grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
-      gap: 16px;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 18px;
       align-items: start;
     }
 
@@ -625,16 +690,18 @@
       display: grid;
       gap: 10px;
       margin-bottom: 18px;
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 4px;
     }
 
     .patient-card {
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       background: #fbfdff;
-      padding: 14px;
+      padding: 12px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
       text-align: left;
     }
@@ -648,22 +715,25 @@
     .patient-card-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       font-weight: 650;
     }
 
     .patient-summary {
-      border: 1px solid rgba(20, 184, 166, 0.24);
-      border-radius: var(--radius-md);
-      background: var(--surface-soft);
-      padding: 16px;
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 20px;
       display: grid;
       gap: 12px;
       margin-bottom: 18px;
-      position: sticky;
-      top: 92px;
+      box-shadow: 0 10px 30px rgba(15, 61, 94, 0.045);
+    }
+
+    .patient-search-panel {
+      align-self: start;
     }
 
     .patient-summary.active {
@@ -687,6 +757,394 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+    }
+
+    .patient-detail-only {
+      display: none;
+    }
+
+    .patient-summary.active .patient-detail-only {
+      display: grid;
+    }
+
+    .patient-summary.active p.patient-detail-only {
+      display: block;
+    }
+
+    .patient-summary.active .card-actions.patient-detail-only {
+      display: flex;
+    }
+
+    .consultation-panel {
+      display: none;
+      border: 1px solid rgba(20, 184, 166, 0.16);
+      border-radius: 16px;
+      background: #f8fcfb;
+      padding: 18px;
+      gap: 14px;
+      grid-column: 1 / -1;
+      box-shadow: 0 12px 34px rgba(15, 61, 94, 0.05);
+    }
+
+    .consultation-panel.active {
+      display: grid;
+    }
+
+    .consultation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .consultation-option {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 11px;
+      background: #ffffff;
+      padding: 12px;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      gap: 4px;
+    }
+
+    .consultation-option:hover,
+    .consultation-option.active {
+      border-color: rgba(20, 184, 166, 0.4);
+      background: #effaf8;
+    }
+
+    .treatment-builder {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      gap: 14px;
+    }
+
+    .treatment-builder.active {
+      display: grid;
+    }
+
+    .treatment-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .treatment-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .odontogram-mini,
+    .selected-tooth-card,
+    .procedure-card,
+    .quote-card {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .odontogram-mini {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      min-height: 560px;
+    }
+
+    .tooth-grid {
+      min-height: 410px;
+      overflow: visible;
+    }
+
+    .dental-arch {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .tooth-node {
+      cursor: pointer;
+    }
+
+    .tooth-shape {
+      fill: #fbfdff;
+      stroke: #cfe2e7;
+      stroke-width: 1.25;
+      transition: fill 0.18s ease, stroke 0.18s ease;
+    }
+
+    .tooth-detail {
+      stroke: #d9e8ec;
+      stroke-width: 0.9;
+      fill: none;
+      pointer-events: none;
+    }
+
+    .tooth-face {
+      fill: rgba(255, 255, 255, 0.72);
+      stroke: #d9e8ec;
+      stroke-width: 0.65;
+      pointer-events: none;
+      transition: fill 0.18s ease, stroke 0.18s ease;
+    }
+
+    .tooth-label {
+      color: var(--primary-dark);
+      fill: var(--primary-dark);
+      font-size: 9px;
+      font-weight: 750;
+      pointer-events: none;
+    }
+
+    .tooth-node.active .tooth-shape {
+      fill: rgba(20, 184, 166, 0.2);
+      stroke: var(--primary);
+      stroke-width: 2;
+    }
+
+    .tooth-node.face-v .tooth-shape {
+      stroke: #3b82f6;
+    }
+
+    .tooth-node.face-lp .tooth-shape {
+      stroke: #0ea5e9;
+    }
+
+    .tooth-node.face-m .tooth-shape {
+      stroke: #f59e0b;
+    }
+
+    .tooth-node.face-d .tooth-shape {
+      stroke: #ef4444;
+    }
+
+    .tooth-node.face-o .tooth-shape {
+      stroke: #14b8a6;
+    }
+
+    .tooth-node.face-raiz .tooth-shape {
+      stroke: #8b5cf6;
+    }
+
+    .tooth-node.face-multi .tooth-shape {
+      stroke: #0f3d5e;
+    }
+
+    .tooth-node.face-v .tooth-face[data-surface="V"] {
+      fill: rgba(59, 130, 246, 0.42);
+      stroke: #3b82f6;
+    }
+
+    .tooth-node.face-lp .tooth-face[data-surface="L/P"] {
+      fill: rgba(14, 165, 233, 0.42);
+      stroke: #0ea5e9;
+    }
+
+    .tooth-node.face-m .tooth-face[data-surface="M"] {
+      fill: rgba(245, 158, 11, 0.46);
+      stroke: #f59e0b;
+    }
+
+    .tooth-node.face-d .tooth-face[data-surface="D"] {
+      fill: rgba(239, 68, 68, 0.4);
+      stroke: #ef4444;
+    }
+
+    .tooth-node.face-o .tooth-face[data-surface="O"] {
+      fill: rgba(20, 184, 166, 0.45);
+      stroke: #14b8a6;
+    }
+
+    .tooth-node.face-raiz .tooth-face[data-surface="Raiz"] {
+      fill: rgba(139, 92, 246, 0.4);
+      stroke: #8b5cf6;
+    }
+
+    .tooth-node.active .tooth-label {
+      fill: var(--primary-dark);
+      font-weight: 900;
+    }
+
+    .arch-label {
+      fill: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .quadrant-label {
+      fill: var(--primary-dark);
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .face-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .face-button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: white;
+      color: var(--primary-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .face-button.active {
+      background: var(--surface-soft);
+      border-color: rgba(20, 184, 166, 0.42);
+    }
+
+    .face-button[data-face="V"].active {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: #3b82f6;
+    }
+
+    .face-button[data-face="L/P"].active {
+      background: rgba(14, 165, 233, 0.12);
+      border-color: #0ea5e9;
+    }
+
+    .face-button[data-face="M"].active {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: #f59e0b;
+    }
+
+    .face-button[data-face="D"].active {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: #ef4444;
+    }
+
+    .face-button[data-face="O"].active {
+      background: rgba(20, 184, 166, 0.14);
+      border-color: #14b8a6;
+    }
+
+    .face-button[data-face="Raiz"].active {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: #8b5cf6;
+    }
+
+    .selected-tooth-card,
+    .procedure-card,
+    .quote-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .selected-tooth-number {
+      width: 62px;
+      height: 62px;
+      border: 2px solid rgba(20, 184, 166, 0.38);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-size: 1.55rem;
+      font-weight: 850;
+      background: #f7fdfc;
+    }
+
+    .quote-list {
+      display: grid;
+      gap: 8px;
+      min-height: 64px;
+    }
+
+    .quote-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+      background: #fbfdff;
+    }
+
+    .quote-total {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 850;
+      color: var(--primary-dark);
+    }
+
+    .plan-card {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .plan-table-wrap {
+      overflow: auto;
+    }
+
+    .plan-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: 0.86rem;
+    }
+
+    .plan-table th,
+    .plan-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .plan-table th {
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .plan-table td:last-child,
+    .plan-table th:last-child {
+      text-align: right;
+    }
+
+    .icon-action {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #ffffff;
+      color: var(--primary-dark);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .icon-action.delete {
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .icon-action svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .patient-care-card {
@@ -806,7 +1264,25 @@
       place-items: center;
       background: var(--surface-soft);
       color: var(--primary-dark);
-      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .card-mark svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .clinic-form-section {
+      display: none;
+    }
+
+    .clinic-form-section.active {
+      display: block;
     }
 
     .card-actions {
@@ -898,6 +1374,8 @@
       .summary-grid,
       .patient-workspace,
       .patient-care-grid,
+      .consultation-grid,
+      .treatment-layout,
       .week-overview {
         grid-template-columns: 1fr;
       }
@@ -964,22 +1442,22 @@
     <div class="app-grid">
       <aside class="panel hero-panel">
         <div class="kicker">Primeiro acesso</div>
-        <h1>Configure o profissional antes dos pacientes</h1>
+        <h1>Organize seu espaço clínico</h1>
         <p class="lead">
-          O OdontoFlow precisa saber quem atende e em qual consultório antes de abrir ficha, anamnese e cadastro de paciente.
+          Informe quem atende e onde atende para o OdontoFlow abrir pacientes, anamnese e consultas no lugar certo.
         </p>
         <div class="steps">
           <div class="step">
             <span class="step-index">1</span>
-            <span>Entrar com uma conta autenticada no Supabase.</span>
+            <span>Entrar com sua conta.</span>
           </div>
           <div class="step">
             <span class="step-index">2</span>
-            <span>Cadastrar profissional com telefone, e-mail e CRO.</span>
+            <span>Confirmar dados profissionais.</span>
           </div>
           <div class="step">
             <span class="step-index">3</span>
-            <span>Criar o primeiro consultório e vincular ao profissional.</span>
+            <span>Vincular o primeiro consultório.</span>
           </div>
         </div>
       </aside>
@@ -1092,22 +1570,55 @@
         <div id="dashboardView" class="view">
           <div class="workspace">
             <aside class="panel product-sidebar">
+              <div class="sidebar-brand">
+                <span class="sidebar-brand-mark" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M8.5 3.5c1.5 0 2.2.8 3.5.8s2-.8 3.5-.8c2.5 0 4 2.2 3.3 5.4l-1.8 8.2c-.4 1.9-2.9 2-3.4.1l-.7-2.7c-.2-.8-1.4-.8-1.6 0l-.7 2.7c-.5 1.9-3 1.8-3.4-.1L5.2 8.9C4.5 5.7 6 3.5 8.5 3.5z"/></svg>
+                </span>
+                <span>Odonto<span>Flow</span></span>
+              </div>
               <button class="mobile-menu-toggle" type="button" id="mobileMenuToggle" aria-expanded="false" aria-controls="workspaceNavigation">
                 <span>Menu</span>
-                <strong id="mobileMenuCurrent">Início</strong>
+                <strong id="mobileMenuCurrent">Dashboard</strong>
                 <b class="menu-chevron" aria-hidden="true">⌄</b>
               </button>
               <nav class="app-nav" id="workspaceNavigation" aria-label="Navegação do OdontoFlow">
                 <div class="nav-group">
                   <div class="nav-group-title">Atendimento</div>
-                  <button class="nav-item active" type="button" data-open-home><span>Início</span></button>
-                  <button class="nav-item" type="button" data-open-patient><span>Pacientes</span></button>
-                  <button class="nav-item" type="button" disabled><span>Agenda</span><small>em breve</small></button>
-                  <button class="nav-item" type="button" disabled><span>Casos / Evolução</span><small>em breve</small></button>
+                  <button class="nav-item active" type="button" data-open-home>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4z"/><path d="M14 20h6V4h-6z"/><path d="M4 20h6v-3H4z"/></svg></span>
+                    <span>Dashboard</span>
+                  </button>
+                  <button class="nav-item" type="button" data-open-patient>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
+                    <span>Pacientes</span>
+                  </button>
+                  <button class="nav-item" type="button" disabled>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></span>
+                    <span>Agenda</span><small>em breve</small>
+                  </button>
+                  <button class="nav-item" type="button" disabled>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></span>
+                    <span>Ficha clínica</span><small>em breve</small>
+                  </button>
+                  <button class="nav-item" type="button" disabled>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 3.5c1.5 0 2.2.8 3.5.8s2-.8 3.5-.8c2.5 0 4 2.2 3.3 5.4l-1.8 8.2c-.4 1.9-2.9 2-3.4.1l-.7-2.7c-.2-.8-1.4-.8-1.6 0l-.7 2.7c-.5 1.9-3 1.8-3.4-.1L5.2 8.9C4.5 5.7 6 3.5 8.5 3.5z"/></svg></span>
+                    <span>Tratamentos</span><small>em breve</small>
+                  </button>
                 </div>
                 <div class="nav-group">
                   <div class="nav-group-title">Gestão</div>
-                  <button class="nav-item" type="button" data-open-clinic><span>Meu consultório</span></button>
+                  <button class="nav-item" type="button" disabled>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                    <span>Financeiro</span><small>em breve</small>
+                  </button>
+                  <button class="nav-item" type="button" disabled>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11h6"/><path d="M9 15h6"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8l4 4v12a2 2 0 0 1-2 2z"/></svg></span>
+                    <span>Orçamentos</span><small>em breve</small>
+                  </button>
+                  <button class="nav-item" type="button" data-open-clinic>
+                    <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
+                    <span>Meu consultório</span>
+                  </button>
                 </div>
               </nav>
 
@@ -1122,7 +1633,7 @@
                   <strong id="sidebarTelefone">-</strong>
                   <span class="muted" id="sidebarEmail">-</span>
                 </div>
-                <div class="profile-block">
+                <div class="profile-block clinic-switcher">
                   <div class="profile-label">Consultório atual</div>
                   <strong id="sidebarConsultorio">-</strong>
                   <span class="muted" id="sidebarConsultoriosTotal">-</span>
@@ -1200,13 +1711,12 @@
                 </div>
 
                 <div class="patient-workspace">
-                  <div>
+                  <div class="patient-search-panel">
                     <div class="patient-toolbar">
                       <div class="field">
                         <label for="patientSearch">Buscar paciente</label>
                         <input id="patientSearch" type="search" autocomplete="off" placeholder="Digite nome, telefone, e-mail ou CPF" />
                       </div>
-                      <button class="button button-primary" type="button" id="newPatientButton">Cadastrar em Meu consultório</button>
                     </div>
 
                     <div id="patientList" class="patient-list" aria-live="polite"></div>
@@ -1218,7 +1728,7 @@
                       <strong id="summaryPatientName">Selecione um paciente</strong>
                       <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
                     </div>
-                    <div class="summary-grid">
+                    <div class="summary-grid patient-detail-only">
                       <div class="summary-item">
                         <strong id="summaryPatientPhone">-</strong>
                         <span class="muted">Telefone</span>
@@ -1232,8 +1742,8 @@
                         <span class="muted">CPF</span>
                       </div>
                     </div>
-                    <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
-                    <div class="patient-care-grid">
+                    <p class="muted patient-detail-only" id="summaryPatientNotes">Sem observações administrativas.</p>
+                    <div class="patient-care-grid patient-detail-only">
                       <div class="patient-care-card">
                         <h3>Anamnese</h3>
                         <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
@@ -1249,9 +1759,141 @@
                         </div>
                       </div>
                     </div>
-                    <div class="card-actions">
+                    <div class="card-actions patient-detail-only">
+                      <button class="mini-button" type="button" id="consultationButton">Consulta</button>
                       <button class="mini-button" type="button" disabled>Editar contato</button>
                       <button class="mini-button" type="button" disabled>Enviar resumo</button>
+                    </div>
+                  </div>
+                  <div class="consultation-panel" id="consultationPanel">
+                    <div>
+                      <div class="kicker">Consulta</div>
+                      <strong>Novo atendimento</strong>
+                      <p class="muted">Escolha se é um tratamento novo ou uma continuação. O odontograma e os procedimentos entram aqui.</p>
+                    </div>
+                    <div class="consultation-grid">
+                      <button class="consultation-option" type="button" data-consultation-action="new">
+                        <strong>Novo tratamento</strong>
+                        <span class="muted">Odontograma, dentes/faces, procedimentos e valores.</span>
+                      </button>
+                      <button class="consultation-option" type="button" data-consultation-action="continue" disabled>
+                        <strong>Continuação</strong>
+                        <span class="muted">Retomar tratamento em andamento e registrar evolução.</span>
+                      </button>
+                      <button class="consultation-option" type="button" data-consultation-action="quote" disabled>
+                        <strong>Orçamento</strong>
+                        <span class="muted">Gerar PDF, imprimir ou preparar envio pelo WhatsApp.</span>
+                      </button>
+                    </div>
+                    <div class="treatment-builder" id="newTreatmentPanel">
+                      <div>
+                        <div class="kicker">Novo tratamento</div>
+                        <strong>Montar plano inicial</strong>
+                        <p class="muted">Selecione dente, face e procedimento. O resumo abaixo já simula o orçamento da consulta.</p>
+                      </div>
+                      <div class="treatment-layout">
+                        <div class="odontogram-mini">
+                          <div>
+                            <strong>Odontograma rápido</strong>
+                            <p class="muted">Arcada em numeração FDI. Clique no dente e depois marque a face.</p>
+                          </div>
+                          <div class="tooth-grid" id="toothGrid" aria-label="Selecionar dente"></div>
+                          <div class="plan-card">
+                            <div class="section-heading">
+                              <div>
+                                <strong>Plano de tratamento</strong>
+                                <p class="muted">Procedimentos adicionados nesta consulta.</p>
+                              </div>
+                              <span class="badge" id="planItemsCount">0 itens</span>
+                            </div>
+                            <div class="plan-table-wrap">
+                              <table class="plan-table">
+                                <thead>
+                                  <tr>
+                                    <th>Ordem</th>
+                                    <th>Dente</th>
+                                    <th>Face</th>
+                                    <th>Procedimento</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                  </tr>
+                                </thead>
+                                <tbody id="treatmentPlanRows">
+                                  <tr>
+                                    <td colspan="7">Nenhum procedimento adicionado ainda.</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="treatment-side">
+                          <div class="selected-tooth-card">
+                            <div class="section-heading">
+                              <div>
+                                <strong>Dente selecionado</strong>
+                                <p class="muted">Marque a face antes de adicionar o procedimento.</p>
+                              </div>
+                              <span class="selected-tooth-number" id="selectedToothLabel">--</span>
+                            </div>
+                            <div class="face-grid" id="faceGrid" aria-label="Selecionar face do dente">
+                              <button class="face-button" type="button" data-face="V">Vestibular</button>
+                              <button class="face-button" type="button" data-face="L/P">Lingual/Palatina</button>
+                              <button class="face-button" type="button" data-face="M">Mesial</button>
+                              <button class="face-button" type="button" data-face="D">Distal</button>
+                              <button class="face-button" type="button" data-face="O">Oclusal</button>
+                              <button class="face-button" type="button" data-face="Raiz">Raiz</button>
+                            </div>
+                          </div>
+                          <div class="procedure-card">
+                            <div>
+                              <strong>Procedimento sugerido</strong>
+                              <p class="muted">Depois isso vem da tabela de procedimentos do consultório.</p>
+                            </div>
+                            <div class="field">
+                              <label for="treatmentProcedure">Tipo</label>
+                              <select id="treatmentProcedure">
+                                <option value="Avaliação clínica" data-price="0">Avaliação clínica</option>
+                                <option value="Restauração em resina" data-price="180">Restauração em resina</option>
+                                <option value="Profilaxia" data-price="160">Profilaxia</option>
+                                <option value="Raspagem" data-price="220">Raspagem</option>
+                                <option value="Tratamento endodôntico" data-price="750">Tratamento endodôntico</option>
+                                <option value="Clareamento" data-price="900">Clareamento</option>
+                              </select>
+                            </div>
+                            <div class="field">
+                              <label for="treatmentValue">Valor estimado</label>
+                              <input id="treatmentValue" type="number" min="0" step="10" inputmode="decimal" placeholder="0,00" />
+                            </div>
+                            <div class="field">
+                              <label for="treatmentNotes">Observação clínica</label>
+                              <textarea id="treatmentNotes" placeholder="Ex.: lesão distal, trocar restauração antiga, acompanhar sensibilidade."></textarea>
+                            </div>
+                            <button class="button button-primary" type="button" id="addTreatmentItem">Adicionar ao plano</button>
+                          </div>
+                          <div class="quote-card">
+                            <div class="section-heading">
+                              <div>
+                                <strong>Resumo do orçamento</strong>
+                                <p class="muted">Prévia para imprimir ou enviar pelo WhatsApp depois.</p>
+                              </div>
+                              <span class="badge" id="quoteItemsCount">0 itens</span>
+                            </div>
+                            <div class="quote-list" id="quoteList">
+                              <p class="muted">Nenhum procedimento adicionado ainda.</p>
+                            </div>
+                            <div class="quote-total">
+                              <span>Total estimado</span>
+                              <span id="quoteTotal">R$ 0,00</span>
+                            </div>
+                            <div class="card-actions">
+                              <button class="mini-button" type="button" disabled>Imprimir orçamento</button>
+                              <button class="mini-button" type="button" disabled>Enviar por WhatsApp</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1267,7 +1909,9 @@
                   <div class="management-card">
                     <div class="card-topline">
                       <h3>Profissional</h3>
-                      <span class="card-mark">P</span>
+                      <span class="card-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+                      </span>
                     </div>
                     <p class="muted">Atualizar telefone e e-mail. CRO fica visível e pode ter edição mais controlada depois.</p>
                     <div class="card-actions">
@@ -1277,7 +1921,9 @@
                   <div class="management-card">
                     <div class="card-topline">
                       <h3>Consultórios</h3>
-                      <span class="card-mark">C</span>
+                      <span class="card-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>
+                      </span>
                     </div>
                     <p class="muted">Adicionar locais de atendimento, editar contato/endereço e arquivar consultórios sem apagar histórico.</p>
                     <div class="card-actions">
@@ -1289,7 +1935,9 @@
                   <div class="management-card">
                     <div class="card-topline">
                       <h3>Pacientes</h3>
-                      <span class="card-mark">F</span>
+                      <span class="card-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+                      </span>
                     </div>
                     <p class="muted">Gerenciar cadastro administrativo: corrigir contato, CPF e status. O atendimento continua na ficha do paciente.</p>
                     <div class="card-actions">
@@ -1302,7 +1950,9 @@
                   <div class="management-card">
                     <div class="card-topline">
                       <h3>Procedimentos</h3>
-                      <span class="card-mark">R$</span>
+                      <span class="card-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg>
+                      </span>
                     </div>
                     <p class="muted">Tabela de procedimentos, valores e categorias para montar plano de tratamento e orçamento.</p>
                     <div class="card-actions">
@@ -1313,7 +1963,9 @@
                   <div class="management-card">
                     <div class="card-topline">
                       <h3>Documentos</h3>
-                      <span class="card-mark">PDF</span>
+                      <span class="card-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 18h4"/></svg>
+                      </span>
                     </div>
                     <p class="muted">Base para resumo, plano de tratamento, orçamento em PDF e envio orientado pelo WhatsApp Web.</p>
                     <div class="card-actions">
@@ -1321,7 +1973,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="section-divider" id="clinicPatientFormSection">
+                <div class="section-divider clinic-form-section" id="clinicPatientFormSection">
                 <form class="form" id="patientForm">
                   <div class="section-heading">
                     <div>
@@ -1458,7 +2110,22 @@
     const patientSearch = document.querySelector("#patientSearch");
     const patientList = document.querySelector("#patientList");
     const patientSummary = document.querySelector("#patientSummary");
-    const newPatientButton = document.querySelector("#newPatientButton");
+    const clinicPatientFormSection = document.querySelector("#clinicPatientFormSection");
+    const consultationButton = document.querySelector("#consultationButton");
+    const consultationPanel = document.querySelector("#consultationPanel");
+    const newTreatmentPanel = document.querySelector("#newTreatmentPanel");
+    const toothGrid = document.querySelector("#toothGrid");
+    const faceGrid = document.querySelector("#faceGrid");
+    const selectedToothLabel = document.querySelector("#selectedToothLabel");
+    const treatmentProcedure = document.querySelector("#treatmentProcedure");
+    const treatmentValue = document.querySelector("#treatmentValue");
+    const treatmentNotes = document.querySelector("#treatmentNotes");
+    const addTreatmentItem = document.querySelector("#addTreatmentItem");
+    const quoteList = document.querySelector("#quoteList");
+    const quoteItemsCount = document.querySelector("#quoteItemsCount");
+    const quoteTotal = document.querySelector("#quoteTotal");
+    const treatmentPlanRows = document.querySelector("#treatmentPlanRows");
+    const planItemsCount = document.querySelector("#planItemsCount");
     const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
     const patientTab = document.querySelector("#patientTab");
     const clinicTab = document.querySelector("#clinicTab");
@@ -1470,6 +2137,10 @@
     let currentProfissional = null;
     let currentConsultorio = null;
     let currentPatients = [];
+    let selectedTooth = "";
+    let selectedFaces = [];
+    let treatmentItems = [];
+    let editingTreatmentIndex = null;
     let onboardingMode = "completo";
 
     function showView(name) {
@@ -1740,6 +2411,10 @@
       document.querySelector("#summaryAnamneseStatus").textContent = "Verificando anamnese...";
       document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
+      consultationPanel.classList.remove("active");
+      newTreatmentPanel.classList.remove("active");
+      document.querySelectorAll("[data-consultation-action]").forEach((button) => button.classList.remove("active"));
+      resetTreatmentDraft();
       await loadPatientAnamnese(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -1798,7 +2473,7 @@
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
       clinicTab.classList.toggle("active", name === "clinic");
-      if (name === "home") setActiveNav(".nav-item[data-open-home]", "Início");
+      if (name === "home") setActiveNav(".nav-item[data-open-home]", "Dashboard");
       if (name === "patient") setActiveNav(".nav-item[data-open-patient]", "Pacientes");
       if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
     }
@@ -1807,8 +2482,176 @@
       clearStatus(patientStatus);
       showDashboardTab("clinic");
       closeMobileMenu();
-      document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      clinicPatientFormSection.classList.add("active");
+      clinicPatientFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
       document.querySelector("#pacienteNome").focus();
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      }).format(Number(value || 0));
+    }
+
+    function resetTreatmentDraft() {
+      selectedTooth = "";
+      selectedFaces = [];
+      treatmentItems = [];
+      editingTreatmentIndex = null;
+      selectedToothLabel.textContent = "--";
+      toothGrid.querySelectorAll(".tooth-node").forEach((button) => {
+        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi");
+      });
+      faceGrid.querySelectorAll(".face-button").forEach((button) => button.classList.remove("active"));
+      treatmentProcedure.selectedIndex = 0;
+      treatmentValue.value = treatmentProcedure.selectedOptions[0]?.dataset.price || "";
+      treatmentNotes.value = "";
+      addTreatmentItem.textContent = "Adicionar ao plano";
+      renderQuote();
+    }
+
+    function faceClass(face) {
+      return `face-${String(face || "").toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
+    }
+
+    function updateSelectedToothVisual() {
+      const faceClasses = ["face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi"];
+      toothGrid.querySelectorAll(".tooth-node").forEach((node) => {
+        const isActive = node.dataset.tooth === selectedTooth;
+        node.classList.toggle("active", isActive);
+        node.classList.remove(...faceClasses);
+        if (!isActive || !selectedFaces.length) return;
+        selectedFaces.forEach((face) => node.classList.add(faceClass(face)));
+        if (selectedFaces.length > 1) node.classList.add("face-multi");
+      });
+
+      faceGrid.querySelectorAll(".face-button").forEach((button) => {
+        button.classList.toggle("active", selectedFaces.includes(button.dataset.face));
+      });
+      selectedToothLabel.textContent = selectedTooth || "--";
+    }
+
+    function renderToothGrid() {
+      const upperRight = ["18", "17", "16", "15", "14", "13", "12", "11"];
+      const upperLeft = ["21", "22", "23", "24", "25", "26", "27", "28"];
+      const lowerRight = ["48", "47", "46", "45", "44", "43", "42", "41"];
+      const lowerLeft = ["31", "32", "33", "34", "35", "36", "37", "38"];
+
+      const toothPath = (x, y, width, height, flip) => {
+        const crown = height * 0.34;
+        const root = height - crown;
+        const top = y - height / 2;
+        const crownEnd = top + crown;
+        const rootEnd = top + crown + root;
+        const rootTip = rootEnd * flip + y * (1 - flip);
+        if (flip === 1) {
+          return `M ${x - width / 2} ${top + 7}
+            C ${x - width / 2 - 3} ${top + 18}, ${x - width / 2 + 2} ${crownEnd}, ${x - width * 0.24} ${crownEnd}
+            C ${x - width * 0.16} ${crownEnd + root * 0.42}, ${x - width * 0.1} ${rootEnd - 4}, ${x} ${rootEnd}
+            C ${x + width * 0.1} ${rootEnd - 4}, ${x + width * 0.16} ${crownEnd + root * 0.42}, ${x + width * 0.24} ${crownEnd}
+            C ${x + width / 2 - 2} ${crownEnd}, ${x + width / 2 + 3} ${top + 18}, ${x + width / 2} ${top + 7}
+            C ${x + width * 0.28} ${top - 3}, ${x - width * 0.28} ${top - 3}, ${x - width / 2} ${top + 7} Z`;
+        }
+
+        return `M ${x - width / 2} ${top + height - 7}
+          C ${x - width / 2 - 3} ${top + height - 18}, ${x - width / 2 + 2} ${top + height - crown}, ${x - width * 0.24} ${top + height - crown}
+          C ${x - width * 0.16} ${top + height - crown - root * 0.42}, ${x - width * 0.1} ${top + 4}, ${x} ${top}
+          C ${x + width * 0.1} ${top + 4}, ${x + width * 0.16} ${top + height - crown - root * 0.42}, ${x + width * 0.24} ${top + height - crown}
+          C ${x + width / 2 - 2} ${top + height - crown}, ${x + width / 2 + 3} ${top + height - 18}, ${x + width / 2} ${top + height - 7}
+          C ${x + width * 0.28} ${top + height + 3}, ${x - width * 0.28} ${top + height + 3}, ${x - width / 2} ${top + height - 7} Z`;
+      };
+
+      const buildArch = (teeth, startX, startY, direction, curve, flip, labelY) => teeth.map((tooth, index) => {
+        const x = startX + (index * 33 * direction);
+        const y = startY + Math.pow(index - 3.5, 2) * curve;
+        const width = index < 3 || index > 5 ? 24 : 18;
+        const height = index < 3 || index > 5 ? 52 : 58;
+        const detailY = flip === 1 ? y - 10 : y + 10;
+        const crownY = flip === 1 ? y - height / 2 - 18 : y + height / 2 + 4;
+        const rootMarkerY = flip === 1 ? y + height * 0.43 : y - height * 0.43;
+        const surfaceW = Math.max(17, width * 0.78);
+        const surfaceH = 15;
+        return `
+          <g class="tooth-node" data-tooth="${tooth}" tabindex="0" role="button" aria-label="Dente ${tooth}">
+            <path class="tooth-shape" d="${toothPath(x, y, width, height, flip)}" />
+            <path class="tooth-detail" d="M ${x - width * 0.26} ${detailY} C ${x - 4} ${detailY + 5 * flip}, ${x + 4} ${detailY + 5 * flip}, ${x + width * 0.26} ${detailY}" />
+            <g aria-hidden="true">
+              <ellipse class="tooth-face" data-surface="O" cx="${x}" cy="${crownY + surfaceH / 2}" rx="${surfaceW / 2}" ry="${surfaceH / 2}" />
+              <path class="tooth-face" data-surface="M" d="M ${x - surfaceW / 2} ${crownY + surfaceH / 2} C ${x - surfaceW / 2 + 2} ${crownY + 2}, ${x - 4} ${crownY + 2}, ${x - 2} ${crownY + surfaceH / 2} C ${x - 4} ${crownY + surfaceH - 2}, ${x - surfaceW / 2 + 2} ${crownY + surfaceH - 2}, ${x - surfaceW / 2} ${crownY + surfaceH / 2} Z" />
+              <path class="tooth-face" data-surface="D" d="M ${x + surfaceW / 2} ${crownY + surfaceH / 2} C ${x + surfaceW / 2 - 2} ${crownY + 2}, ${x + 4} ${crownY + 2}, ${x + 2} ${crownY + surfaceH / 2} C ${x + 4} ${crownY + surfaceH - 2}, ${x + surfaceW / 2 - 2} ${crownY + surfaceH - 2}, ${x + surfaceW / 2} ${crownY + surfaceH / 2} Z" />
+              <path class="tooth-face" data-surface="V" d="M ${x - surfaceW / 2 + 4} ${crownY + 1} H ${x + surfaceW / 2 - 4} C ${x + 5} ${crownY + 5}, ${x - 5} ${crownY + 5}, ${x - surfaceW / 2 + 4} ${crownY + 1} Z" />
+              <path class="tooth-face" data-surface="L/P" d="M ${x - surfaceW / 2 + 4} ${crownY + surfaceH - 1} H ${x + surfaceW / 2 - 4} C ${x + 5} ${crownY + surfaceH - 5}, ${x - 5} ${crownY + surfaceH - 5}, ${x - surfaceW / 2 + 4} ${crownY + surfaceH - 1} Z" />
+              <circle class="tooth-face" data-surface="Raiz" cx="${x}" cy="${rootMarkerY}" r="3.4" />
+            </g>
+            <text class="tooth-label" x="${x}" y="${labelY}" text-anchor="middle">${tooth}</text>
+          </g>
+        `;
+      }).join("");
+
+      toothGrid.innerHTML = `
+        <svg class="dental-arch" viewBox="0 0 620 430" aria-hidden="false">
+          <text class="arch-label" x="24" y="30">Arcada superior</text>
+          <text class="arch-label" x="24" y="264">Arcada inferior</text>
+          <text class="quadrant-label" x="284" y="198" text-anchor="end">Q1</text>
+          <text class="quadrant-label" x="336" y="198">Q2</text>
+          <text class="quadrant-label" x="284" y="238" text-anchor="end">Q4</text>
+          <text class="quadrant-label" x="336" y="238">Q3</text>
+          <line x1="310" y1="54" x2="310" y2="376" stroke="#e5eef1" stroke-width="1" />
+          <line x1="42" y1="214" x2="578" y2="214" stroke="#e5eef1" stroke-width="1" />
+          <path d="M84 112 C176 42, 444 42, 536 112" fill="none" stroke="#d8e7ea" stroke-width="2" stroke-linecap="round" />
+          <path d="M84 318 C176 388, 444 388, 536 318" fill="none" stroke="#d8e7ea" stroke-width="2" stroke-linecap="round" />
+          ${buildArch(upperRight, 278, 110, -1, 1.2, 1, 54)}
+          ${buildArch(upperLeft, 342, 110, 1, 1.2, 1, 54)}
+          ${buildArch(lowerRight, 278, 320, -1, -1.2, -1, 392)}
+          ${buildArch(lowerLeft, 342, 320, 1, -1.2, -1, 392)}
+        </svg>
+      `;
+    }
+
+    function renderQuote() {
+      quoteItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
+      planItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
+      const total = treatmentItems.reduce((sum, item) => sum + item.value, 0);
+      quoteTotal.textContent = formatCurrency(total);
+
+      if (!treatmentItems.length) {
+        quoteList.innerHTML = `<p class="muted">Nenhum procedimento adicionado ainda.</p>`;
+        treatmentPlanRows.innerHTML = `<tr><td colspan="7">Nenhum procedimento adicionado ainda.</td></tr>`;
+        return;
+      }
+
+      treatmentPlanRows.innerHTML = treatmentItems.map((item, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${escapeHtml(item.tooth || "-")}</td>
+          <td>${escapeHtml(item.face || "-")}</td>
+          <td>
+            <strong>${escapeHtml(item.procedure)}</strong>
+            ${item.notes ? `<div class="muted">${escapeHtml(item.notes)}</div>` : ""}
+          </td>
+          <td>${escapeHtml(formatCurrency(item.value))}</td>
+          <td><span class="badge">Planejado</span></td>
+          <td>
+            <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento">
+              <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            </button>
+            <button class="icon-action delete" type="button" data-delete-treatment="${index}" aria-label="Excluir procedimento">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
+            </button>
+          </td>
+        </tr>
+      `).join("");
+
+      quoteList.innerHTML = treatmentItems.map((item, index) => `
+        <div class="quote-item">
+          <span>
+            <strong>${escapeHtml(item.procedure)}</strong>
+            <span class="muted">Dente ${escapeHtml(item.tooth || "-")} · Face ${escapeHtml(item.face || "-")}${item.notes ? ` · ${escapeHtml(item.notes)}` : ""}</span>
+          </span>
+          <strong>${escapeHtml(formatCurrency(item.value))}</strong>
+        </div>
+      `).join("");
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -1947,7 +2790,8 @@
         showDashboardTab("clinic");
         closeMobileMenu();
         if (button.hasAttribute("data-new-patient")) {
-          document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+          clinicPatientFormSection.classList.add("active");
+          clinicPatientFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
           document.querySelector("#pacienteNome").focus();
         }
       });
@@ -1963,12 +2807,10 @@
       });
     });
 
-    newPatientButton.addEventListener("click", () => {
-      openNewPatientForm();
-    });
-
     patientSearch.addEventListener("input", () => {
       patientSummary.classList.remove("active");
+      consultationPanel.classList.remove("active");
+      newTreatmentPanel.classList.remove("active");
       renderPatientList();
     });
 
@@ -1982,7 +2824,131 @@
       clearStatus(patientStatus);
       patientForm.reset();
       showDashboardTab("clinic");
-      document.querySelector("#clinicPatientFormSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      clinicPatientFormSection.classList.remove("active");
+      document.querySelector(".management-grid").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    consultationButton.addEventListener("click", () => {
+      consultationPanel.classList.toggle("active");
+      if (consultationPanel.classList.contains("active")) {
+        consultationPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+
+    document.querySelectorAll("[data-consultation-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.dataset.consultationAction !== "new") return;
+        document.querySelectorAll("[data-consultation-action]").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        newTreatmentPanel.classList.add("active");
+        newTreatmentPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+
+    toothGrid.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-tooth]");
+      if (!button) return;
+      if (selectedTooth === button.dataset.tooth) {
+        selectedTooth = "";
+        selectedFaces = [];
+      } else {
+        selectedTooth = button.dataset.tooth;
+        selectedFaces = [];
+      }
+      updateSelectedToothVisual();
+    });
+
+    toothGrid.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const button = event.target.closest("[data-tooth]");
+      if (!button) return;
+      event.preventDefault();
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    faceGrid.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-face]");
+      if (!button) return;
+      if (!selectedTooth) {
+        selectedToothLabel.textContent = "!";
+        return;
+      }
+
+      const face = button.dataset.face;
+      selectedFaces = selectedFaces.includes(face)
+        ? selectedFaces.filter((item) => item !== face)
+        : [...selectedFaces, face];
+      updateSelectedToothVisual();
+    });
+
+    treatmentProcedure.addEventListener("change", () => {
+      treatmentValue.value = treatmentProcedure.selectedOptions[0]?.dataset.price || "";
+    });
+
+    addTreatmentItem.addEventListener("click", () => {
+      if (!selectedTooth) {
+        selectedToothLabel.textContent = "!";
+        return;
+      }
+
+      const procedure = treatmentProcedure.value;
+      const value = Number(treatmentValue.value || 0);
+      const nextItem = {
+        tooth: selectedTooth,
+        faces: [...selectedFaces],
+        face: selectedFaces.length ? selectedFaces.join(", ") : "geral",
+        procedure,
+        value,
+        notes: treatmentNotes.value.trim()
+      };
+
+      if (editingTreatmentIndex === null) {
+        treatmentItems.push(nextItem);
+      } else {
+        treatmentItems[editingTreatmentIndex] = nextItem;
+        editingTreatmentIndex = null;
+        addTreatmentItem.textContent = "Adicionar ao plano";
+      }
+
+      treatmentNotes.value = "";
+      renderQuote();
+    });
+
+    treatmentPlanRows.addEventListener("click", (event) => {
+      const editButton = event.target.closest("[data-edit-treatment]");
+      const deleteButton = event.target.closest("[data-delete-treatment]");
+
+      if (deleteButton) {
+        const index = Number(deleteButton.dataset.deleteTreatment);
+        treatmentItems.splice(index, 1);
+        if (editingTreatmentIndex === index) {
+          editingTreatmentIndex = null;
+          addTreatmentItem.textContent = "Adicionar ao plano";
+        }
+        renderQuote();
+        return;
+      }
+
+      if (!editButton) return;
+      const index = Number(editButton.dataset.editTreatment);
+      const item = treatmentItems[index];
+      if (!item) return;
+
+      editingTreatmentIndex = index;
+      selectedTooth = item.tooth;
+      selectedFaces = Array.isArray(item.faces)
+        ? [...item.faces]
+        : String(item.face || "")
+          .split(",")
+          .map((face) => face.trim())
+          .filter((face) => face && face !== "geral");
+      selectedToothLabel.textContent = selectedTooth || "--";
+      updateSelectedToothVisual();
+      treatmentProcedure.value = item.procedure;
+      treatmentValue.value = item.value;
+      treatmentNotes.value = item.notes || "";
+      addTreatmentItem.textContent = "Salvar alteração";
+      document.querySelector(".selected-tooth-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
 
     patientForm.addEventListener("submit", async (event) => {
@@ -2058,6 +3024,7 @@
 
         patientForm.reset();
         await loadPatients();
+        clinicPatientFormSection.classList.remove("active");
         setStatus(patientStatus, "success", hasAnamnese
           ? "Paciente cadastrado com anamnese inicial e vínculo ao consultório atual."
           : "Paciente cadastrado e vinculado ao consultório atual.");
@@ -2101,6 +3068,8 @@
       return `${day}/${month}/${year}`;
     }
 
+    renderToothGrid();
+    resetTreatmentDraft();
     loadSession();
   </script>
 </body>
