@@ -40,6 +40,15 @@ Tudo isso ainda e local no front-end. Ainda nao persiste no Supabase.
 - Cada item precisa ter editar/excluir.
 - Se o dentista errar, precisa corrigir rapido.
 - O plano deve ser visual o suficiente para virar PDF/WhatsApp depois.
+- A tabela de procedimentos deve ser editavel em `Meu consultorio`.
+- O dentista nao deve depender de tabela impressa de valores.
+- Ao selecionar um procedimento, o preco sugerido deve aparecer automaticamente.
+- Procedimentos podem exigir dente, exigir face ou nao depender de dente.
+- Se nenhum dente estiver selecionado, o atendimento deve mostrar apenas procedimentos gerais, como avaliacao, profilaxia e clareamento.
+- Se um dente estiver selecionado, o atendimento deve mostrar procedimentos aplicaveis a dente/face.
+- Numero do dente e face ajudam o filtro e devem permanecer na logica do plano.
+- Ao abrir o paciente para atendimento, a ficha deve ficar compacta: nome, telefone, idade e botao `+` para detalhes.
+- `Continuar tratamento`, `Nova consulta` e `Historico` devem ficar claros, com poucos botoes e contexto clinico.
 
 ## Dados De Um Item
 

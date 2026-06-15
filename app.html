@@ -675,8 +675,26 @@
     }
 
     .patient-toolbar {
-      display: block;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
       margin: 16px 0 12px;
+    }
+
+    .patient-search-meta {
+      min-height: 42px;
+      border: 1px solid rgba(20, 184, 166, 0.18);
+      border-radius: 999px;
+      background: #f7fdfc;
+      color: var(--primary-dark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 850;
+      white-space: nowrap;
     }
 
     .patient-workspace {
@@ -695,6 +713,21 @@
       padding-right: 4px;
     }
 
+    .empty-state {
+      border: 1px dashed rgba(15, 61, 94, 0.18);
+      border-radius: 14px;
+      background: #fbfdff;
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .empty-state strong {
+      color: var(--primary-dark);
+      display: block;
+    }
+
     .patient-card {
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
@@ -704,6 +737,19 @@
       gap: 10px;
       align-items: center;
       text-align: left;
+    }
+
+    .patient-card.active {
+      border-color: rgba(20, 184, 166, 0.58);
+      background: #f0fdfa;
+      box-shadow: 0 10px 24px rgba(20, 184, 166, 0.12);
+    }
+
+    .patient-card mark {
+      border-radius: 4px;
+      background: #fef3c7;
+      color: inherit;
+      padding: 0 2px;
     }
 
     .patient-card strong,
@@ -725,7 +771,7 @@
       border: 1px solid rgba(15, 61, 94, 0.08);
       border-radius: 16px;
       background: #ffffff;
-      padding: 20px;
+      padding: 14px;
       display: grid;
       gap: 12px;
       margin-bottom: 18px;
@@ -737,6 +783,39 @@
     }
 
     .patient-summary.active {
+      display: grid;
+    }
+
+    .patient-compact-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .patient-details-toggle {
+      width: 38px;
+      height: 38px;
+      margin-left: 0;
+      border-radius: 50%;
+    }
+
+    .patient-details-toggle[aria-expanded="true"] svg {
+      transform: rotate(45deg);
+    }
+
+    .patient-details-toggle svg {
+      transition: transform 0.16s ease;
+    }
+
+    .patient-details-panel {
+      display: none;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .patient-summary.details-open .patient-details-panel {
       display: grid;
     }
 
@@ -759,20 +838,8 @@
       gap: 10px;
     }
 
-    .patient-detail-only {
-      display: none;
-    }
-
-    .patient-summary.active .patient-detail-only {
-      display: grid;
-    }
-
-    .patient-summary.active p.patient-detail-only {
-      display: block;
-    }
-
-    .patient-summary.active .card-actions.patient-detail-only {
-      display: flex;
+    .patient-next-actions {
+      align-items: center;
     }
 
     .consultation-panel {
@@ -812,6 +879,10 @@
     .consultation-option.active {
       border-color: rgba(20, 184, 166, 0.4);
       background: #effaf8;
+    }
+
+    .consultation-option[data-consultation-action="continue"] {
+      border-color: rgba(59, 130, 246, 0.18);
     }
 
     .treatment-builder {
@@ -903,6 +974,28 @@
       fill: rgba(20, 184, 166, 0.2);
       stroke: var(--primary);
       stroke-width: 2;
+    }
+
+    .tooth-node.has-plan .tooth-shape {
+      fill: rgba(59, 130, 246, 0.12);
+      stroke: #2563eb;
+      stroke-width: 1.8;
+    }
+
+    .tooth-node.has-care .tooth-shape {
+      fill: rgba(245, 158, 11, 0.14);
+      stroke: #d97706;
+    }
+
+    .tooth-node.has-urgent .tooth-shape {
+      fill: rgba(239, 68, 68, 0.13);
+      stroke: #dc2626;
+    }
+
+    .tooth-node.has-plan .tooth-label,
+    .tooth-node.has-care .tooth-label,
+    .tooth-node.has-urgent .tooth-label {
+      font-weight: 900;
     }
 
     .tooth-node.face-v .tooth-shape {
@@ -1032,6 +1125,70 @@
       border-color: #8b5cf6;
     }
 
+    .odontogram-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .legend-chip {
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 9px;
+      color: var(--primary-dark);
+      font-size: 0.76rem;
+      font-weight: 800;
+      background: #ffffff;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #cbd5e1;
+    }
+
+    .legend-dot.healthy {
+      background: #cbd5e1;
+    }
+
+    .legend-dot.planned {
+      background: #2563eb;
+    }
+
+    .legend-dot.care {
+      background: #d97706;
+    }
+
+    .legend-dot.urgent {
+      background: #dc2626;
+    }
+
+    .selected-tooth-summary {
+      border: 1px dashed rgba(15, 61, 94, 0.14);
+      border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      gap: 7px;
+      background: #fbfdff;
+      font-size: 0.82rem;
+    }
+
+    .selected-tooth-summary strong {
+      color: var(--primary-dark);
+    }
+
+    .selected-tooth-summary ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
     .selected-tooth-card,
     .procedure-card,
     .quote-card {
@@ -1114,6 +1271,15 @@
       letter-spacing: 0.06em;
     }
 
+    .plan-table tr.is-editing td {
+      background: #f0fdfa;
+    }
+
+    .plan-table tr.just-updated td {
+      background: #fff7ed;
+      transition: background 0.4s ease;
+    }
+
     .plan-table td:last-child,
     .plan-table th:last-child {
       text-align: right;
@@ -1147,6 +1313,61 @@
       stroke-linejoin: round;
     }
 
+    .inline-feedback {
+      border: 1px solid rgba(20, 184, 166, 0.2);
+      border-radius: 11px;
+      background: #f7fdfc;
+      color: var(--primary-dark);
+      padding: 10px 12px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: none;
+    }
+
+    .inline-feedback.show {
+      display: block;
+    }
+
+    .inline-feedback.warning {
+      border-color: rgba(245, 158, 11, 0.28);
+      background: #fff7ed;
+    }
+
+    .quote-actions {
+      align-items: stretch;
+    }
+
+    .quote-actions .mini-button {
+      justify-content: center;
+    }
+
+    .message-preview {
+      display: none;
+      border: 1px dashed rgba(20, 184, 166, 0.28);
+      border-radius: 12px;
+      background: #f7fdfc;
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .message-preview.active {
+      display: grid;
+    }
+
+    .message-preview label {
+      color: var(--primary-dark);
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .message-preview textarea {
+      min-height: 170px;
+      resize: vertical;
+      border-color: rgba(20, 184, 166, 0.24);
+      background: #ffffff;
+      font-size: 0.84rem;
+    }
+
     .patient-care-card {
       border: 1px solid rgba(20, 184, 166, 0.18);
       border-radius: 12px;
@@ -1160,6 +1381,35 @@
     .patient-care-card h3 {
       margin: 0;
       font-size: 1rem;
+    }
+
+    .procedure-manager-section.active {
+      display: block;
+    }
+
+    .procedure-manager-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .procedure-form,
+    .procedure-catalog-panel {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .procedure-table {
+      min-width: 560px;
+    }
+
+    .procedure-table .muted {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.78rem;
     }
 
     .linked-context {
@@ -1376,6 +1626,7 @@
       .patient-care-grid,
       .consultation-grid,
       .treatment-layout,
+      .procedure-manager-layout,
       .week-overview {
         grid-template-columns: 1fr;
       }
@@ -1717,72 +1968,79 @@
                         <label for="patientSearch">Buscar paciente</label>
                         <input id="patientSearch" type="search" autocomplete="off" placeholder="Digite nome, telefone, e-mail ou CPF" />
                       </div>
+                      <div class="patient-search-meta" id="patientSearchMeta">0 pacientes</div>
                     </div>
 
                     <div id="patientList" class="patient-list" aria-live="polite"></div>
                   </div>
 
                   <div id="patientSummary" class="patient-summary">
-                    <div>
-                      <div class="kicker">Ficha do paciente</div>
-                      <strong id="summaryPatientName">Selecione um paciente</strong>
-                      <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
+                    <div class="patient-compact-bar">
+                      <div>
+                        <div class="kicker">Atendimento</div>
+                        <strong id="summaryPatientName">Selecione um paciente</strong>
+                        <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
+                      </div>
+                      <button class="icon-action patient-details-toggle" type="button" id="togglePatientDetails" aria-expanded="false" aria-label="Ver detalhes do paciente" disabled>
+                        <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                      </button>
                     </div>
-                    <div class="summary-grid patient-detail-only">
-                      <div class="summary-item">
-                        <strong id="summaryPatientPhone">-</strong>
-                        <span class="muted">Telefone</span>
+                    <div class="patient-details-panel" id="patientDetailsPanel">
+                      <div class="summary-grid">
+                        <div class="summary-item">
+                          <strong id="summaryPatientPhone">-</strong>
+                          <span class="muted">Telefone</span>
+                        </div>
+                        <div class="summary-item">
+                          <strong id="summaryPatientEmail">-</strong>
+                          <span class="muted">E-mail</span>
+                        </div>
+                        <div class="summary-item">
+                          <strong id="summaryPatientCpf">-</strong>
+                          <span class="muted">CPF</span>
+                        </div>
                       </div>
-                      <div class="summary-item">
-                        <strong id="summaryPatientEmail">-</strong>
-                        <span class="muted">E-mail</span>
-                      </div>
-                      <div class="summary-item">
-                        <strong id="summaryPatientCpf">-</strong>
-                        <span class="muted">CPF</span>
-                      </div>
-                    </div>
-                    <p class="muted patient-detail-only" id="summaryPatientNotes">Sem observações administrativas.</p>
-                    <div class="patient-care-grid patient-detail-only">
-                      <div class="patient-care-card">
-                        <h3>Anamnese</h3>
-                        <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
-                        <p class="muted" id="summaryAnamneseDetails">Quando existir anamnese cadastrada, o resumo aparece aqui na ficha do paciente.</p>
-                        <button class="mini-button" type="button" disabled>Editar em Meu consultório</button>
-                      </div>
-                      <div class="patient-care-card">
-                        <h3>Tratamento em andamento</h3>
-                        <p class="muted">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
-                        <div class="card-actions">
-                          <button class="mini-button" type="button" disabled>Novo tratamento</button>
-                          <button class="mini-button" type="button" disabled>Gerar orçamento</button>
+                      <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
+                      <div class="patient-care-grid">
+                        <div class="patient-care-card">
+                          <h3>Anamnese</h3>
+                          <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
+                          <p class="muted" id="summaryAnamneseDetails">Quando existir anamnese cadastrada, o resumo aparece aqui na ficha do paciente.</p>
+                          <button class="mini-button" type="button" disabled>Editar em Meu consultório</button>
+                        </div>
+                        <div class="patient-care-card">
+                          <h3>Tratamento em andamento</h3>
+                          <p class="muted">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
+                          <div class="card-actions">
+                            <button class="mini-button" type="button" disabled>Novo tratamento</button>
+                            <button class="mini-button" type="button" disabled>Gerar orçamento</button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="card-actions patient-detail-only">
-                      <button class="mini-button" type="button" id="consultationButton">Consulta</button>
-                      <button class="mini-button" type="button" disabled>Editar contato</button>
-                      <button class="mini-button" type="button" disabled>Enviar resumo</button>
+                    <div class="card-actions patient-next-actions">
+                      <button class="button button-primary" type="button" id="consultationButton">Iniciar atendimento</button>
+                      <button class="mini-button" type="button" data-open-history>Histórico</button>
                     </div>
                   </div>
                   <div class="consultation-panel" id="consultationPanel">
                     <div>
-                      <div class="kicker">Consulta</div>
-                      <strong>Novo atendimento</strong>
-                      <p class="muted">Escolha se é um tratamento novo ou uma continuação. O odontograma e os procedimentos entram aqui.</p>
+                      <div class="kicker">Próxima ação</div>
+                      <strong>O que vai acontecer agora?</strong>
+                      <p class="muted">Escolha o caminho clínico sem sair da tela de atendimento.</p>
                     </div>
                     <div class="consultation-grid">
                       <button class="consultation-option" type="button" data-consultation-action="new">
-                        <strong>Novo tratamento</strong>
+                        <strong>Nova consulta</strong>
                         <span class="muted">Odontograma, dentes/faces, procedimentos e valores.</span>
                       </button>
-                      <button class="consultation-option" type="button" data-consultation-action="continue" disabled>
-                        <strong>Continuação</strong>
-                        <span class="muted">Retomar tratamento em andamento e registrar evolução.</span>
+                      <button class="consultation-option" type="button" data-consultation-action="continue">
+                        <strong>Continuar tratamento</strong>
+                        <span class="muted">Retomar plano em aberto e registrar evolução.</span>
                       </button>
-                      <button class="consultation-option" type="button" data-consultation-action="quote" disabled>
-                        <strong>Orçamento</strong>
-                        <span class="muted">Gerar PDF, imprimir ou preparar envio pelo WhatsApp.</span>
+                      <button class="consultation-option" type="button" data-consultation-action="history">
+                        <strong>Histórico</strong>
+                        <span class="muted">Revisar consultas, planos e observações anteriores.</span>
                       </button>
                     </div>
                     <div class="treatment-builder" id="newTreatmentPanel">
@@ -1798,6 +2056,12 @@
                             <p class="muted">Arcada em numeração FDI. Clique no dente e depois marque a face.</p>
                           </div>
                           <div class="tooth-grid" id="toothGrid" aria-label="Selecionar dente"></div>
+                          <div class="odontogram-legend" aria-label="Legenda do odontograma">
+                            <span class="legend-chip"><span class="legend-dot healthy" aria-hidden="true"></span>Hígido</span>
+                            <span class="legend-chip"><span class="legend-dot planned" aria-hidden="true"></span>Planejado</span>
+                            <span class="legend-chip"><span class="legend-dot care" aria-hidden="true"></span>Em tratamento</span>
+                            <span class="legend-chip"><span class="legend-dot urgent" aria-hidden="true"></span>Urgente</span>
+                          </div>
                           <div class="plan-card">
                             <div class="section-heading">
                               <div>
@@ -1826,6 +2090,7 @@
                                 </tbody>
                               </table>
                             </div>
+                            <div class="inline-feedback" id="treatmentFeedback" role="status"></div>
                           </div>
                         </div>
                         <div class="treatment-side">
@@ -1845,22 +2110,23 @@
                               <button class="face-button" type="button" data-face="O">Oclusal</button>
                               <button class="face-button" type="button" data-face="Raiz">Raiz</button>
                             </div>
+                            <div class="selected-tooth-summary" id="selectedToothSummary">
+                              <strong>Nenhum dente selecionado</strong>
+                              <span class="muted">Clique em um dente para ver procedimentos planejados nesta consulta.</span>
+                            </div>
                           </div>
                           <div class="procedure-card">
                             <div>
                               <strong>Procedimento sugerido</strong>
-                              <p class="muted">Depois isso vem da tabela de procedimentos do consultório.</p>
+                              <p class="muted" id="procedureContextHint">Sem dente selecionado: aparecem procedimentos gerais do consultório.</p>
                             </div>
                             <div class="field">
                               <label for="treatmentProcedure">Tipo</label>
-                              <select id="treatmentProcedure">
-                                <option value="Avaliação clínica" data-price="0">Avaliação clínica</option>
-                                <option value="Restauração em resina" data-price="180">Restauração em resina</option>
-                                <option value="Profilaxia" data-price="160">Profilaxia</option>
-                                <option value="Raspagem" data-price="220">Raspagem</option>
-                                <option value="Tratamento endodôntico" data-price="750">Tratamento endodôntico</option>
-                                <option value="Clareamento" data-price="900">Clareamento</option>
-                              </select>
+                              <select id="treatmentProcedure"></select>
+                            </div>
+                            <div class="field">
+                              <label for="treatmentPriceRule">Regra de preço</label>
+                              <select id="treatmentPriceRule"></select>
                             </div>
                             <div class="field">
                               <label for="treatmentValue">Valor estimado</label>
@@ -1887,10 +2153,17 @@
                               <span>Total estimado</span>
                               <span id="quoteTotal">R$ 0,00</span>
                             </div>
-                            <div class="card-actions">
-                              <button class="mini-button" type="button" disabled>Imprimir orçamento</button>
-                              <button class="mini-button" type="button" disabled>Enviar por WhatsApp</button>
+                            <div class="message-preview" id="whatsappPreview">
+                              <label for="whatsappMessage">Mensagem para WhatsApp</label>
+                              <textarea id="whatsappMessage" aria-describedby="quoteActionStatus"></textarea>
+                              <span class="muted">Revise antes de abrir o WhatsApp Web. O envio final acontece fora do OdontoFlow.</span>
                             </div>
+                            <div class="card-actions quote-actions">
+                              <button class="mini-button" type="button" id="printQuoteButton" disabled>Imprimir PDF</button>
+                              <button class="mini-button" type="button" id="prepareWhatsappButton" disabled>Preparar WhatsApp</button>
+                              <button class="mini-button" type="button" id="openWhatsappButton" disabled>Abrir WhatsApp</button>
+                            </div>
+                            <div class="inline-feedback" id="quoteActionStatus" role="status"></div>
                           </div>
                         </div>
                       </div>
@@ -1956,8 +2229,8 @@
                     </div>
                     <p class="muted">Tabela de procedimentos, valores e categorias para montar plano de tratamento e orçamento.</p>
                     <div class="card-actions">
-                      <button class="mini-button" type="button" disabled>Adicionar</button>
-                      <button class="mini-button" type="button" disabled>Editar valores</button>
+                      <button class="mini-button" type="button" id="openProcedureManager">Adicionar / editar</button>
+                      <button class="mini-button" type="button" id="focusProcedurePrices">Editar valores</button>
                     </div>
                   </div>
                   <div class="management-card">
@@ -1970,6 +2243,90 @@
                     <p class="muted">Base para resumo, plano de tratamento, orçamento em PDF e envio orientado pelo WhatsApp Web.</p>
                     <div class="card-actions">
                       <button class="mini-button" type="button" disabled>Configurar PDF</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="section-divider clinic-form-section procedure-manager-section" id="procedureManagerSection">
+                  <div class="section-heading">
+                    <div>
+                      <div class="kicker">Procedimentos</div>
+                      <h3>Tabela do consultório</h3>
+                    </div>
+                    <span class="badge" id="procedureCatalogSource">base local</span>
+                  </div>
+                  <div class="procedure-manager-layout">
+                    <form class="form procedure-form" id="procedureForm">
+                      <input type="hidden" id="procedureEditingId" />
+                      <div class="grid">
+                        <div class="field full">
+                          <label for="procedureName">Nome do procedimento</label>
+                          <input id="procedureName" type="text" required placeholder="Ex.: Restauração em resina" />
+                        </div>
+                        <div class="field">
+                          <label for="procedureCategory">Categoria</label>
+                          <input id="procedureCategory" type="text" placeholder="Ex.: Dentística" />
+                        </div>
+                        <div class="field">
+                          <label for="procedureApplication">Aplicação</label>
+                          <select id="procedureApplication">
+                            <option value="sem_dente">Sem dente</option>
+                            <option value="por_dente">Por dente</option>
+                            <option value="por_face">Por face</option>
+                            <option value="arcada">Arcada</option>
+                            <option value="boca_toda">Boca toda</option>
+                          </select>
+                        </div>
+                        <label class="check-item">
+                          <input id="procedureRequiresTooth" type="checkbox" />
+                          Exige dente
+                        </label>
+                        <label class="check-item">
+                          <input id="procedureRequiresFace" type="checkbox" />
+                          Exige face
+                        </label>
+                        <label class="check-item">
+                          <input id="procedureAllowsMultipleFaces" type="checkbox" checked />
+                          Múltiplas faces
+                        </label>
+                        <div class="field">
+                          <label for="procedureRuleName">Regra de preço</label>
+                          <input id="procedureRuleName" type="text" placeholder="Ex.: 2 faces" />
+                        </div>
+                        <div class="field">
+                          <label for="procedureRuleValue">Valor</label>
+                          <input id="procedureRuleValue" type="number" min="0" step="10" inputmode="decimal" placeholder="0,00" />
+                        </div>
+                        <div class="field">
+                          <label for="procedureRuleFaces">Quantidade de faces</label>
+                          <input id="procedureRuleFaces" type="number" min="0" max="6" step="1" inputmode="numeric" placeholder="opcional" />
+                        </div>
+                      </div>
+                      <div class="patient-form-actions">
+                        <button class="button button-primary" type="submit" id="saveProcedureButton">Salvar procedimento</button>
+                        <button class="button button-plain" type="button" id="cancelProcedureEdit">Cancelar edição</button>
+                      </div>
+                      <div class="inline-feedback" id="procedureStatus" role="status"></div>
+                    </form>
+                    <div class="procedure-catalog-panel">
+                      <div class="section-heading">
+                        <div>
+                          <strong>Procedimentos ativos</strong>
+                          <p class="muted">A seleção no atendimento usa esta base para filtrar por dente, face e preço.</p>
+                        </div>
+                      </div>
+                      <div class="plan-table-wrap">
+                        <table class="plan-table procedure-table">
+                          <thead>
+                            <tr>
+                              <th>Procedimento</th>
+                              <th>Aplicação</th>
+                              <th>Preço</th>
+                              <th>Ações</th>
+                            </tr>
+                          </thead>
+                          <tbody id="procedureRows"></tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2108,27 +2465,49 @@
     const patientForm = document.querySelector("#patientForm");
     const patientStatus = document.querySelector("#patientStatus");
     const patientSearch = document.querySelector("#patientSearch");
+    const patientSearchMeta = document.querySelector("#patientSearchMeta");
     const patientList = document.querySelector("#patientList");
     const patientSummary = document.querySelector("#patientSummary");
     const clinicPatientFormSection = document.querySelector("#clinicPatientFormSection");
     const consultationButton = document.querySelector("#consultationButton");
     const consultationPanel = document.querySelector("#consultationPanel");
     const newTreatmentPanel = document.querySelector("#newTreatmentPanel");
+    const togglePatientDetails = document.querySelector("#togglePatientDetails");
+    const patientDetailsPanel = document.querySelector("#patientDetailsPanel");
     const toothGrid = document.querySelector("#toothGrid");
     const faceGrid = document.querySelector("#faceGrid");
     const selectedToothLabel = document.querySelector("#selectedToothLabel");
+    const selectedToothSummary = document.querySelector("#selectedToothSummary");
     const treatmentProcedure = document.querySelector("#treatmentProcedure");
+    const treatmentPriceRule = document.querySelector("#treatmentPriceRule");
     const treatmentValue = document.querySelector("#treatmentValue");
     const treatmentNotes = document.querySelector("#treatmentNotes");
+    const procedureContextHint = document.querySelector("#procedureContextHint");
     const addTreatmentItem = document.querySelector("#addTreatmentItem");
     const quoteList = document.querySelector("#quoteList");
     const quoteItemsCount = document.querySelector("#quoteItemsCount");
     const quoteTotal = document.querySelector("#quoteTotal");
     const treatmentPlanRows = document.querySelector("#treatmentPlanRows");
     const planItemsCount = document.querySelector("#planItemsCount");
+    const treatmentFeedback = document.querySelector("#treatmentFeedback");
+    const printQuoteButton = document.querySelector("#printQuoteButton");
+    const prepareWhatsappButton = document.querySelector("#prepareWhatsappButton");
+    const openWhatsappButton = document.querySelector("#openWhatsappButton");
+    const whatsappPreview = document.querySelector("#whatsappPreview");
+    const whatsappMessage = document.querySelector("#whatsappMessage");
+    const quoteActionStatus = document.querySelector("#quoteActionStatus");
     const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
     const patientTab = document.querySelector("#patientTab");
     const clinicTab = document.querySelector("#clinicTab");
+    const procedureManagerSection = document.querySelector("#procedureManagerSection");
+    const openProcedureManager = document.querySelector("#openProcedureManager");
+    const focusProcedurePrices = document.querySelector("#focusProcedurePrices");
+    const procedureCatalogSource = document.querySelector("#procedureCatalogSource");
+    const procedureForm = document.querySelector("#procedureForm");
+    const procedureRows = document.querySelector("#procedureRows");
+    const procedureStatus = document.querySelector("#procedureStatus");
+    const saveProcedureButton = document.querySelector("#saveProcedureButton");
+    const cancelProcedureEdit = document.querySelector("#cancelProcedureEdit");
     const appGrid = document.querySelector(".app-grid");
     const productSidebar = document.querySelector(".product-sidebar");
     const mobileMenuToggle = document.querySelector("#mobileMenuToggle");
@@ -2137,11 +2516,92 @@
     let currentProfissional = null;
     let currentConsultorio = null;
     let currentPatients = [];
+    let selectedPatientId = null;
     let selectedTooth = "";
     let selectedFaces = [];
     let treatmentItems = [];
     let editingTreatmentIndex = null;
+    let highlightedTreatmentIndex = null;
+    let procedures = [];
+    let priceRules = [];
+    let procedureStorageMode = "local";
     let onboardingMode = "completo";
+
+    const defaultProcedures = [
+      {
+        id: "proc-avaliacao",
+        nome: "Avaliação clínica",
+        categoria: "Consulta",
+        aplicacao: "sem_dente",
+        exige_dente: false,
+        exige_face: false,
+        permite_multiplas_faces: false,
+        ativo: true,
+        rules: [{ id: "rule-avaliacao", nome_regra: "Consulta inicial", valor: 0 }]
+      },
+      {
+        id: "proc-profilaxia",
+        nome: "Profilaxia",
+        categoria: "Preventivo",
+        aplicacao: "boca_toda",
+        exige_dente: false,
+        exige_face: false,
+        permite_multiplas_faces: false,
+        ativo: true,
+        rules: [{ id: "rule-profilaxia", nome_regra: "Limpeza completa", valor: 160 }]
+      },
+      {
+        id: "proc-clareamento",
+        nome: "Clareamento",
+        categoria: "Estética",
+        aplicacao: "arcada",
+        exige_dente: false,
+        exige_face: false,
+        permite_multiplas_faces: false,
+        ativo: true,
+        rules: [{ id: "rule-clareamento", nome_regra: "Clareamento caseiro", valor: 900 }]
+      },
+      {
+        id: "proc-restauracao",
+        nome: "Restauração em resina",
+        categoria: "Dentística",
+        aplicacao: "por_face",
+        exige_dente: true,
+        exige_face: true,
+        permite_multiplas_faces: true,
+        ativo: true,
+        rules: [
+          { id: "rule-restauracao-1", nome_regra: "1 face", quantidade_faces: 1, valor: 180 },
+          { id: "rule-restauracao-2", nome_regra: "2 faces", quantidade_faces: 2, valor: 240 },
+          { id: "rule-restauracao-3", nome_regra: "3+ faces", quantidade_faces: 3, valor: 320 }
+        ]
+      },
+      {
+        id: "proc-raspagem",
+        nome: "Raspagem",
+        categoria: "Periodontia",
+        aplicacao: "por_dente",
+        exige_dente: true,
+        exige_face: false,
+        permite_multiplas_faces: false,
+        ativo: true,
+        rules: [{ id: "rule-raspagem", nome_regra: "Por dente/região", valor: 220 }]
+      },
+      {
+        id: "proc-endodontia",
+        nome: "Tratamento endodôntico",
+        categoria: "Endodontia",
+        aplicacao: "por_dente",
+        exige_dente: true,
+        exige_face: false,
+        permite_multiplas_faces: false,
+        ativo: true,
+        rules: [
+          { id: "rule-endo-uni", nome_regra: "Unirradicular", valor: 750 },
+          { id: "rule-endo-multi", nome_regra: "Multirradicular", valor: 1100 }
+        ]
+      }
+    ];
 
     function showView(name) {
       Object.values(views).forEach((view) => view.classList.remove("active"));
@@ -2320,6 +2780,7 @@
       document.querySelector("#sidebarConsultoriosTotal").textContent = `${count || 0} consultório${count === 1 ? "" : "s"} vinculado${count === 1 ? "" : "s"}`;
       document.querySelector("#patientContextProfissional").textContent = profissional.nome;
       document.querySelector("#patientContextConsultorio").textContent = consultorio?.nome || "Consultório atual";
+      await loadProcedureCatalog();
       await loadPatients();
       showDashboardTab("home");
       showView("dashboard");
@@ -2371,25 +2832,41 @@
         const numericHaystack = [patient.telefone, patient.cpf].map(onlyDigits).join(" ");
         return !query || haystack.includes(query) || (digits && numericHaystack.includes(digits));
       });
+      const hasSearch = Boolean(query || digits);
+      patientSearchMeta.textContent = hasSearch
+        ? `${filtered.length} de ${currentPatients.length}`
+        : `${currentPatients.length} ${currentPatients.length === 1 ? "paciente" : "pacientes"}`;
 
       if (!currentPatients.length) {
-        patientList.innerHTML = `<div class="status show info">Nenhum paciente cadastrado ainda. Cadastre em Meu consultório.</div>`;
+        patientList.innerHTML = `
+          <div class="empty-state">
+            <strong>Nenhum paciente cadastrado</strong>
+            <span>Cadastre o primeiro paciente em Meu consultório para abrir a ficha de atendimento.</span>
+            <button class="mini-button" type="button" data-empty-new-patient>Cadastrar paciente</button>
+          </div>
+        `;
         return;
       }
 
       if (!filtered.length) {
-        patientList.innerHTML = `<div class="status show info">Nenhum paciente encontrado para essa busca.</div>`;
+        patientList.innerHTML = `
+          <div class="empty-state">
+            <strong>Nenhum paciente encontrado</strong>
+            <span>Revise nome, telefone, e-mail ou CPF. Se for uma primeira consulta, cadastre o paciente.</span>
+            <button class="mini-button" type="button" data-empty-new-patient>Novo paciente</button>
+          </div>
+        `;
         return;
       }
 
       patientList.innerHTML = filtered.map((patient) => `
-        <button class="patient-card" type="button" data-patient-id="${patient.id}">
+        <button class="patient-card${patient.id === selectedPatientId ? " active" : ""}" type="button" data-patient-id="${patient.id}" aria-pressed="${patient.id === selectedPatientId}">
           <span>
-            <strong>${escapeHtml(patient.nome)}</strong>
+            <strong>${highlightMatch(patient.nome, query, digits)}</strong>
             <span class="patient-card-meta">
-              <span>${escapeHtml(formatPhone(patient.telefone || "") || "sem telefone")}</span>
-              <span>${escapeHtml(patient.email || "sem e-mail")}</span>
-              ${patient.cpf ? `<span>CPF ${escapeHtml(formatCpf(patient.cpf))}</span>` : ""}
+              <span>${highlightMatch(formatPhone(patient.telefone || "") || "sem telefone", query, digits)}</span>
+              <span>${highlightMatch(patient.email || "sem e-mail", query, digits)}</span>
+              ${patient.cpf ? `<span>CPF ${highlightMatch(formatCpf(patient.cpf), query, digits)}</span>` : ""}
             </span>
           </span>
           <span class="mini-button">Abrir ficha</span>
@@ -2400,10 +2877,14 @@
     async function showPatientSummary(patientId) {
       const patient = currentPatients.find((item) => item.id === patientId);
       if (!patient) return;
+      selectedPatientId = patientId;
+      renderPatientList();
       document.querySelector("#summaryPatientName").textContent = patient.nome;
-      document.querySelector("#summaryPatientMeta").textContent = patient.data_nascimento
-        ? `Nascimento: ${formatDate(patient.data_nascimento)}`
-        : "Nascimento não informado";
+      const compactDetails = [
+        formatPhone(patient.telefone || "") || "sem telefone",
+        patient.data_nascimento ? `${formatAge(patient.data_nascimento)} anos` : "idade não informada"
+      ];
+      document.querySelector("#summaryPatientMeta").textContent = compactDetails.join(" · ");
       document.querySelector("#summaryPatientPhone").textContent = formatPhone(patient.telefone || "") || "-";
       document.querySelector("#summaryPatientEmail").textContent = patient.email || "-";
       document.querySelector("#summaryPatientCpf").textContent = formatCpf(patient.cpf || "") || "-";
@@ -2411,6 +2892,9 @@
       document.querySelector("#summaryAnamneseStatus").textContent = "Verificando anamnese...";
       document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
+      patientSummary.classList.remove("details-open");
+      togglePatientDetails.disabled = false;
+      togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
       document.querySelectorAll("[data-consultation-action]").forEach((button) => button.classList.remove("active"));
@@ -2469,6 +2953,34 @@
         .replace(/'/g, "&#039;");
     }
 
+    function highlightMatch(value, normalizedQuery, digitQuery) {
+      const text = String(value || "");
+      const normalizedText = normalizeText(text);
+      const digitText = onlyDigits(text);
+      const escapedText = escapeHtml(text);
+      let matchIndex = -1;
+      let matchLength = 0;
+
+      if (normalizedQuery) {
+        matchIndex = normalizedText.indexOf(normalizedQuery);
+        matchLength = normalizedQuery.length;
+      }
+
+      if (matchIndex < 0 && digitQuery && digitText.includes(digitQuery)) {
+        const digitPositions = [];
+        [...text].forEach((char, index) => {
+          if (/\d/.test(char)) digitPositions.push(index);
+        });
+        const digitIndex = digitText.indexOf(digitQuery);
+        matchIndex = digitPositions[digitIndex] ?? -1;
+        const lastDigitPosition = digitPositions[digitIndex + digitQuery.length - 1];
+        matchLength = lastDigitPosition >= matchIndex ? lastDigitPosition - matchIndex + 1 : 0;
+      }
+
+      if (matchIndex < 0 || !matchLength) return escapedText;
+      return `${escapeHtml(text.slice(0, matchIndex))}<mark>${escapeHtml(text.slice(matchIndex, matchIndex + matchLength))}</mark>${escapeHtml(text.slice(matchIndex + matchLength))}`;
+    }
+
     function showDashboardTab(name) {
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
@@ -2494,42 +3006,440 @@
       }).format(Number(value || 0));
     }
 
+    function getLocalProcedureKey() {
+      return `odontoflow_procedimentos_${currentConsultorio?.id || "local"}`;
+    }
+
+    function cloneDefaultProcedures() {
+      return defaultProcedures.map((procedure) => ({
+        ...procedure,
+        consultorio_id: currentConsultorio?.id || null,
+        rules: procedure.rules.map((rule) => ({ ...rule, procedimento_id: procedure.id }))
+      }));
+    }
+
+    function applyProcedureCatalog(catalog, mode = "local") {
+      const normalized = (catalog?.length ? catalog : cloneDefaultProcedures()).map((procedure) => ({
+        ...procedure,
+        id: procedure.id || crypto.randomUUID(),
+        nome: procedure.nome || procedure.name || "Procedimento",
+        categoria: procedure.categoria || "",
+        aplicacao: procedure.aplicacao || "sem_dente",
+        exige_dente: Boolean(procedure.exige_dente),
+        exige_face: Boolean(procedure.exige_face),
+        permite_multiplas_faces: procedure.permite_multiplas_faces !== false,
+        ativo: procedure.ativo !== false,
+        rules: (procedure.rules || []).map((rule) => ({
+          ...rule,
+          id: rule.id || crypto.randomUUID(),
+          procedimento_id: rule.procedimento_id || procedure.id,
+          nome_regra: rule.nome_regra || "Valor padrão",
+          valor: Number(rule.valor || 0),
+          quantidade_faces: rule.quantidade_faces === "" || rule.quantidade_faces === undefined ? null : Number(rule.quantidade_faces),
+          ativo: rule.ativo !== false
+        }))
+      }));
+      procedures = normalized;
+      priceRules = normalized.flatMap((procedure) => procedure.rules.map((rule) => ({ ...rule, procedimento_id: procedure.id })));
+      procedureStorageMode = mode;
+      procedureCatalogSource.textContent = mode === "supabase" ? "Supabase" : "base local";
+      renderProcedureCatalog();
+      renderProcedureOptions();
+    }
+
+    function saveLocalProcedures() {
+      localStorage.setItem(getLocalProcedureKey(), JSON.stringify(procedures));
+    }
+
+    async function loadProcedureCatalog() {
+      const localCatalog = localStorage.getItem(getLocalProcedureKey());
+      try {
+        if (!currentConsultorio?.id) throw new Error("Consultório não carregado.");
+        const { data, error } = await supabase
+          .from("procedimentos")
+          .select("id, consultorio_id, nome, categoria, aplicacao, exige_dente, exige_face, permite_multiplas_faces, ativo, regras_preco_procedimento(id, procedimento_id, nome_regra, quantidade_faces, numero_dente, face_dente, material, nivel_dificuldade, valor, ativo)")
+          .eq("consultorio_id", currentConsultorio.id)
+          .eq("ativo", true)
+          .order("nome", { ascending: true });
+
+        if (error) throw error;
+        const catalog = (data || []).map((procedure) => ({
+          ...procedure,
+          rules: procedure.regras_preco_procedimento || []
+        }));
+        applyProcedureCatalog(catalog.length ? catalog : JSON.parse(localCatalog || "null"), catalog.length ? "supabase" : "local");
+      } catch (error) {
+        applyProcedureCatalog(JSON.parse(localCatalog || "null"), "local");
+      }
+    }
+
+    function getProcedureRules(procedureId) {
+      return priceRules.filter((rule) => rule.procedimento_id === procedureId && rule.ativo !== false);
+    }
+
+    function isProcedureAvailableForContext(procedure) {
+      if (!procedure.ativo) return false;
+      if (!selectedTooth) return !procedure.exige_dente;
+      return procedure.exige_dente || ["por_dente", "por_face"].includes(procedure.aplicacao);
+    }
+
+    function getBestRuleForContext(procedureId) {
+      const rules = getProcedureRules(procedureId);
+      if (!rules.length) return null;
+      const faceCount = selectedFaces.length;
+      const exactFaceRule = rules.find((rule) => Number(rule.quantidade_faces || 0) === faceCount);
+      if (exactFaceRule) return exactFaceRule;
+      if (faceCount >= 3) {
+        const multiFaceRule = rules.find((rule) => Number(rule.quantidade_faces || 0) >= 3);
+        if (multiFaceRule) return multiFaceRule;
+      }
+      return rules[0];
+    }
+
+    function renderProcedureOptions(preferredProcedureId = null, preferredRuleId = null) {
+      const available = procedures.filter(isProcedureAvailableForContext);
+      procedureContextHint.textContent = selectedTooth
+        ? `Dente ${selectedTooth} selecionado: aparecem procedimentos por dente/face.`
+        : "Sem dente selecionado: aparecem procedimentos gerais do consultório.";
+
+      if (!available.length) {
+        treatmentProcedure.innerHTML = `<option value="">Nenhum procedimento disponível</option>`;
+        treatmentPriceRule.innerHTML = `<option value="">Sem regra de preço</option>`;
+        treatmentValue.value = "";
+        addTreatmentItem.disabled = true;
+        return;
+      }
+
+      addTreatmentItem.disabled = false;
+      treatmentProcedure.innerHTML = available.map((procedure) => `
+        <option value="${escapeHtml(procedure.id)}">${escapeHtml(procedure.nome)}</option>
+      `).join("");
+
+      const procedureId = preferredProcedureId && available.some((procedure) => procedure.id === preferredProcedureId)
+        ? preferredProcedureId
+        : available[0].id;
+      treatmentProcedure.value = procedureId;
+      renderPriceRuleOptions(preferredRuleId);
+    }
+
+    function renderPriceRuleOptions(preferredRuleId = null) {
+      const procedure = procedures.find((item) => item.id === treatmentProcedure.value);
+      if (!procedure) {
+        treatmentPriceRule.innerHTML = `<option value="">Sem regra de preço</option>`;
+        treatmentValue.value = "";
+        return;
+      }
+
+      const rules = getProcedureRules(procedure.id);
+      if (!rules.length) {
+        treatmentPriceRule.innerHTML = `<option value="">Valor manual</option>`;
+        treatmentValue.value = "";
+        return;
+      }
+
+      treatmentPriceRule.innerHTML = rules.map((rule) => `
+        <option value="${escapeHtml(rule.id)}">${escapeHtml(rule.nome_regra)} · ${escapeHtml(formatCurrency(rule.valor))}</option>
+      `).join("");
+      const bestRule = preferredRuleId && rules.some((rule) => rule.id === preferredRuleId)
+        ? rules.find((rule) => rule.id === preferredRuleId)
+        : getBestRuleForContext(procedure.id);
+      treatmentPriceRule.value = bestRule?.id || rules[0].id;
+      treatmentValue.value = bestRule?.valor ?? rules[0].valor ?? "";
+    }
+
+    function getApplicationLabel(value) {
+      const labels = {
+        sem_dente: "Sem dente",
+        por_dente: "Por dente",
+        por_face: "Por face",
+        arcada: "Arcada",
+        boca_toda: "Boca toda"
+      };
+      return labels[value] || value || "-";
+    }
+
+    function renderProcedureCatalog() {
+      if (!procedureRows) return;
+      if (!procedures.length) {
+        procedureRows.innerHTML = `<tr><td colspan="4">Nenhum procedimento cadastrado ainda.</td></tr>`;
+        return;
+      }
+
+      procedureRows.innerHTML = procedures.map((procedure) => {
+        const rules = getProcedureRules(procedure.id);
+        const firstRule = rules[0];
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(procedure.nome)}</strong>
+              <span class="muted">${escapeHtml(procedure.categoria || "Sem categoria")} · ${procedure.exige_dente ? "usa dente" : "sem dente"}${procedure.exige_face ? " · usa face" : ""}</span>
+            </td>
+            <td>${escapeHtml(getApplicationLabel(procedure.aplicacao))}</td>
+            <td>${firstRule ? escapeHtml(formatCurrency(firstRule.valor)) : "Manual"}</td>
+            <td>
+              <button class="icon-action" type="button" data-edit-procedure="${escapeHtml(procedure.id)}" aria-label="Editar procedimento">
+                <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function setProcedureStatus(message, type = "success") {
+      procedureStatus.className = `inline-feedback show ${type}`;
+      procedureStatus.textContent = message;
+    }
+
+    function clearProcedureStatus() {
+      procedureStatus.className = "inline-feedback";
+      procedureStatus.textContent = "";
+    }
+
+    function resetProcedureForm() {
+      procedureForm.reset();
+      document.querySelector("#procedureEditingId").value = "";
+      document.querySelector("#procedureApplication").value = "sem_dente";
+      document.querySelector("#procedureAllowsMultipleFaces").checked = true;
+      saveProcedureButton.textContent = "Salvar procedimento";
+      clearProcedureStatus();
+    }
+
+    function syncProcedureFlagsFromApplication() {
+      const application = document.querySelector("#procedureApplication").value;
+      const requiresTooth = ["por_dente", "por_face"].includes(application);
+      const requiresFace = application === "por_face";
+      document.querySelector("#procedureRequiresTooth").checked = requiresTooth;
+      document.querySelector("#procedureRequiresFace").checked = requiresFace;
+      document.querySelector("#procedureAllowsMultipleFaces").checked = requiresFace;
+    }
+
+    function fillProcedureForm(procedureId) {
+      const procedure = procedures.find((item) => item.id === procedureId);
+      if (!procedure) return;
+      const firstRule = getProcedureRules(procedure.id)[0];
+      document.querySelector("#procedureEditingId").value = procedure.id;
+      document.querySelector("#procedureName").value = procedure.nome || "";
+      document.querySelector("#procedureCategory").value = procedure.categoria || "";
+      document.querySelector("#procedureApplication").value = procedure.aplicacao || "sem_dente";
+      document.querySelector("#procedureRequiresTooth").checked = Boolean(procedure.exige_dente);
+      document.querySelector("#procedureRequiresFace").checked = Boolean(procedure.exige_face);
+      document.querySelector("#procedureAllowsMultipleFaces").checked = procedure.permite_multiplas_faces !== false;
+      document.querySelector("#procedureRuleName").value = firstRule?.nome_regra || "";
+      document.querySelector("#procedureRuleValue").value = firstRule?.valor ?? "";
+      document.querySelector("#procedureRuleFaces").value = firstRule?.quantidade_faces ?? "";
+      saveProcedureButton.textContent = "Salvar alteração";
+      procedureManagerSection.classList.add("active");
+      procedureForm.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    async function persistProcedure(procedure, rule) {
+      if (!currentConsultorio?.id) throw new Error("Consultório não encontrado.");
+      const procedurePayload = {
+        id: procedure.id,
+        consultorio_id: currentConsultorio.id,
+        nome: procedure.nome,
+        categoria: procedure.categoria || null,
+        aplicacao: procedure.aplicacao,
+        exige_dente: procedure.exige_dente,
+        exige_face: procedure.exige_face,
+        permite_multiplas_faces: procedure.permite_multiplas_faces,
+        ativo: true
+      };
+      const { error: procedureError } = await supabase
+        .from("procedimentos")
+        .upsert(procedurePayload);
+      if (procedureError) throw procedureError;
+
+      if (rule) {
+        const rulePayload = {
+          id: rule.id,
+          procedimento_id: procedure.id,
+          nome_regra: rule.nome_regra,
+          quantidade_faces: rule.quantidade_faces,
+          valor: rule.valor,
+          ativo: true
+        };
+        const { error: ruleError } = await supabase
+          .from("regras_preco_procedimento")
+          .upsert(rulePayload);
+        if (ruleError) throw ruleError;
+      }
+    }
+
+    async function saveProcedureFromForm() {
+      const editingId = document.querySelector("#procedureEditingId").value;
+      const procedureId = editingId || crypto.randomUUID();
+      const ruleId = getProcedureRules(procedureId)[0]?.id || crypto.randomUUID();
+      const procedure = {
+        id: procedureId,
+        consultorio_id: currentConsultorio?.id || null,
+        nome: document.querySelector("#procedureName").value.trim(),
+        categoria: document.querySelector("#procedureCategory").value.trim(),
+        aplicacao: document.querySelector("#procedureApplication").value,
+        exige_dente: document.querySelector("#procedureRequiresTooth").checked,
+        exige_face: document.querySelector("#procedureRequiresFace").checked,
+        permite_multiplas_faces: document.querySelector("#procedureAllowsMultipleFaces").checked,
+        ativo: true
+      };
+      const ruleName = document.querySelector("#procedureRuleName").value.trim() || "Valor padrão";
+      const ruleValue = Number(document.querySelector("#procedureRuleValue").value || 0);
+      const ruleFacesValue = document.querySelector("#procedureRuleFaces").value;
+      const rule = {
+        id: ruleId,
+        procedimento_id: procedureId,
+        nome_regra: ruleName,
+        quantidade_faces: ruleFacesValue === "" ? null : Number(ruleFacesValue),
+        valor: ruleValue,
+        ativo: true
+      };
+
+      if (!procedure.nome) throw new Error("Nome do procedimento é obrigatório.");
+
+      const existingIndex = procedures.findIndex((item) => item.id === procedureId);
+      const nextProcedure = { ...procedure, rules: [rule] };
+      if (existingIndex >= 0) {
+        const existingRules = procedures[existingIndex].rules || [];
+        const remainingRules = existingRules.filter((item) => item.id !== rule.id);
+        nextProcedure.rules = [rule, ...remainingRules];
+        procedures[existingIndex] = nextProcedure;
+      } else {
+        procedures.push(nextProcedure);
+      }
+
+      priceRules = procedures.flatMap((item) => item.rules.map((itemRule) => ({ ...itemRule, procedimento_id: item.id })));
+      let statusMessage = "Procedimento salvo no consultório.";
+      let statusType = "success";
+      try {
+        await persistProcedure(procedure, rule);
+        procedureStorageMode = "supabase";
+        procedureCatalogSource.textContent = "Supabase";
+      } catch (error) {
+        saveLocalProcedures();
+        procedureStorageMode = "local";
+        procedureCatalogSource.textContent = "base local";
+        statusMessage = "Procedimento salvo localmente. Quando a tabela existir no Supabase, ele poderá ser persistido.";
+        statusType = "warning";
+      }
+
+      renderProcedureCatalog();
+      renderProcedureOptions(treatmentProcedure.value);
+      resetProcedureForm();
+      setProcedureStatus(statusMessage, statusType);
+    }
+
     function resetTreatmentDraft() {
       selectedTooth = "";
       selectedFaces = [];
       treatmentItems = [];
       editingTreatmentIndex = null;
+      highlightedTreatmentIndex = null;
       selectedToothLabel.textContent = "--";
       toothGrid.querySelectorAll(".tooth-node").forEach((button) => {
-        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi");
+        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi", "has-plan", "has-care", "has-urgent");
       });
       faceGrid.querySelectorAll(".face-button").forEach((button) => button.classList.remove("active"));
-      treatmentProcedure.selectedIndex = 0;
-      treatmentValue.value = treatmentProcedure.selectedOptions[0]?.dataset.price || "";
+      renderSelectedToothSummary();
+      renderProcedureOptions();
       treatmentNotes.value = "";
       addTreatmentItem.textContent = "Adicionar ao plano";
+      clearTreatmentFeedback();
+      clearQuoteAction();
       renderQuote();
+    }
+
+    function setTreatmentFeedback(message, type = "success") {
+      treatmentFeedback.className = `inline-feedback show ${type}`;
+      treatmentFeedback.textContent = message;
+    }
+
+    function clearTreatmentFeedback() {
+      treatmentFeedback.className = "inline-feedback";
+      treatmentFeedback.textContent = "";
+    }
+
+    function setQuoteAction(message, type = "success") {
+      quoteActionStatus.className = `inline-feedback show ${type}`;
+      quoteActionStatus.textContent = message;
+    }
+
+    function clearQuoteAction() {
+      quoteActionStatus.className = "inline-feedback";
+      quoteActionStatus.textContent = "";
+      whatsappPreview.classList.remove("active");
+      whatsappMessage.value = "";
     }
 
     function faceClass(face) {
       return `face-${String(face || "").toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
     }
 
+    function getTreatmentVisualStatus(item) {
+      const text = `${item.procedure || ""} ${item.notes || ""}`.toLowerCase();
+      if (text.includes("urg") || text.includes("dor") || text.includes("endod")) return "urgent";
+      if (text.includes("restaura") || text.includes("raspagem") || text.includes("sensibilidade")) return "care";
+      return "planned";
+    }
+
+    function getToothItems(tooth) {
+      return treatmentItems.filter((item) => item.tooth === tooth);
+    }
+
+    function renderSelectedToothSummary() {
+      if (!selectedTooth) {
+        selectedToothSummary.innerHTML = `
+          <strong>Nenhum dente selecionado</strong>
+          <span class="muted">Clique em um dente para ver procedimentos planejados nesta consulta.</span>
+        `;
+        return;
+      }
+
+      const items = getToothItems(selectedTooth);
+      if (!items.length) {
+        selectedToothSummary.innerHTML = `
+          <strong>Dente ${escapeHtml(selectedTooth)}</strong>
+          <span class="muted">Sem procedimento planejado nesta consulta.</span>
+        `;
+        return;
+      }
+
+      selectedToothSummary.innerHTML = `
+        <strong>Dente ${escapeHtml(selectedTooth)} · ${items.length} ${items.length === 1 ? "procedimento" : "procedimentos"}</strong>
+        <ul>
+          ${items.map((item) => `
+            <li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")}</li>
+          `).join("")}
+        </ul>
+      `;
+    }
+
     function updateSelectedToothVisual() {
       const faceClasses = ["face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi"];
+      const statusClasses = ["has-plan", "has-care", "has-urgent"];
       toothGrid.querySelectorAll(".tooth-node").forEach((node) => {
         const isActive = node.dataset.tooth === selectedTooth;
+        const plannedItems = getToothItems(node.dataset.tooth);
+        const plannedFaces = plannedItems.flatMap((item) => Array.isArray(item.faces) ? item.faces : []);
+        const visualFaces = isActive && selectedFaces.length ? selectedFaces : plannedFaces;
+        const hasUrgent = plannedItems.some((item) => getTreatmentVisualStatus(item) === "urgent");
+        const hasCare = plannedItems.some((item) => getTreatmentVisualStatus(item) === "care");
         node.classList.toggle("active", isActive);
         node.classList.remove(...faceClasses);
-        if (!isActive || !selectedFaces.length) return;
-        selectedFaces.forEach((face) => node.classList.add(faceClass(face)));
-        if (selectedFaces.length > 1) node.classList.add("face-multi");
+        node.classList.remove(...statusClasses);
+        if (plannedItems.length) {
+          node.classList.add("has-plan");
+          if (hasCare) node.classList.add("has-care");
+          if (hasUrgent) node.classList.add("has-urgent");
+        }
+        visualFaces.forEach((face) => node.classList.add(faceClass(face)));
+        if (visualFaces.length > 1) node.classList.add("face-multi");
       });
 
       faceGrid.querySelectorAll(".face-button").forEach((button) => {
         button.classList.toggle("active", selectedFaces.includes(button.dataset.face));
       });
       selectedToothLabel.textContent = selectedTooth || "--";
+      renderSelectedToothSummary();
     }
 
     function renderToothGrid() {
@@ -2614,24 +3524,30 @@
       planItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
       const total = treatmentItems.reduce((sum, item) => sum + item.value, 0);
       quoteTotal.textContent = formatCurrency(total);
+      printQuoteButton.disabled = !treatmentItems.length;
+      prepareWhatsappButton.disabled = !treatmentItems.length;
+      openWhatsappButton.disabled = !treatmentItems.length || !whatsappPreview.classList.contains("active") || !whatsappMessage.value.trim();
+      updateSelectedToothVisual();
 
       if (!treatmentItems.length) {
         quoteList.innerHTML = `<p class="muted">Nenhum procedimento adicionado ainda.</p>`;
         treatmentPlanRows.innerHTML = `<tr><td colspan="7">Nenhum procedimento adicionado ainda.</td></tr>`;
+        clearQuoteAction();
         return;
       }
 
       treatmentPlanRows.innerHTML = treatmentItems.map((item, index) => `
-        <tr>
+        <tr class="${index === editingTreatmentIndex ? "is-editing" : ""}${index === highlightedTreatmentIndex ? " just-updated" : ""}">
           <td>${index + 1}</td>
           <td>${escapeHtml(item.tooth || "-")}</td>
           <td>${escapeHtml(item.face || "-")}</td>
           <td>
             <strong>${escapeHtml(item.procedure)}</strong>
+            ${item.priceRuleName ? `<div class="muted">${escapeHtml(item.priceRuleName)}</div>` : ""}
             ${item.notes ? `<div class="muted">${escapeHtml(item.notes)}</div>` : ""}
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
-          <td><span class="badge">Planejado</span></td>
+          <td><span class="badge">${getTreatmentVisualStatus(item) === "urgent" ? "Urgente" : "Planejado"}</span></td>
           <td>
             <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento">
               <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -2647,11 +3563,185 @@
         <div class="quote-item">
           <span>
             <strong>${escapeHtml(item.procedure)}</strong>
-            <span class="muted">Dente ${escapeHtml(item.tooth || "-")} · Face ${escapeHtml(item.face || "-")}${item.notes ? ` · ${escapeHtml(item.notes)}` : ""}</span>
+            <span class="muted">Dente ${escapeHtml(item.tooth || "-")} · Face ${escapeHtml(item.face || "-")}${item.priceRuleName ? ` · ${escapeHtml(item.priceRuleName)}` : ""}${item.notes ? ` · ${escapeHtml(item.notes)}` : ""}</span>
           </span>
           <strong>${escapeHtml(formatCurrency(item.value))}</strong>
         </div>
       `).join("");
+    }
+
+    function getSelectedPatient() {
+      return currentPatients.find((patient) => patient.id === selectedPatientId) || null;
+    }
+
+    function buildQuoteSummary() {
+      const patient = getSelectedPatient();
+      const total = treatmentItems.reduce((sum, item) => sum + item.value, 0);
+      return {
+        patient,
+        total,
+        items: treatmentItems.map((item, index) => ({
+          ...item,
+          index: index + 1,
+          status: getTreatmentVisualStatus(item) === "urgent" ? "Urgente" : "Planejado"
+        }))
+      };
+    }
+
+    function buildWhatsappMessage() {
+      const summary = buildQuoteSummary();
+      const patientName = summary.patient?.nome || "paciente";
+      const professional = currentProfissional?.nome || "equipe OdontoFlow";
+      const consultorio = currentConsultorio?.nome || "consultorio";
+      const itemLines = summary.items.map((item) => {
+        const details = [
+          `Dente ${item.tooth || "-"}`,
+          `Face ${item.face || "geral"}`,
+          item.status,
+          formatCurrency(item.value)
+        ];
+        return `${item.index}. ${item.procedure} - ${details.join(" | ")}${item.notes ? `\n   Obs.: ${item.notes}` : ""}`;
+      });
+
+      return [
+        `Ola, ${patientName}.`,
+        "",
+        `Segue o resumo inicial do plano de tratamento preparado por ${professional} em ${consultorio}:`,
+        "",
+        ...itemLines,
+        "",
+        `Total estimado: ${formatCurrency(summary.total)}`,
+        "",
+        "Esse resumo serve para conferencia e alinhamento. A equipe pode ajustar etapas, valores ou observacoes antes da aprovacao final."
+      ].join("\n");
+    }
+
+    function prepareWhatsappMessage() {
+      if (!treatmentItems.length) {
+        setQuoteAction("Adicione ao menos um procedimento ao plano.", "warning");
+        return;
+      }
+      whatsappMessage.value = buildWhatsappMessage();
+      whatsappPreview.classList.add("active");
+      openWhatsappButton.disabled = false;
+      setQuoteAction("Mensagem preparada. Revise antes de abrir o WhatsApp Web.");
+      whatsappMessage.focus();
+    }
+
+    function openWhatsapp() {
+      const patient = getSelectedPatient();
+      const phoneDigits = onlyDigits(patient?.telefone || "");
+      if (!patient) {
+        setQuoteAction("Selecione um paciente antes de abrir o WhatsApp.", "warning");
+        return;
+      }
+      if (phoneDigits.length !== 11) {
+        setQuoteAction("O paciente precisa ter telefone com DDD e 9 digitos.", "warning");
+        return;
+      }
+      if (!whatsappMessage.value.trim()) prepareWhatsappMessage();
+      const url = `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(whatsappMessage.value.trim())}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      setQuoteAction("WhatsApp Web aberto em nova aba. Confirme o envio por la.");
+    }
+
+    function buildPrintableQuoteHtml() {
+      const summary = buildQuoteSummary();
+      const generatedAt = new Date().toLocaleString("pt-BR");
+      const patientName = summary.patient?.nome || "Paciente nao selecionado";
+      const patientPhone = formatPhone(summary.patient?.telefone || "") || "-";
+      const logoUrl = new URL("assets/odontoflow-logo-horizontal.svg", window.location.href).href;
+      const rows = summary.items.map((item) => `
+        <tr>
+          <td>${item.index}</td>
+          <td>${escapeHtml(item.tooth || "-")}</td>
+          <td>${escapeHtml(item.face || "geral")}</td>
+          <td>
+            <strong>${escapeHtml(item.procedure)}</strong>
+            ${item.notes ? `<br><span>${escapeHtml(item.notes)}</span>` : ""}
+          </td>
+          <td>${escapeHtml(item.status)}</td>
+          <td>${escapeHtml(formatCurrency(item.value))}</td>
+        </tr>
+      `).join("");
+
+      return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Plano de tratamento - ${escapeHtml(patientName)}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; }
+    img { width: 170px; height: auto; }
+    h1 { font-size: 24px; margin: 0 0 6px; color: #0f3d5e; }
+    h2 { font-size: 15px; margin: 22px 0 10px; color: #0f3d5e; }
+    p { margin: 3px 0; }
+    .muted { color: #71838d; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .box { border: 1px solid #d8e7ea; border-radius: 10px; padding: 10px; background: #fbfdff; }
+    .box strong { display: block; color: #0f3d5e; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th, td { border-bottom: 1px solid #d8e7ea; padding: 10px 8px; text-align: left; vertical-align: top; }
+    th { background: #eef9f7; color: #0f3d5e; font-size: 12px; text-transform: uppercase; }
+    .total { margin-top: 18px; padding: 14px; border-radius: 12px; background: #0f3d5e; color: #ffffff; display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; }
+    .note { margin-top: 18px; border-left: 4px solid #14b8a6; padding: 10px 12px; color: #435766; background: #f7fdfc; }
+    @media print { body { padding: 18mm; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <img src="${logoUrl}" alt="OdontoFlow">
+      <p class="muted">Documento gerado manualmente pelo navegador em ${escapeHtml(generatedAt)}</p>
+    </div>
+    <div>
+      <h1>Plano de tratamento</h1>
+      <p>${escapeHtml(currentConsultorio?.nome || "Consultorio")}</p>
+      <p class="muted">${escapeHtml(currentProfissional?.nome || "Profissional responsavel")}</p>
+    </div>
+  </header>
+  <section class="grid">
+    <div class="box"><strong>Paciente</strong>${escapeHtml(patientName)}</div>
+    <div class="box"><strong>Telefone</strong>${escapeHtml(patientPhone)}</div>
+    <div class="box"><strong>Itens</strong>${summary.items.length}</div>
+  </section>
+  <h2>Procedimentos planejados</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Dente</th>
+        <th>Face</th>
+        <th>Procedimento</th>
+        <th>Status</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="total"><span>Total estimado</span><span>${escapeHtml(formatCurrency(summary.total))}</span></div>
+  <p class="note">Este documento e uma previa operacional para conferencia, conversa com o paciente e impressao em PDF pelo navegador.</p>
+  <script>window.addEventListener("load", () => window.print());<\/script>
+</body>
+</html>`;
+    }
+
+    function printQuote() {
+      if (!treatmentItems.length) {
+        setQuoteAction("Adicione ao menos um procedimento ao plano.", "warning");
+        return;
+      }
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        setQuoteAction("O navegador bloqueou a janela de impressao.", "warning");
+        return;
+      }
+      printWindow.document.open();
+      printWindow.document.write(buildPrintableQuoteHtml());
+      printWindow.document.close();
+      setQuoteAction("Previa de impressao aberta. Use salvar como PDF no navegador.");
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -2797,6 +3887,48 @@
       });
     });
 
+    openProcedureManager.addEventListener("click", () => {
+      clearProcedureStatus();
+      procedureManagerSection.classList.add("active");
+      clinicPatientFormSection.classList.remove("active");
+      procedureManagerSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector("#procedureName").focus();
+    });
+
+    focusProcedurePrices.addEventListener("click", () => {
+      procedureManagerSection.classList.add("active");
+      clinicPatientFormSection.classList.remove("active");
+      procedureManagerSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector("#procedureRuleValue").focus();
+    });
+
+    document.querySelector("#procedureApplication").addEventListener("change", syncProcedureFlagsFromApplication);
+
+    cancelProcedureEdit.addEventListener("click", resetProcedureForm);
+
+    procedureRows.addEventListener("click", (event) => {
+      const editButton = event.target.closest("[data-edit-procedure]");
+      if (!editButton) return;
+      fillProcedureForm(editButton.dataset.editProcedure);
+    });
+
+    procedureForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearProcedureStatus();
+      saveProcedureButton.disabled = true;
+      saveProcedureButton.textContent = "Salvando...";
+      try {
+        await saveProcedureFromForm();
+      } catch (error) {
+        setProcedureStatus(error.message || "Não foi possível salvar o procedimento.", "warning");
+      } finally {
+        saveProcedureButton.disabled = false;
+        if (!document.querySelector("#procedureEditingId").value) {
+          saveProcedureButton.textContent = "Salvar procedimento";
+        }
+      }
+    });
+
     document.querySelectorAll("[data-open-patient]").forEach((button) => {
       button.addEventListener("click", () => {
         clearStatus(patientStatus);
@@ -2808,13 +3940,22 @@
     });
 
     patientSearch.addEventListener("input", () => {
+      selectedPatientId = null;
       patientSummary.classList.remove("active");
+      patientSummary.classList.remove("details-open");
+      togglePatientDetails.disabled = true;
+      togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
       renderPatientList();
     });
 
     patientList.addEventListener("click", async (event) => {
+      if (event.target.closest("[data-empty-new-patient]")) {
+        openNewPatientForm();
+        return;
+      }
+
       const card = event.target.closest("[data-patient-id]");
       if (!card) return;
       await showPatientSummary(card.dataset.patientId);
@@ -2835,11 +3976,32 @@
       }
     });
 
+    togglePatientDetails.addEventListener("click", () => {
+      const isOpen = patientSummary.classList.toggle("details-open");
+      togglePatientDetails.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.querySelectorAll("[data-open-history]").forEach((button) => {
+      button.addEventListener("click", () => {
+        patientSummary.classList.add("details-open");
+        togglePatientDetails.setAttribute("aria-expanded", "true");
+        patientDetailsPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+
     document.querySelectorAll("[data-consultation-action]").forEach((button) => {
       button.addEventListener("click", () => {
-        if (button.dataset.consultationAction !== "new") return;
+        const action = button.dataset.consultationAction;
+        if (action === "history") {
+          patientSummary.classList.add("details-open");
+          togglePatientDetails.setAttribute("aria-expanded", "true");
+          patientDetailsPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          return;
+        }
         document.querySelectorAll("[data-consultation-action]").forEach((item) => item.classList.remove("active"));
         button.classList.add("active");
+        document.querySelector("#newTreatmentPanel .kicker").textContent = action === "continue" ? "Continuar tratamento" : "Nova consulta";
+        document.querySelector("#newTreatmentPanel strong").textContent = action === "continue" ? "Retomar plano do paciente" : "Montar plano inicial";
         newTreatmentPanel.classList.add("active");
         newTreatmentPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       });
@@ -2856,6 +4018,7 @@
         selectedFaces = [];
       }
       updateSelectedToothVisual();
+      renderProcedureOptions(treatmentProcedure.value);
     });
 
     toothGrid.addEventListener("keydown", (event) => {
@@ -2879,39 +4042,68 @@
         ? selectedFaces.filter((item) => item !== face)
         : [...selectedFaces, face];
       updateSelectedToothVisual();
+      renderProcedureOptions(treatmentProcedure.value);
     });
 
     treatmentProcedure.addEventListener("change", () => {
-      treatmentValue.value = treatmentProcedure.selectedOptions[0]?.dataset.price || "";
+      renderPriceRuleOptions();
+    });
+
+    treatmentPriceRule.addEventListener("change", () => {
+      const rule = priceRules.find((item) => item.id === treatmentPriceRule.value);
+      treatmentValue.value = rule?.valor ?? "";
     });
 
     addTreatmentItem.addEventListener("click", () => {
-      if (!selectedTooth) {
+      const selectedProcedure = procedures.find((procedure) => procedure.id === treatmentProcedure.value);
+      const selectedRule = priceRules.find((rule) => rule.id === treatmentPriceRule.value);
+      if (!selectedProcedure) {
+        setTreatmentFeedback("Selecione um procedimento disponível para este contexto.", "warning");
+        return;
+      }
+      if (selectedProcedure.exige_dente && !selectedTooth) {
         selectedToothLabel.textContent = "!";
+        setTreatmentFeedback("Este procedimento precisa de um dente selecionado.", "warning");
+        return;
+      }
+      if (selectedProcedure.exige_face && !selectedFaces.length) {
+        setTreatmentFeedback("Este procedimento precisa de pelo menos uma face selecionada.", "warning");
         return;
       }
 
-      const procedure = treatmentProcedure.value;
       const value = Number(treatmentValue.value || 0);
       const nextItem = {
-        tooth: selectedTooth,
+        tooth: selectedProcedure.exige_dente ? selectedTooth : "",
         faces: [...selectedFaces],
-        face: selectedFaces.length ? selectedFaces.join(", ") : "geral",
-        procedure,
+        face: selectedProcedure.exige_face && selectedFaces.length ? selectedFaces.join(", ") : "geral",
+        procedure: selectedProcedure.nome,
+        procedureId: selectedProcedure.id,
+        priceRuleId: selectedRule?.id || "",
+        priceRuleName: selectedRule?.nome_regra || "Valor manual",
         value,
         notes: treatmentNotes.value.trim()
       };
 
       if (editingTreatmentIndex === null) {
         treatmentItems.push(nextItem);
+        highlightedTreatmentIndex = treatmentItems.length - 1;
+        setTreatmentFeedback("Procedimento adicionado ao plano.");
       } else {
+        highlightedTreatmentIndex = editingTreatmentIndex;
         treatmentItems[editingTreatmentIndex] = nextItem;
         editingTreatmentIndex = null;
         addTreatmentItem.textContent = "Adicionar ao plano";
+        setTreatmentFeedback("Procedimento atualizado no plano.");
       }
 
       treatmentNotes.value = "";
+      clearQuoteAction();
       renderQuote();
+      updateSelectedToothVisual();
+      window.setTimeout(() => {
+        highlightedTreatmentIndex = null;
+        renderQuote();
+      }, 1400);
     });
 
     treatmentPlanRows.addEventListener("click", (event) => {
@@ -2920,12 +4112,23 @@
 
       if (deleteButton) {
         const index = Number(deleteButton.dataset.deleteTreatment);
+        const removed = treatmentItems[index];
         treatmentItems.splice(index, 1);
         if (editingTreatmentIndex === index) {
           editingTreatmentIndex = null;
           addTreatmentItem.textContent = "Adicionar ao plano";
         }
+        if (editingTreatmentIndex !== null && editingTreatmentIndex > index) {
+          editingTreatmentIndex -= 1;
+        }
+        highlightedTreatmentIndex = null;
+        setTreatmentFeedback(
+          removed ? `Procedimento removido: ${removed.procedure}.` : "Procedimento removido.",
+          "warning"
+        );
+        clearQuoteAction();
         renderQuote();
+        updateSelectedToothVisual();
         return;
       }
 
@@ -2944,11 +4147,22 @@
           .filter((face) => face && face !== "geral");
       selectedToothLabel.textContent = selectedTooth || "--";
       updateSelectedToothVisual();
-      treatmentProcedure.value = item.procedure;
+      const procedureId = item.procedureId || procedures.find((procedure) => procedure.nome === item.procedure)?.id || "";
+      renderProcedureOptions(procedureId, item.priceRuleId);
       treatmentValue.value = item.value;
       treatmentNotes.value = item.notes || "";
       addTreatmentItem.textContent = "Salvar alteração";
+      highlightedTreatmentIndex = index;
+      setTreatmentFeedback("Editando procedimento selecionado. Ajuste os dados e salve a alteração.");
+      renderQuote();
       document.querySelector(".selected-tooth-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    prepareWhatsappButton.addEventListener("click", prepareWhatsappMessage);
+    openWhatsappButton.addEventListener("click", openWhatsapp);
+    printQuoteButton.addEventListener("click", printQuote);
+    whatsappMessage.addEventListener("input", () => {
+      openWhatsappButton.disabled = !treatmentItems.length || !whatsappMessage.value.trim();
     });
 
     patientForm.addEventListener("submit", async (event) => {
@@ -3066,6 +4280,16 @@
       const [year, month, day] = String(value || "").split("-");
       if (!year || !month || !day) return "-";
       return `${day}/${month}/${year}`;
+    }
+
+    function formatAge(value) {
+      const birthDate = new Date(`${value}T00:00:00`);
+      if (Number.isNaN(birthDate.getTime())) return "-";
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age -= 1;
+      return Math.max(age, 0);
     }
 
     renderToothGrid();
