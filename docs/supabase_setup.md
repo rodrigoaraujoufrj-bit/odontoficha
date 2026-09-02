@@ -1,6 +1,6 @@
 # OdontoFlow - Setup Supabase
 
-Status: rascunho operacional
+Última atualização: 2026-06-13
 
 Projeto Supabase:
 

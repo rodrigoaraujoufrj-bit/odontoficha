@@ -1,6 +1,6 @@
 # OdontoFlow - Manual de Preenchimento das Tabelas
 
-Status: rascunho inicial
+Última atualização: 2026-06-13
 
 Este manual define como cada tabela deve ser preenchida. Ele deve evoluir junto com o schema do Supabase.
 

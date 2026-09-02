@@ -1,6 +1,6 @@
 # OdontoFlow - Modelo de Dados
 
-Status: rascunho inicial
+Última atualização: 2026-09-02
 
 Este documento descreve a proposta inicial de modelo de dados do OdontoFlow. Os nomes de tabelas e campos devem seguir o padrao `pt_br` em `snake_case`.
 

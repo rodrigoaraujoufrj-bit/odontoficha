@@ -1,6 +1,6 @@
 # OdontoFlow - Regras de Negocio
 
-Status: rascunho inicial
+Última atualização: 2026-09-02
 
 Este documento registra regras e decisoes de produto para orientar o MVP.
 
