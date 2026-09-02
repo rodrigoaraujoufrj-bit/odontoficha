@@ -966,6 +966,47 @@
       display: grid;
     }
 
+    .treatment-plan-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      padding: 10px 14px;
+    }
+
+    .treatment-plan-chooser {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .treatment-plan-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .treatment-plan-option {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .treatment-plan-bar[hidden],
+    .treatment-plan-chooser[hidden],
+    .treatment-layout[hidden] {
+      display: none;
+    }
+
     .treatment-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
@@ -1689,6 +1730,12 @@
       font-weight: 850;
     }
 
+    .badge-urgent {
+      background: rgba(220, 38, 38, 0.12);
+      color: var(--danger);
+      margin-left: 6px;
+    }
+
     .loading {
       min-height: 220px;
       display: grid;
@@ -2134,7 +2181,7 @@
                         </div>
                         <div class="patient-care-card">
                           <h3>Tratamento em andamento</h3>
-                          <p class="muted">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
+                          <p class="muted" id="summaryTreatmentStatus">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
                           <div class="card-actions">
                             <button class="mini-button" type="button" disabled>Novo tratamento</button>
                             <button class="mini-button" type="button" disabled>Gerar orçamento</button>
@@ -2182,7 +2229,18 @@
                         <strong>Montar plano inicial</strong>
                         <p class="muted">Selecione dente, face e procedimento. O resumo abaixo já simula o orçamento da consulta.</p>
                       </div>
-                      <div class="treatment-layout">
+                      <div class="treatment-plan-bar" id="treatmentPlanBar" hidden>
+                        <div>
+                          <span class="badge" id="treatmentPlanStatusBadge">Rascunho</span>
+                          <span class="muted" id="treatmentPlanOwnerNote"></span>
+                        </div>
+                        <button class="mini-button" type="button" id="assumeTreatmentPlanButton" hidden>Assumir este plano</button>
+                      </div>
+                      <div class="treatment-plan-chooser" id="treatmentPlanChooser" hidden>
+                        <p class="muted">Este paciente tem mais de um plano em aberto. Escolha qual continuar:</p>
+                        <div class="treatment-plan-list" id="treatmentPlanList"></div>
+                      </div>
+                      <div class="treatment-layout" id="treatmentLayout">
                         <div class="odontogram-mini">
                           <div class="odontogram-header">
                             <div>
@@ -2272,14 +2330,20 @@
                               <input id="treatmentValue" type="number" min="0" step="10" inputmode="decimal" placeholder="0,00" />
                             </div>
                             <div class="field">
-                              <label for="treatmentStatus">Status do procedimento</label>
+                              <label for="treatmentStatus">Andamento</label>
                               <select id="treatmentStatus">
-                                <option value="planned">Planejado</option>
-                                <option value="care">Em tratamento</option>
-                                <option value="urgent">Urgente</option>
+                                <option value="planejado">Planejado</option>
+                                <option value="aprovado">Aprovado</option>
+                                <option value="em_andamento">Em andamento</option>
+                                <option value="realizado">Realizado</option>
+                                <option value="cancelado">Cancelado</option>
                               </select>
-                              <span class="hint">Você decide a prioridade clínica, não o sistema.</span>
+                              <span class="hint">Andamento de aprovação/execução. Severidade clínica é um campo separado, abaixo.</span>
                             </div>
+                            <label class="check-item">
+                              <input id="treatmentUrgent" type="checkbox" />
+                              Urgente (severidade clínica)
+                            </label>
                             <div class="field">
                               <label for="treatmentNotes">Observação clínica</label>
                               <textarea id="treatmentNotes" placeholder="Ex.: lesão distal, trocar restauração antiga, acompanhar sensibilidade."></textarea>
@@ -2636,9 +2700,18 @@
     const treatmentPriceRule = document.querySelector("#treatmentPriceRule");
     const treatmentValue = document.querySelector("#treatmentValue");
     const treatmentStatus = document.querySelector("#treatmentStatus");
+    const treatmentUrgent = document.querySelector("#treatmentUrgent");
     const treatmentNotes = document.querySelector("#treatmentNotes");
     const procedureContextHint = document.querySelector("#procedureContextHint");
     const addTreatmentItem = document.querySelector("#addTreatmentItem");
+    const treatmentLayout = document.querySelector("#treatmentLayout");
+    const treatmentPlanBar = document.querySelector("#treatmentPlanBar");
+    const treatmentPlanStatusBadge = document.querySelector("#treatmentPlanStatusBadge");
+    const treatmentPlanOwnerNote = document.querySelector("#treatmentPlanOwnerNote");
+    const assumeTreatmentPlanButton = document.querySelector("#assumeTreatmentPlanButton");
+    const treatmentPlanChooser = document.querySelector("#treatmentPlanChooser");
+    const treatmentPlanList = document.querySelector("#treatmentPlanList");
+    const summaryTreatmentStatus = document.querySelector("#summaryTreatmentStatus");
     const quoteList = document.querySelector("#quoteList");
     const quoteItemsCount = document.querySelector("#quoteItemsCount");
     const quoteTotal = document.querySelector("#quoteTotal");
@@ -2678,6 +2751,9 @@
     let treatmentItems = [];
     let editingTreatmentIndex = null;
     let highlightedTreatmentIndex = null;
+    let patientTreatmentPlans = [];
+    let currentTreatmentPlan = null;
+    let treatmentPlanLocked = false;
     let procedures = [];
     let priceRules = [];
     let procedureStorageMode = "local";
@@ -3025,6 +3101,188 @@
       }
     }
 
+    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, criado_em";
+
+    async function loadPatientTreatmentPlans(patientId) {
+      if (!patientId || !currentConsultorio?.id) return;
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em, itens_plano_tratamento(${PLAN_ITEM_COLUMNS})`)
+        .eq("paciente_id", patientId)
+        .eq("consultorio_id", currentConsultorio.id)
+        .order("criado_em", { ascending: false });
+
+      patientTreatmentPlans = error ? [] : (data || []);
+      renderTreatmentStatusSummary();
+    }
+
+    function getOpenTreatmentPlans() {
+      return patientTreatmentPlans.filter((plan) => !["concluido", "cancelado"].includes(plan.status));
+    }
+
+    function getActiveItemsOfPlan(plan) {
+      return (plan.itens_plano_tratamento || []).filter((item) => item.status !== "cancelado");
+    }
+
+    function renderTreatmentStatusSummary() {
+      if (!summaryTreatmentStatus) return;
+      if (!patientTreatmentPlans.length) {
+        summaryTreatmentStatus.textContent = "Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.";
+        return;
+      }
+      const openPlans = getOpenTreatmentPlans();
+      if (!openPlans.length) {
+        summaryTreatmentStatus.textContent = `${patientTreatmentPlans.length} ${patientTreatmentPlans.length === 1 ? "plano" : "planos"} no histórico, nenhum em aberto no momento.`;
+        return;
+      }
+      const totalItems = openPlans.reduce((sum, plan) => sum + getActiveItemsOfPlan(plan).length, 0);
+      summaryTreatmentStatus.textContent = `${openPlans.length} ${openPlans.length === 1 ? "plano em aberto" : "planos em aberto"} · ${totalItems} ${totalItems === 1 ? "procedimento planejado" : "procedimentos planejados"}.`;
+    }
+
+    function getPlanStatusLabel(status) {
+      const labels = {
+        rascunho: "Rascunho",
+        apresentado: "Apresentado",
+        aprovado_parcial: "Aprovado parcialmente",
+        aprovado: "Aprovado",
+        em_execucao: "Em execução",
+        concluido: "Concluído",
+        cancelado: "Cancelado",
+        substituido: "Substituído"
+      };
+      return labels[status] || status;
+    }
+
+    function getItemStatusLabel(status) {
+      const labels = {
+        planejado: "Planejado",
+        aprovado: "Aprovado",
+        em_andamento: "Em andamento",
+        realizado: "Realizado",
+        cancelado: "Cancelado"
+      };
+      return labels[status] || labels.planejado;
+    }
+
+    function mapDbItemToUiItem(row) {
+      const faces = Array.isArray(row.faces_dente) ? row.faces_dente : [];
+      return {
+        dbId: row.id,
+        ordem: row.ordem || 1,
+        tooth: row.numero_dente || "",
+        faces,
+        face: faces.length ? faces.join(", ") : "geral",
+        procedure: row.procedimento_nome,
+        procedureId: row.procedimento_id || "",
+        priceRuleId: row.regra_preco_procedimento_id || "",
+        priceRuleName: row.regra_preco_nome || "Valor manual",
+        value: Number(row.valor_final ?? row.valor_estimado ?? 0),
+        status: row.status || "planejado",
+        urgente: Boolean(row.urgente),
+        notes: row.observacao || ""
+      };
+    }
+
+    function canEditCurrentPlan() {
+      if (!currentTreatmentPlan) return true;
+      return currentTreatmentPlan.profissional_id === currentProfissional?.id;
+    }
+
+    function renderTreatmentPlanBar() {
+      if (!currentTreatmentPlan) {
+        treatmentPlanBar.hidden = true;
+        treatmentPlanLocked = false;
+        return;
+      }
+      treatmentPlanBar.hidden = false;
+      treatmentPlanStatusBadge.textContent = getPlanStatusLabel(currentTreatmentPlan.status);
+      const isOwner = canEditCurrentPlan();
+      treatmentPlanLocked = !isOwner;
+      if (isOwner) {
+        treatmentPlanOwnerNote.textContent = "";
+        assumeTreatmentPlanButton.hidden = true;
+      } else {
+        const ownerName = consultorioColegas.find((colega) => colega.id === currentTreatmentPlan.profissional_id)?.nome || "outro profissional do consultório";
+        treatmentPlanOwnerNote.textContent = `Plano conduzido por ${ownerName}. Assuma para editar.`;
+        assumeTreatmentPlanButton.hidden = false;
+      }
+      renderProcedureOptions(treatmentProcedure.value);
+      renderQuote();
+    }
+
+    function renderTreatmentPlanChooser(plans) {
+      treatmentPlanChooser.hidden = false;
+      treatmentLayout.hidden = true;
+      treatmentPlanBar.hidden = true;
+      treatmentPlanList.innerHTML = plans.map((plan) => `
+        <button class="mini-button treatment-plan-option" type="button" data-plan-id="${plan.id}">
+          <strong>${escapeHtml(plan.titulo || "Plano de tratamento")}</strong>
+          <span class="muted">${escapeHtml(getPlanStatusLabel(plan.status))} · ${getActiveItemsOfPlan(plan).length} itens${plan.profissional_id !== currentProfissional?.id ? " · de outro profissional" : ""}</span>
+        </button>
+      `).join("");
+    }
+
+    function selectTreatmentPlan(plan) {
+      currentTreatmentPlan = plan;
+      treatmentPlanChooser.hidden = true;
+      treatmentLayout.hidden = false;
+      const items = getActiveItemsOfPlan(plan)
+        .slice()
+        .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+        .map(mapDbItemToUiItem);
+      resetTreatmentDraft(items);
+      renderTreatmentPlanBar();
+    }
+
+    async function ensureTreatmentPlan() {
+      if (currentTreatmentPlan) return currentTreatmentPlan;
+      if (!selectedPatientId || !currentConsultorio?.id || !currentProfissional?.id) return null;
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .insert({
+          paciente_id: selectedPatientId,
+          consultorio_id: currentConsultorio.id,
+          profissional_id: currentProfissional.id,
+          titulo: "Plano de tratamento",
+          status: "rascunho"
+        })
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível criar o plano de tratamento.", "warning");
+        return null;
+      }
+
+      currentTreatmentPlan = { ...data, itens_plano_tratamento: [] };
+      patientTreatmentPlans.unshift(currentTreatmentPlan);
+      renderTreatmentPlanBar();
+      renderTreatmentStatusSummary();
+      return currentTreatmentPlan;
+    }
+
+    async function openContinueTreatmentFlow() {
+      currentTreatmentPlan = null;
+      const openPlans = getOpenTreatmentPlans();
+
+      if (!openPlans.length) {
+        treatmentPlanChooser.hidden = true;
+        treatmentLayout.hidden = false;
+        resetTreatmentDraft();
+        renderTreatmentPlanBar();
+        setTreatmentFeedback('Nenhum plano em aberto para este paciente. Use "Nova consulta" para começar um novo.', "warning");
+        return;
+      }
+
+      if (openPlans.length === 1) {
+        selectTreatmentPlan(openPlans[0]);
+        return;
+      }
+
+      renderTreatmentPlanChooser(openPlans);
+    }
+
     function renderPatientList() {
       const query = normalizeText(patientSearch.value);
       const digits = onlyDigits(patientSearch.value);
@@ -3108,9 +3366,14 @@
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
       document.querySelectorAll("[data-consultation-action]").forEach((button) => button.classList.remove("active"));
+      currentTreatmentPlan = null;
+      treatmentPlanChooser.hidden = true;
+      treatmentLayout.hidden = false;
       resetTreatmentDraft();
+      renderTreatmentPlanBar();
       await loadPatientAnamnese(patient.id);
       await loadPatientSharing(patient.id);
+      await loadPatientTreatmentPlans(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -3327,7 +3590,7 @@
         return;
       }
 
-      addTreatmentItem.disabled = false;
+      addTreatmentItem.disabled = treatmentPlanLocked;
       treatmentProcedure.innerHTML = available.map((procedure) => `
         <option value="${escapeHtml(procedure.id)}">${escapeHtml(procedure.nome)}</option>
       `).join("");
@@ -3545,10 +3808,10 @@
       setProcedureStatus(statusMessage, statusType);
     }
 
-    function resetTreatmentDraft() {
+    function resetTreatmentDraft(items = []) {
       selectedTooth = "";
       selectedFaces = [];
-      treatmentItems = [];
+      treatmentItems = items;
       editingTreatmentIndex = null;
       highlightedTreatmentIndex = null;
       selectedToothLabel.textContent = "--";
@@ -3559,7 +3822,8 @@
       renderSelectedToothSummary();
       renderProcedureOptions();
       treatmentNotes.value = "";
-      treatmentStatus.value = "planned";
+      treatmentStatus.value = "planejado";
+      treatmentUrgent.checked = false;
       addTreatmentItem.textContent = "Adicionar ao plano";
       clearTreatmentFeedback();
       clearQuoteAction();
@@ -3590,15 +3854,6 @@
 
     function faceClass(face) {
       return `face-${String(face || "").toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
-    }
-
-    function getTreatmentVisualStatus(item) {
-      return item.status || "planned";
-    }
-
-    function getStatusLabel(status) {
-      const labels = { planned: "Planejado", care: "Em tratamento", urgent: "Urgente" };
-      return labels[status] || labels.planned;
     }
 
     function getToothItems(tooth) {
@@ -3641,8 +3896,8 @@
         const plannedItems = getToothItems(node.dataset.tooth);
         const plannedFaces = plannedItems.flatMap((item) => Array.isArray(item.faces) ? item.faces : []);
         const visualFaces = isActive && selectedFaces.length ? selectedFaces : plannedFaces;
-        const hasUrgent = plannedItems.some((item) => getTreatmentVisualStatus(item) === "urgent");
-        const hasCare = plannedItems.some((item) => getTreatmentVisualStatus(item) === "care");
+        const hasUrgent = plannedItems.some((item) => item.urgente);
+        const hasCare = plannedItems.some((item) => item.status === "em_andamento");
         node.classList.toggle("active", isActive);
         node.classList.remove(...faceClasses);
         node.classList.remove(...statusClasses);
@@ -3817,12 +4072,15 @@
             ${item.notes ? `<div class="muted">${escapeHtml(item.notes)}</div>` : ""}
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
-          <td><span class="badge">${getStatusLabel(getTreatmentVisualStatus(item))}</span></td>
           <td>
-            <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento">
+            <span class="badge">${escapeHtml(getItemStatusLabel(item.status))}</span>
+            ${item.urgente ? `<span class="badge badge-urgent">Urgente</span>` : ""}
+          </td>
+          <td>
+            <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento" ${treatmentPlanLocked ? "disabled" : ""}>
               <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             </button>
-            <button class="icon-action delete" type="button" data-delete-treatment="${index}" aria-label="Excluir procedimento">
+            <button class="icon-action delete" type="button" data-delete-treatment="${index}" aria-label="Excluir procedimento" ${treatmentPlanLocked ? "disabled" : ""}>
               <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
             </button>
           </td>
@@ -3853,7 +4111,7 @@
         items: treatmentItems.map((item, index) => ({
           ...item,
           index: index + 1,
-          status: getStatusLabel(getTreatmentVisualStatus(item))
+          status: getItemStatusLabel(item.status) + (item.urgente ? " · Urgente" : "")
         }))
       };
     }
@@ -4292,7 +4550,7 @@
     });
 
     document.querySelectorAll("[data-consultation-action]").forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
         const action = button.dataset.consultationAction;
         if (action === "history") {
           patientSummary.classList.add("details-open");
@@ -4306,7 +4564,51 @@
         document.querySelector("#newTreatmentPanel strong").textContent = action === "continue" ? "Retomar plano do paciente" : "Montar plano inicial";
         newTreatmentPanel.classList.add("active");
         newTreatmentPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        if (action === "new") {
+          currentTreatmentPlan = null;
+          treatmentPlanChooser.hidden = true;
+          treatmentLayout.hidden = false;
+          resetTreatmentDraft();
+          renderTreatmentPlanBar();
+        } else if (action === "continue") {
+          await openContinueTreatmentFlow();
+        }
       });
+    });
+
+    treatmentPlanList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-plan-id]");
+      if (!button) return;
+      const plan = patientTreatmentPlans.find((item) => item.id === button.dataset.planId);
+      if (plan) selectTreatmentPlan(plan);
+    });
+
+    assumeTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan) return;
+      assumeTreatmentPlanButton.disabled = true;
+      assumeTreatmentPlanButton.textContent = "Assumindo...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ profissional_id: currentProfissional.id })
+        .eq("id", currentTreatmentPlan.id)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      assumeTreatmentPlanButton.disabled = false;
+      assumeTreatmentPlanButton.textContent = "Assumir este plano";
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível assumir este plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano assumido. Você já pode editar os procedimentos.");
     });
 
     toothGrid.addEventListener("click", (event) => {
@@ -4369,7 +4671,30 @@
       treatmentValue.value = rule?.valor ?? "";
     });
 
-    addTreatmentItem.addEventListener("click", () => {
+    function buildItemPayload(item, planId) {
+      return {
+        plano_tratamento_id: planId,
+        procedimento_id: item.procedureId || null,
+        regra_preco_procedimento_id: item.priceRuleId || null,
+        numero_dente: item.tooth || null,
+        faces_dente: item.faces && item.faces.length ? item.faces : [],
+        procedimento_nome: item.procedure,
+        regra_preco_nome: item.priceRuleName || null,
+        valor_estimado: item.value,
+        valor_final: item.value,
+        observacao: item.notes || null,
+        status: item.status,
+        urgente: item.urgente,
+        ordem: item.ordem
+      };
+    }
+
+    addTreatmentItem.addEventListener("click", async () => {
+      if (treatmentPlanLocked) {
+        setTreatmentFeedback("Assuma este plano antes de adicionar ou editar procedimentos.", "warning");
+        return;
+      }
+
       const selectedProcedure = procedures.find((procedure) => procedure.id === treatmentProcedure.value);
       const selectedRule = priceRules.find((rule) => rule.id === treatmentPriceRule.value);
       if (!selectedProcedure) {
@@ -4387,7 +4712,10 @@
       }
 
       const value = Number(treatmentValue.value || 0);
+      const editingItem = editingTreatmentIndex === null ? null : treatmentItems[editingTreatmentIndex];
       const nextItem = {
+        dbId: editingItem?.dbId,
+        ordem: editingItem?.ordem || treatmentItems.length + 1,
         tooth: selectedProcedure.exige_dente ? selectedTooth : "",
         faces: [...selectedFaces],
         face: selectedProcedure.exige_face && selectedFaces.length ? selectedFaces.join(", ") : "geral",
@@ -4397,23 +4725,64 @@
         priceRuleName: selectedRule?.nome_regra || "Valor manual",
         value,
         status: treatmentStatus.value,
+        urgente: treatmentUrgent.checked,
         notes: treatmentNotes.value.trim()
       };
 
+      addTreatmentItem.disabled = true;
+
+      const plan = await ensureTreatmentPlan();
+      if (!plan) {
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        return;
+      }
+
       if (editingTreatmentIndex === null) {
-        treatmentItems.push(nextItem);
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .insert(buildItemPayload(nextItem, plan.id))
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        if (error) {
+          setTreatmentFeedback("Não foi possível salvar este procedimento no plano.", "warning");
+          return;
+        }
+
+        const savedItem = mapDbItemToUiItem(data);
+        treatmentItems.push(savedItem);
+        plan.itens_plano_tratamento = plan.itens_plano_tratamento || [];
+        plan.itens_plano_tratamento.push(data);
         highlightedTreatmentIndex = treatmentItems.length - 1;
         setTreatmentFeedback("Procedimento adicionado ao plano.");
       } else {
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update(buildItemPayload(nextItem, plan.id))
+          .eq("id", nextItem.dbId)
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        if (error) {
+          setTreatmentFeedback("Não foi possível salvar a alteração deste procedimento.", "warning");
+          return;
+        }
+
         highlightedTreatmentIndex = editingTreatmentIndex;
-        treatmentItems[editingTreatmentIndex] = nextItem;
+        treatmentItems[editingTreatmentIndex] = mapDbItemToUiItem(data);
+        const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
+        if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex] = data;
         editingTreatmentIndex = null;
         addTreatmentItem.textContent = "Adicionar ao plano";
         setTreatmentFeedback("Procedimento atualizado no plano.");
       }
 
+      renderTreatmentStatusSummary();
       treatmentNotes.value = "";
-      treatmentStatus.value = "planned";
+      treatmentStatus.value = "planejado";
+      treatmentUrgent.checked = false;
       clearQuoteAction();
       renderQuote();
       updateSelectedToothVisual();
@@ -4423,14 +4792,33 @@
       }, 1400);
     });
 
-    treatmentPlanRows.addEventListener("click", (event) => {
+    treatmentPlanRows.addEventListener("click", async (event) => {
       const editButton = event.target.closest("[data-edit-treatment]");
       const deleteButton = event.target.closest("[data-delete-treatment]");
 
       if (deleteButton) {
+        if (treatmentPlanLocked) return;
         const index = Number(deleteButton.dataset.deleteTreatment);
         const removed = treatmentItems[index];
+        if (!removed) return;
+
+        deleteButton.disabled = true;
+        const plan = currentTreatmentPlan;
+        const { error } = removed.dbId && plan
+          ? await supabase.from("itens_plano_tratamento").update({ status: "cancelado" }).eq("id", removed.dbId)
+          : { error: null };
+
+        if (error) {
+          deleteButton.disabled = false;
+          setTreatmentFeedback("Não foi possível remover este procedimento.", "warning");
+          return;
+        }
+
         treatmentItems.splice(index, 1);
+        if (plan) {
+          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === removed.dbId);
+          if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex].status = "cancelado";
+        }
         if (editingTreatmentIndex === index) {
           editingTreatmentIndex = null;
           addTreatmentItem.textContent = "Adicionar ao plano";
@@ -4443,13 +4831,14 @@
           removed ? `Procedimento removido: ${removed.procedure}.` : "Procedimento removido.",
           "warning"
         );
+        renderTreatmentStatusSummary();
         clearQuoteAction();
         renderQuote();
         updateSelectedToothVisual();
         return;
       }
 
-      if (!editButton) return;
+      if (!editButton || treatmentPlanLocked) return;
       const index = Number(editButton.dataset.editTreatment);
       const item = treatmentItems[index];
       if (!item) return;
@@ -4467,7 +4856,8 @@
       const procedureId = item.procedureId || procedures.find((procedure) => procedure.nome === item.procedure)?.id || "";
       renderProcedureOptions(procedureId, item.priceRuleId);
       treatmentValue.value = item.value;
-      treatmentStatus.value = item.status || "planned";
+      treatmentStatus.value = item.status || "planejado";
+      treatmentUrgent.checked = Boolean(item.urgente);
       treatmentNotes.value = item.notes || "";
       addTreatmentItem.textContent = "Salvar alteração";
       highlightedTreatmentIndex = index;
