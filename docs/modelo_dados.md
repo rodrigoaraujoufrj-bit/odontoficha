@@ -47,6 +47,9 @@ Guarda os locais de atendimento.
 Campos provaveis:
 
 - `id`
+- `criado_por_usuario_id` (auditoria: quem criou o registro do consultorio; imutavel
+  apos o insert, nao concede nenhum privilegio administrativo alem dos outros
+  profissionais vinculados)
 - `nome`
 - `telefone`
 - `email`
@@ -70,6 +73,10 @@ Campos provaveis:
 - `criado_em`
 - `atualizado_em`
 
+Qualquer profissional vinculado (ativo) a um consultorio pode ver quais outros
+profissionais tambem estao vinculados a ele (nome e CRO) - necessario para poder
+convidar um colega a compartilhar um paciente.
+
 ### pacientes
 
 Guarda dados basicos do paciente.
@@ -77,6 +84,9 @@ Guarda dados basicos do paciente.
 Campos provaveis:
 
 - `id`
+- `criado_por_profissional_id` (auditoria: quem cadastrou o paciente pela primeira
+  vez; imutavel apos o insert e **nao** e o mecanismo de controle de acesso -
+  quem pode ver/editar o paciente e sempre decidido por `paciente_consultorios`)
 - `nome`
 - `telefone`
 - `email`
@@ -88,7 +98,11 @@ Campos provaveis:
 
 ### paciente_consultorios
 
-Vincula pacientes a consultorios e profissionais.
+Vincula pacientes a consultorios e profissionais. **Este e o mecanismo real de
+compartilhamento**: um mesmo paciente pode ter varias linhas ativas aqui, uma para
+cada profissional que o atende naquele consultorio (por exemplo, dois dentistas do
+mesmo consultorio dividindo o mesmo paciente conforme o tipo de tratamento). Todo
+profissional com uma linha ativa tem acesso igual ao paciente.
 
 Campos provaveis:
 
@@ -351,3 +365,14 @@ Campos provaveis:
 - Se laboratorio entra no MVP completo ou apenas como controle simples de etapas.
 - Nivel inicial do odontograma: texto por dente, selecao de face ou interface visual.
 - Como representar faces do dente sem atrasar o MVP v1.
+- Como revogar o acesso de um profissional a um paciente compartilhado (desativar
+  `paciente_consultorios`) atraves da propria interface, sem depender de acesso direto
+  ao banco.
+- Se compartilhamento de paciente deve ser possivel entre profissionais de
+  **consultorios diferentes** (hoje so e permitido entre colegas do mesmo consultorio).
+- Papel de secretaria/recepcionista: ainda nao existe no modelo (ver Regras De Acesso
+  E Permissoes em `regras_negocio.md`).
+
+Resolvido nesta rodada: compartilhamento de paciente entre profissionais do mesmo
+consultorio (ver `paciente_consultorios` acima e a migracao
+`20260902100000_compartilhamento_pacientes_entre_profissionais.sql`).

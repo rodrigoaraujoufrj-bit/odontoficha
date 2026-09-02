@@ -42,6 +42,31 @@ Organize ficha, evolucao, agenda, orcamento, financeiro e laboratorio em um flux
 - Paciente nao deve depender de um unico `consultorio_id` fixo na tabela principal.
 - Vinculo com consultorio deve ser controlado em `paciente_consultorios`.
 - Se o consultorio for informado errado, corrigir o vinculo, nao duplicar o paciente.
+- `criado_por_profissional_id` (em `pacientes`) e um dado de auditoria: registra apenas
+  quem cadastrou o paciente pela primeira vez e nunca muda depois disso. Ele **nao**
+  define quem pode atender o paciente hoje - isso e sempre decidido por `paciente_consultorios`.
+
+## Regras De Compartilhamento De Paciente Entre Profissionais
+
+Confirmado como cenario real: mais de um dentista do mesmo consultorio pode dividir o
+mesmo paciente, dependendo do tratamento (ex.: dois profissionais do mesmo consultorio,
+cada um responsavel por um tipo de procedimento).
+
+- Um paciente pode estar vinculado a mais de um profissional no mesmo consultorio ao
+  mesmo tempo, cada vinculo sendo uma linha ativa em `paciente_consultorios`.
+- Todo profissional vinculado (ativo) a um paciente tem acesso igual: pode ver e
+  atualizar ficha, anamnese, planos de tratamento e orcamentos desse paciente. Nao existe
+  um "dono" com mais poder que os demais sobre o cadastro do paciente.
+- Compartilhar um paciente e uma acao explicita: um profissional que ja atende o
+  paciente escolhe um colega do mesmo consultorio e cria o vinculo. Nao existe
+  compartilhamento implicito ou automatico entre todos os profissionais de um
+  consultorio.
+- Profissionais do mesmo consultorio podem ver o nome e CRO uns dos outros (apenas
+  isso) para viabilizar essa colaboracao - fora dessa lista, nenhum dado de outro
+  profissional fica visivel.
+- Remover o acesso de um profissional a um paciente compartilhado (desativar o
+  vinculo) ainda nao tem interface no MVP; hoje so o proprio profissional consegue
+  desativar o proprio vinculo diretamente no banco.
 
 ## Regras De Cadastro Do Profissional
 
@@ -133,6 +158,12 @@ cpf no banco: 12345678909
 - Um plano pode estar em rascunho.
 - Um plano pode gerar orcamento.
 - Itens do plano devem aceitar dente e face, mas isso nao deve ser sempre obrigatorio.
+- `profissional_id` no plano representa quem esta conduzindo aquele plano **agora**,
+  nao necessariamente quem criou. Qualquer profissional com acesso ao paciente naquele
+  consultorio pode assumir um plano criado por um colega (por exemplo, um especialista
+  assumindo uma etapa especifica do tratamento). Reatribuir so e possivel para si mesmo,
+  e so quando o profissional ja tem acesso legitimo ao paciente e ao consultorio - nunca
+  para alguem de fora da clinica.
 - Status minimo do item:
   - `planejado`
   - `aprovado`
@@ -199,13 +230,18 @@ cpf no banco: 12345678909
 
 ## Regras De Acesso E Permissoes
 
-Ainda em aberto.
+Decidido para profissionais (dentistas): ver "Regras De Compartilhamento De Paciente
+Entre Profissionais". Resumo: acesso a paciente e sempre por vinculo explicito em
+`paciente_consultorios`, todo profissional vinculado tem acesso igual, e colegas do
+mesmo consultorio se enxergam (nome/CRO) para viabilizar o compartilhamento.
 
-Hipotese inicial:
+Ainda em aberto (perfil secretaria/recepcionista):
 
-- Dentista pode ver todos os dados dos seus pacientes.
 - Secretaria/recepcionista pode cadastrar paciente, agenda, pagamentos e laboratorio.
-- Dados clinicos sensiveis podem exigir permissao mais restrita.
+- Dados clinicos sensiveis (anamnese, historico medico) podem exigir permissao mais
+  restrita que a de agenda/cadastro basico.
+- Hoje o sistema so tem o papel "profissional" (`profissionais` = 1 conta = 1 dentista);
+  um papel separado para secretaria/recepcionista ainda nao existe no modelo de dados.
 
 ## Riscos
 

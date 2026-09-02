@@ -838,6 +838,42 @@
       gap: 10px;
     }
 
+    .patient-care-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .shared-colleagues-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .shared-colleagues-list li {
+      background: rgba(20, 184, 166, 0.1);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+    }
+
+    .share-patient-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .share-patient-form select {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    #shareColleagueStatus.error {
+      color: #991b1b;
+    }
+
     .patient-next-actions {
       align-items: center;
     }
@@ -2016,6 +2052,15 @@
                             <button class="mini-button" type="button" disabled>Gerar orçamento</button>
                           </div>
                         </div>
+                        <div class="patient-care-card full-width">
+                          <h3>Compartilhado com</h3>
+                          <ul class="shared-colleagues-list" id="summarySharedList"></ul>
+                          <form class="share-patient-form" id="sharePatientForm">
+                            <select id="shareColleagueSelect"></select>
+                            <button class="mini-button" type="submit" id="sharePatientButton">Compartilhar</button>
+                          </form>
+                          <p class="muted" id="shareColleagueStatus"></p>
+                        </div>
                       </div>
                     </div>
                     <div class="card-actions patient-next-actions">
@@ -2474,6 +2519,10 @@
     const newTreatmentPanel = document.querySelector("#newTreatmentPanel");
     const togglePatientDetails = document.querySelector("#togglePatientDetails");
     const patientDetailsPanel = document.querySelector("#patientDetailsPanel");
+    const summarySharedList = document.querySelector("#summarySharedList");
+    const sharePatientForm = document.querySelector("#sharePatientForm");
+    const shareColleagueSelect = document.querySelector("#shareColleagueSelect");
+    const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
     const toothGrid = document.querySelector("#toothGrid");
     const faceGrid = document.querySelector("#faceGrid");
     const selectedToothLabel = document.querySelector("#selectedToothLabel");
@@ -2516,6 +2565,7 @@
     let currentProfissional = null;
     let currentConsultorio = null;
     let currentPatients = [];
+    let consultorioColegas = [];
     let selectedPatientId = null;
     let selectedTooth = "";
     let selectedFaces = [];
@@ -2781,6 +2831,7 @@
       document.querySelector("#patientContextProfissional").textContent = profissional.nome;
       document.querySelector("#patientContextConsultorio").textContent = consultorio?.nome || "Consultório atual";
       await loadProcedureCatalog();
+      await loadConsultorioColegas();
       await loadPatients();
       showDashboardTab("home");
       showView("dashboard");
@@ -2802,21 +2853,78 @@
     }
 
     async function loadPatients() {
-      if (!currentProfissional?.id) return;
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
       const { data, error } = await supabase
-        .from("pacientes")
-        .select("id, nome, telefone, email, cpf, data_nascimento, observacoes, criado_em")
-        .eq("criado_por_profissional_id", currentProfissional.id)
-        .is("arquivado_em", null)
-        .order("nome", { ascending: true });
+        .from("paciente_consultorios")
+        .select("pacientes(id, nome, telefone, email, cpf, data_nascimento, observacoes, criado_em, arquivado_em)")
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("ativo", true);
 
       if (error) {
         patientList.innerHTML = `<div class="status show error">Não foi possível carregar pacientes.</div>`;
         return;
       }
 
-      currentPatients = data || [];
+      const byId = new Map();
+      (data || []).forEach((row) => {
+        const patient = Array.isArray(row.pacientes) ? row.pacientes[0] : row.pacientes;
+        if (patient && !patient.arquivado_em && !byId.has(patient.id)) byId.set(patient.id, patient);
+      });
+      currentPatients = Array.from(byId.values()).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
       renderPatientList();
+    }
+
+    async function loadConsultorioColegas() {
+      if (!currentConsultorio?.id) return;
+      const { data, error } = await supabase
+        .from("profissional_consultorios")
+        .select("profissional_id, profissionais(id, nome)")
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("ativo", true);
+
+      if (error) {
+        consultorioColegas = [];
+        return;
+      }
+
+      consultorioColegas = (data || [])
+        .map((row) => (Array.isArray(row.profissionais) ? row.profissionais[0] : row.profissionais))
+        .filter((profissional) => profissional && profissional.id !== currentProfissional?.id);
+    }
+
+    async function loadPatientSharing(patientId) {
+      if (!patientId || !currentConsultorio?.id) return;
+      shareColleagueStatus.textContent = "";
+
+      const { data, error } = await supabase
+        .from("paciente_consultorios")
+        .select("profissional_id, profissionais(id, nome)")
+        .eq("paciente_id", patientId)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("ativo", true);
+
+      const linked = error
+        ? []
+        : (data || []).map((row) => (Array.isArray(row.profissionais) ? row.profissionais[0] : row.profissionais)).filter(Boolean);
+
+      summarySharedList.innerHTML = linked.length
+        ? linked.map((profissional) => `<li>${escapeHtml(profissional.nome)}</li>`).join("")
+        : `<li class="muted">Só você atende este paciente aqui</li>`;
+
+      const linkedIds = new Set(linked.map((profissional) => profissional.id));
+      const disponiveis = consultorioColegas.filter((profissional) => !linkedIds.has(profissional.id));
+
+      if (!disponiveis.length) {
+        shareColleagueSelect.innerHTML = `<option value="">Nenhum colega disponível</option>`;
+        shareColleagueSelect.disabled = true;
+        sharePatientForm.querySelector("button").disabled = true;
+      } else {
+        shareColleagueSelect.innerHTML = disponiveis
+          .map((profissional) => `<option value="${escapeHtml(profissional.id)}">${escapeHtml(profissional.nome)}</option>`)
+          .join("");
+        shareColleagueSelect.disabled = false;
+        sharePatientForm.querySelector("button").disabled = false;
+      }
     }
 
     function renderPatientList() {
@@ -2900,6 +3008,7 @@
       document.querySelectorAll("[data-consultation-action]").forEach((button) => button.classList.remove("active"));
       resetTreatmentDraft();
       await loadPatientAnamnese(patient.id);
+      await loadPatientSharing(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -3855,6 +3964,7 @@
       currentProfissional = null;
       currentConsultorio = null;
       currentPatients = [];
+      consultorioColegas = [];
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
@@ -3959,6 +4069,37 @@
       const card = event.target.closest("[data-patient-id]");
       if (!card) return;
       await showPatientSummary(card.dataset.patientId);
+    });
+
+    sharePatientForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const patient = getSelectedPatient();
+      const colegaId = shareColleagueSelect.value;
+      if (!patient || !colegaId || !currentConsultorio?.id) return;
+
+      const button = sharePatientForm.querySelector("button");
+      button.disabled = true;
+      shareColleagueStatus.textContent = "Compartilhando...";
+      shareColleagueStatus.classList.remove("error");
+
+      const { error } = await supabase
+        .from("paciente_consultorios")
+        .insert({
+          paciente_id: patient.id,
+          consultorio_id: currentConsultorio.id,
+          profissional_id: colegaId,
+          ativo: true
+        });
+
+      if (error) {
+        shareColleagueStatus.textContent = "Não foi possível compartilhar o paciente com este colega.";
+        shareColleagueStatus.classList.add("error");
+        button.disabled = false;
+        return;
+      }
+
+      shareColleagueStatus.textContent = "Paciente compartilhado.";
+      await loadPatientSharing(patient.id);
     });
 
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {
