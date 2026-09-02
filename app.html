@@ -2876,36 +2876,28 @@
 
     async function loadConsultorioColegas() {
       if (!currentConsultorio?.id) return;
-      const { data, error } = await supabase
-        .from("profissional_consultorios")
-        .select("profissional_id, profissionais(id, nome)")
-        .eq("consultorio_id", currentConsultorio.id)
-        .eq("ativo", true);
+      const { data, error } = await supabase.rpc("colegas_do_consultorio", {
+        consultorio_uuid: currentConsultorio.id
+      });
 
       if (error) {
         consultorioColegas = [];
         return;
       }
 
-      consultorioColegas = (data || [])
-        .map((row) => (Array.isArray(row.profissionais) ? row.profissionais[0] : row.profissionais))
-        .filter((profissional) => profissional && profissional.id !== currentProfissional?.id);
+      consultorioColegas = (data || []).filter((profissional) => profissional.id !== currentProfissional?.id);
     }
 
     async function loadPatientSharing(patientId) {
       if (!patientId || !currentConsultorio?.id) return;
       shareColleagueStatus.textContent = "";
 
-      const { data, error } = await supabase
-        .from("paciente_consultorios")
-        .select("profissional_id, profissionais(id, nome)")
-        .eq("paciente_id", patientId)
-        .eq("consultorio_id", currentConsultorio.id)
-        .eq("ativo", true);
+      const { data, error } = await supabase.rpc("profissionais_vinculados_paciente", {
+        paciente_uuid: patientId,
+        consultorio_uuid: currentConsultorio.id
+      });
 
-      const linked = error
-        ? []
-        : (data || []).map((row) => (Array.isArray(row.profissionais) ? row.profissionais[0] : row.profissionais)).filter(Boolean);
+      const linked = (error ? [] : data || []).filter((profissional) => profissional.id !== currentProfissional?.id);
 
       summarySharedList.innerHTML = linked.length
         ? linked.map((profissional) => `<li>${escapeHtml(profissional.nome)}</li>`).join("")
