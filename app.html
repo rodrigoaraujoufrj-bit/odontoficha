@@ -958,11 +958,64 @@
       display: grid;
       gap: 12px;
       align-content: start;
-      min-height: 560px;
+    }
+
+    .odontogram-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pediatric-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+
+    .pediatric-toggle.on {
+      color: #b45309;
+    }
+
+    .pediatric-switch {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--line);
+      transition: background 0.15s ease;
+      flex: 0 0 auto;
+    }
+
+    .pediatric-switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      transition: transform 0.15s ease;
+    }
+
+    .pediatric-toggle.on .pediatric-switch {
+      background: #d97706;
+    }
+
+    .pediatric-toggle.on .pediatric-switch::after {
+      transform: translateX(14px);
     }
 
     .tooth-grid {
-      min-height: 410px;
       overflow: visible;
     }
 
@@ -981,13 +1034,6 @@
       stroke: #cfe2e7;
       stroke-width: 1.25;
       transition: fill 0.18s ease, stroke 0.18s ease;
-    }
-
-    .tooth-detail {
-      stroke: #d9e8ec;
-      stroke-width: 0.9;
-      fill: none;
-      pointer-events: none;
     }
 
     .tooth-face {
@@ -2096,9 +2142,15 @@
                       </div>
                       <div class="treatment-layout">
                         <div class="odontogram-mini">
-                          <div>
-                            <strong>Odontograma rápido</strong>
-                            <p class="muted">Arcada em numeração FDI. Clique no dente e depois marque a face.</p>
+                          <div class="odontogram-header">
+                            <div>
+                              <strong>Odontograma rápido</strong>
+                              <p class="muted" id="odontogramHint">Arcada em numeração FDI. Clique no dente e depois marque a face.</p>
+                            </div>
+                            <label class="pediatric-toggle" id="pediatricToggle">
+                              <span class="pediatric-switch"></span>
+                              Pediátrico
+                            </label>
                           </div>
                           <div class="tooth-grid" id="toothGrid" aria-label="Selecionar dente"></div>
                           <div class="odontogram-legend" aria-label="Legenda do odontograma">
@@ -2525,6 +2577,8 @@
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
     const toothGrid = document.querySelector("#toothGrid");
     const faceGrid = document.querySelector("#faceGrid");
+    const pediatricToggle = document.querySelector("#pediatricToggle");
+    const odontogramHint = document.querySelector("#odontogramHint");
     const selectedToothLabel = document.querySelector("#selectedToothLabel");
     const selectedToothSummary = document.querySelector("#selectedToothSummary");
     const treatmentProcedure = document.querySelector("#treatmentProcedure");
@@ -3543,79 +3597,129 @@
       renderSelectedToothSummary();
     }
 
+    const TOOTH_SETS = {
+      adult: {
+        upperRight: ["18", "17", "16", "15", "14", "13", "12", "11"],
+        upperLeft: ["21", "22", "23", "24", "25", "26", "27", "28"],
+        lowerRight: ["48", "47", "46", "45", "44", "43", "42", "41"],
+        lowerLeft: ["31", "32", "33", "34", "35", "36", "37", "38"],
+        family: { 1: "incisor", 2: "incisor", 3: "canine", 4: "premolar", 5: "premolar", 6: "molar", 7: "molar", 8: "molar" },
+        size: { 1: [17, 22, 23], 2: [14, 20, 21], 3: [16, 19, 27], 4: [19, 21, 19], 5: [19, 21, 18], 6: [29, 23, 17], 7: [27, 23, 16], 8: [23, 22, 15] },
+      },
+      pediatric: {
+        upperRight: ["55", "54", "53", "52", "51"],
+        upperLeft: ["61", "62", "63", "64", "65"],
+        lowerRight: ["85", "84", "83", "82", "81"],
+        lowerLeft: ["71", "72", "73", "74", "75"],
+        family: { 1: "incisor", 2: "incisor", 3: "canine", 4: "molar", 5: "molar" },
+        size: { 1: [14, 17, 16], 2: [12, 16, 15], 3: [13, 15, 19], 4: [21, 17, 12], 5: [23, 18, 12] },
+      },
+    };
+
+    let pediatricMode = false;
+
+    function toothShapePath(cx, topY, w, crownH, rootH, family) {
+      const r = Math.min(w * 0.42, crownH * 0.42);
+      const topEdge = family === "canine"
+        ? `M ${cx - w / 2} ${topY + r}
+           Q ${cx - w / 2} ${topY} ${cx - w / 2 + r} ${topY}
+           L ${cx - w * 0.14} ${topY}
+           L ${cx} ${topY - crownH * 0.24}
+           L ${cx + w * 0.14} ${topY}
+           L ${cx + w / 2 - r} ${topY}
+           Q ${cx + w / 2} ${topY} ${cx + w / 2} ${topY + r}`
+        : `M ${cx - w / 2} ${topY + r}
+           Q ${cx - w / 2} ${topY} ${cx - w / 2 + r} ${topY}
+           L ${cx + w / 2 - r} ${topY}
+           Q ${cx + w / 2} ${topY} ${cx + w / 2} ${topY + r}`;
+
+      if (family === "molar") {
+        const forkY = topY + crownH + rootH * 0.4;
+        return `${topEdge}
+          L ${cx + w / 2} ${topY + crownH - 3}
+          Q ${cx + w / 2} ${topY + crownH + 2} ${cx + w * 0.28} ${forkY}
+          Q ${cx + w * 0.2} ${forkY + rootH * 0.2} ${cx + w * 0.13} ${topY + crownH + rootH}
+          Q ${cx + w * 0.08} ${forkY + rootH * 0.12} ${cx + 2} ${forkY + 1}
+          L ${cx - 2} ${forkY + 1}
+          Q ${cx - w * 0.08} ${forkY + rootH * 0.12} ${cx - w * 0.13} ${topY + crownH + rootH}
+          Q ${cx - w * 0.2} ${forkY + rootH * 0.2} ${cx - w * 0.28} ${forkY}
+          Q ${cx - w / 2} ${topY + crownH + 2} ${cx - w / 2} ${topY + crownH - 3}
+          Z`;
+      }
+
+      return `${topEdge}
+        L ${cx + w / 2} ${topY + crownH - 3}
+        Q ${cx + w / 2} ${topY + crownH + 3} ${cx + w * 0.2} ${topY + crownH + rootH * 0.55}
+        Q ${cx + 2.5} ${topY + crownH + rootH - 3} ${cx} ${topY + crownH + rootH}
+        Q ${cx - 2.5} ${topY + crownH + rootH - 3} ${cx - w * 0.2} ${topY + crownH + rootH * 0.55}
+        Q ${cx - w / 2} ${topY + crownH + 3} ${cx - w / 2} ${topY + crownH - 3}
+        Z`;
+    }
+
+    function toothFaceMarks(cx, topY, w, crownH, rootH) {
+      const innerW = w * 0.6;
+      return `
+        <rect class="tooth-face" data-surface="V" x="${cx - innerW / 2}" y="${topY + crownH * 0.06}" width="${innerW}" height="${crownH * 0.24}" rx="${crownH * 0.1}" />
+        <rect class="tooth-face" data-surface="M" x="${cx - w * 0.44}" y="${topY + crownH * 0.24}" width="${w * 0.24}" height="${crownH * 0.52}" rx="${w * 0.09}" />
+        <rect class="tooth-face" data-surface="D" x="${cx + w * 0.2}" y="${topY + crownH * 0.24}" width="${w * 0.24}" height="${crownH * 0.52}" rx="${w * 0.09}" />
+        <rect class="tooth-face" data-surface="L/P" x="${cx - innerW / 2}" y="${topY + crownH * 0.70}" width="${innerW}" height="${crownH * 0.24}" rx="${crownH * 0.1}" />
+        <ellipse class="tooth-face" data-surface="O" cx="${cx}" cy="${topY + crownH * 0.5}" rx="${w * 0.19}" ry="${crownH * 0.19}" />
+        <circle class="tooth-face" data-surface="Raiz" cx="${cx}" cy="${topY + crownH + rootH * 0.42}" r="${Math.min(3.2, w * 0.14)}" />
+      `;
+    }
+
+    function layoutToothArch(rightHalf, leftHalf, sizeMap, familyMap, gap, midGap) {
+      const positions = [];
+      let x = 0;
+      let maxH = 0;
+      function place(tooth) {
+        const pos = Number(tooth[1]);
+        const [w, crownH, rootH] = sizeMap[pos];
+        x += w / 2;
+        positions.push({ tooth, cx: x, w, crownH, rootH, family: familyMap[pos] });
+        maxH = Math.max(maxH, crownH + rootH);
+        x += w / 2;
+      }
+      rightHalf.forEach((tooth, i) => { if (i > 0) x += gap; place(tooth); });
+      x += midGap;
+      const midX = x - midGap / 2;
+      leftHalf.forEach((tooth, i) => { if (i > 0) x += gap; place(tooth); });
+      return { positions, width: x, midX, maxH };
+    }
+
+    function buildToothRow(positions, topY) {
+      return positions.map(({ tooth, cx, w, crownH, rootH, family }) => `
+        <g class="tooth-node" data-tooth="${tooth}" tabindex="0" role="button" aria-label="Dente ${tooth}">
+          <path class="tooth-shape" d="${toothShapePath(cx, topY, w, crownH, rootH, family)}" />
+          ${toothFaceMarks(cx, topY, w, crownH, rootH)}
+          <text class="tooth-label" x="${cx}" y="${topY - 7}" text-anchor="middle">${tooth}</text>
+        </g>
+      `).join("");
+    }
+
     function renderToothGrid() {
-      const upperRight = ["18", "17", "16", "15", "14", "13", "12", "11"];
-      const upperLeft = ["21", "22", "23", "24", "25", "26", "27", "28"];
-      const lowerRight = ["48", "47", "46", "45", "44", "43", "42", "41"];
-      const lowerLeft = ["31", "32", "33", "34", "35", "36", "37", "38"];
+      const set = pediatricMode ? TOOTH_SETS.pediatric : TOOTH_SETS.adult;
+      const gap = 7, midGap = 16, margin = 20;
 
-      const toothPath = (x, y, width, height, flip) => {
-        const crown = height * 0.34;
-        const root = height - crown;
-        const top = y - height / 2;
-        const crownEnd = top + crown;
-        const rootEnd = top + crown + root;
-        const rootTip = rootEnd * flip + y * (1 - flip);
-        if (flip === 1) {
-          return `M ${x - width / 2} ${top + 7}
-            C ${x - width / 2 - 3} ${top + 18}, ${x - width / 2 + 2} ${crownEnd}, ${x - width * 0.24} ${crownEnd}
-            C ${x - width * 0.16} ${crownEnd + root * 0.42}, ${x - width * 0.1} ${rootEnd - 4}, ${x} ${rootEnd}
-            C ${x + width * 0.1} ${rootEnd - 4}, ${x + width * 0.16} ${crownEnd + root * 0.42}, ${x + width * 0.24} ${crownEnd}
-            C ${x + width / 2 - 2} ${crownEnd}, ${x + width / 2 + 3} ${top + 18}, ${x + width / 2} ${top + 7}
-            C ${x + width * 0.28} ${top - 3}, ${x - width * 0.28} ${top - 3}, ${x - width / 2} ${top + 7} Z`;
-        }
+      const upper = layoutToothArch(set.upperRight, set.upperLeft, set.size, set.family, gap, midGap);
+      const lower = layoutToothArch(set.lowerRight, set.lowerLeft, set.size, set.family, gap, midGap);
+      const archWidth = Math.max(upper.width, lower.width);
 
-        return `M ${x - width / 2} ${top + height - 7}
-          C ${x - width / 2 - 3} ${top + height - 18}, ${x - width / 2 + 2} ${top + height - crown}, ${x - width * 0.24} ${top + height - crown}
-          C ${x - width * 0.16} ${top + height - crown - root * 0.42}, ${x - width * 0.1} ${top + 4}, ${x} ${top}
-          C ${x + width * 0.1} ${top + 4}, ${x + width * 0.16} ${top + height - crown - root * 0.42}, ${x + width * 0.24} ${top + height - crown}
-          C ${x + width / 2 - 2} ${top + height - crown}, ${x + width / 2 + 3} ${top + height - 18}, ${x + width / 2} ${top + height - 7}
-          C ${x + width * 0.28} ${top + height + 3}, ${x - width * 0.28} ${top + height + 3}, ${x - width / 2} ${top + height - 7} Z`;
-      };
+      const upperY = margin + 26;
+      const lowerY = upperY + upper.maxH + 46;
+      const totalHeight = lowerY + lower.maxH + 14;
+      const totalWidth = archWidth + margin * 2;
 
-      const buildArch = (teeth, startX, startY, direction, curve, flip, labelY) => teeth.map((tooth, index) => {
-        const x = startX + (index * 33 * direction);
-        const y = startY + Math.pow(index - 3.5, 2) * curve;
-        const width = index < 3 || index > 5 ? 24 : 18;
-        const height = index < 3 || index > 5 ? 52 : 58;
-        const detailY = flip === 1 ? y - 10 : y + 10;
-        const crownY = flip === 1 ? y - height / 2 - 18 : y + height / 2 + 4;
-        const rootMarkerY = flip === 1 ? y + height * 0.43 : y - height * 0.43;
-        const surfaceW = Math.max(17, width * 0.78);
-        const surfaceH = 15;
-        return `
-          <g class="tooth-node" data-tooth="${tooth}" tabindex="0" role="button" aria-label="Dente ${tooth}">
-            <path class="tooth-shape" d="${toothPath(x, y, width, height, flip)}" />
-            <path class="tooth-detail" d="M ${x - width * 0.26} ${detailY} C ${x - 4} ${detailY + 5 * flip}, ${x + 4} ${detailY + 5 * flip}, ${x + width * 0.26} ${detailY}" />
-            <g aria-hidden="true">
-              <ellipse class="tooth-face" data-surface="O" cx="${x}" cy="${crownY + surfaceH / 2}" rx="${surfaceW / 2}" ry="${surfaceH / 2}" />
-              <path class="tooth-face" data-surface="M" d="M ${x - surfaceW / 2} ${crownY + surfaceH / 2} C ${x - surfaceW / 2 + 2} ${crownY + 2}, ${x - 4} ${crownY + 2}, ${x - 2} ${crownY + surfaceH / 2} C ${x - 4} ${crownY + surfaceH - 2}, ${x - surfaceW / 2 + 2} ${crownY + surfaceH - 2}, ${x - surfaceW / 2} ${crownY + surfaceH / 2} Z" />
-              <path class="tooth-face" data-surface="D" d="M ${x + surfaceW / 2} ${crownY + surfaceH / 2} C ${x + surfaceW / 2 - 2} ${crownY + 2}, ${x + 4} ${crownY + 2}, ${x + 2} ${crownY + surfaceH / 2} C ${x + 4} ${crownY + surfaceH - 2}, ${x + surfaceW / 2 - 2} ${crownY + surfaceH - 2}, ${x + surfaceW / 2} ${crownY + surfaceH / 2} Z" />
-              <path class="tooth-face" data-surface="V" d="M ${x - surfaceW / 2 + 4} ${crownY + 1} H ${x + surfaceW / 2 - 4} C ${x + 5} ${crownY + 5}, ${x - 5} ${crownY + 5}, ${x - surfaceW / 2 + 4} ${crownY + 1} Z" />
-              <path class="tooth-face" data-surface="L/P" d="M ${x - surfaceW / 2 + 4} ${crownY + surfaceH - 1} H ${x + surfaceW / 2 - 4} C ${x + 5} ${crownY + surfaceH - 5}, ${x - 5} ${crownY + surfaceH - 5}, ${x - surfaceW / 2 + 4} ${crownY + surfaceH - 1} Z" />
-              <circle class="tooth-face" data-surface="Raiz" cx="${x}" cy="${rootMarkerY}" r="3.4" />
-            </g>
-            <text class="tooth-label" x="${x}" y="${labelY}" text-anchor="middle">${tooth}</text>
-          </g>
-        `;
-      }).join("");
+      const shiftX = (positions) => positions.map((p) => ({ ...p, cx: p.cx + margin }));
 
       toothGrid.innerHTML = `
-        <svg class="dental-arch" viewBox="0 0 620 430" aria-hidden="false">
-          <text class="arch-label" x="24" y="30">Arcada superior</text>
-          <text class="arch-label" x="24" y="264">Arcada inferior</text>
-          <text class="quadrant-label" x="284" y="198" text-anchor="end">Q1</text>
-          <text class="quadrant-label" x="336" y="198">Q2</text>
-          <text class="quadrant-label" x="284" y="238" text-anchor="end">Q4</text>
-          <text class="quadrant-label" x="336" y="238">Q3</text>
-          <line x1="310" y1="54" x2="310" y2="376" stroke="#e5eef1" stroke-width="1" />
-          <line x1="42" y1="214" x2="578" y2="214" stroke="#e5eef1" stroke-width="1" />
-          <path d="M84 112 C176 42, 444 42, 536 112" fill="none" stroke="#d8e7ea" stroke-width="2" stroke-linecap="round" />
-          <path d="M84 318 C176 388, 444 388, 536 318" fill="none" stroke="#d8e7ea" stroke-width="2" stroke-linecap="round" />
-          ${buildArch(upperRight, 278, 110, -1, 1.2, 1, 54)}
-          ${buildArch(upperLeft, 342, 110, 1, 1.2, 1, 54)}
-          ${buildArch(lowerRight, 278, 320, -1, -1.2, -1, 392)}
-          ${buildArch(lowerLeft, 342, 320, 1, -1.2, -1, 392)}
+        <svg class="dental-arch" viewBox="0 0 ${totalWidth} ${totalHeight}" aria-hidden="false">
+          <text class="arch-label" x="${margin}" y="${upperY - 20}">Arcada superior</text>
+          <text class="arch-label" x="${margin}" y="${lowerY - 20}">Arcada inferior</text>
+          <line x1="${upper.midX + margin}" y1="${upperY - 14}" x2="${upper.midX + margin}" y2="${upperY + upper.maxH + 8}" stroke="#e5eef1" stroke-width="1" />
+          <line x1="${lower.midX + margin}" y1="${lowerY - 14}" x2="${lower.midX + margin}" y2="${lowerY + lower.maxH + 8}" stroke="#e5eef1" stroke-width="1" />
+          ${buildToothRow(shiftX(upper.positions), upperY)}
+          ${buildToothRow(shiftX(lower.positions), lowerY)}
         </svg>
       `;
     }
@@ -4174,6 +4278,19 @@
       selectedFaces = selectedFaces.includes(face)
         ? selectedFaces.filter((item) => item !== face)
         : [...selectedFaces, face];
+      updateSelectedToothVisual();
+      renderProcedureOptions(treatmentProcedure.value);
+    });
+
+    pediatricToggle.addEventListener("click", () => {
+      pediatricMode = !pediatricMode;
+      pediatricToggle.classList.toggle("on", pediatricMode);
+      odontogramHint.textContent = pediatricMode
+        ? "Arcada em numeração FDI decídua. Clique no dente e depois marque a face."
+        : "Arcada em numeração FDI. Clique no dente e depois marque a face.";
+      selectedTooth = "";
+      selectedFaces = [];
+      renderToothGrid();
       updateSelectedToothVisual();
       renderProcedureOptions(treatmentProcedure.value);
     });
