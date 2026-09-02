@@ -129,21 +129,56 @@ temos prontos para usar:
   `possui_cardiopatia`, `observacoes_clinicas`). Não há uso real de
   `fichas_clinicas` para eu levar em conta.
 
-## 6. Proposta de ordem de execução (aguardando sua decisão — nada implementado ainda)
+## 6. Decisões (respondidas em 02/09/2026)
 
-**Fase A — persistência básica do plano de tratamento** (reaproveita 100% do
-schema já migrado, sem nenhuma migration nova):
-- Ao abrir "Nova consulta" ou "Continuar tratamento", buscar/criar um
-  `planos_tratamento` (status `rascunho`) daquele paciente.
+1. **"Nova consulta" não é sinônimo de "novo plano".** Uma consulta nova pode ser
+   um problema clínico novo (→ novo `plano_tratamento`) ou o retorno de um
+   tratamento já em andamento (→ continuação de um plano existente). Consequência
+   de desenho: "Continuar tratamento" precisa **listar os planos em aberto do
+   paciente** (não `concluido`/`cancelado`) para o dentista escolher qual está
+   retomando — não existe um único "rascunho atual" implícito, um paciente pode
+   ter mais de um plano aberto ao mesmo tempo (ex.: ortodontia em andamento +
+   uma cárie nova). "Nova consulta" sempre cria um `plano_tratamento` novo.
+2. **Severidade clínica e andamento financeiro/execução são eixos diferentes,
+   não devem ser um único campo.** "Urgente" é uma classificação de severidade
+   do caso (pode se aplicar a um item em qualquer etapa); "Planejado / Em
+   tratamento / Realizado / Cancelado" é o andamento de aprovação e execução.
+   A constraint atual de `itens_plano_tratamento.status` mistura os dois
+   (`'planejado', 'aprovado', 'em_andamento', 'realizado', 'cancelado', 'urgente'`
+   como se fossem mutuamente exclusivos) — **isso é um erro de modelagem a
+   corrigir**, não só uma escolha de vocabulário de tela. Correção: separar em
+   `status` (andamento/aprovação, 5 valores, sem `urgente`) e um novo campo de
+   severidade (`urgente boolean`) que pode coexistir com qualquer status. Ver
+   migração `20260902150000_separar_severidade_status_item_plano.sql`.
+3. **Paciente compartilhado → plano compartilhado.** Já é assim na RLS que já
+   está em produção: as políticas de `select` em `planos_tratamento` e
+   `itens_plano_tratamento` usam `usuario_pode_acessar_paciente`, que já
+   enxerga qualquer vínculo ativo em `paciente_consultorios` — não há
+   restrição por `profissional_id` na leitura. Não precisa de migração nova
+   para isso. O que falta é o **front-end** não filtrar por "só meus planos" e
+   oferecer uma ação de "assumir este plano" quando o colega quiser editar um
+   plano criado por outro profissional (a regra de reatribuição — só para si
+   mesmo, só com acesso legítimo — já está implementada na policy de `update`).
+
+## 7. Proposta de ordem de execução
+
+**Fase A — persistência básica do plano de tratamento** (schema já existente +
+uma migração pequena para a decisão nº 2):
+- Migração: separar severidade (`urgente`) do `status` em `itens_plano_tratamento`.
+- Ao clicar "Nova consulta": sempre cria um `planos_tratamento` novo.
+- Ao clicar "Continuar tratamento": lista os planos do paciente com status fora
+  de `concluido`/`cancelado` para escolher qual continuar (abre direto se houver
+  só um).
 - "Adicionar ao plano" grava em `itens_plano_tratamento`, não só no array.
-- Ao abrir a ficha do paciente, carregar os itens do plano em rascunho mais
-  recente (se existir) para popular a tela — isso sozinho já resolve o bug nº 1.
-- "Continuar tratamento" passa a de fato reabrir o plano existente em vez de uma
-  tela vazia.
+- Ao abrir a ficha do paciente, carregar os planos/itens do banco (isso resolve o
+  bug nº 1) — sem filtrar por `profissional_id`, para já nascer compatível com
+  paciente compartilhado (decisão nº 3).
+- Se o plano pertence a outro profissional, mostrar ação "Assumir este plano"
+  antes de permitir editar itens (a RLS de `update`/`insert` já exige isso).
 
 **Fase B — "Histórico" de verdade, ainda sem tabela nova**:
-- Lista dos `planos_tratamento` do paciente (independente do status), com data e
-  itens de cada um — dá pra fazer só com o que já existe no banco.
+- Lista de todos os `planos_tratamento` do paciente (qualquer status), com data
+  e itens de cada um.
 
 **Fase C — correções pequenas e independentes** (podem entrar a qualquer momento,
 não dependem da Fase A/B):
@@ -154,22 +189,3 @@ não dependem da Fase A/B):
 **Fase D — fora do MVP por decisão já tomada, não mexer agora**:
 - Orçamento como registro (`orcamentos`).
 - Estoque/material.
-
-## 7. Perguntas para decidir antes de eu implementar
-
-1. **Gatilho de "novo plano" vs. "continuar o mesmo":** quando o dentista clica
-   "Nova consulta" num paciente que já tem um plano em rascunho aberto, o sistema
-   deve criar um **segundo** plano (a regra de negócio já permite "um paciente
-   pode ter vários planos") ou continuar editando o mesmo rascunho? Isso muda a
-   lógica de "Nova consulta" vs. "Continuar tratamento" precisar ser
-   comportamentos realmente diferentes.
-2. **Vocabulário de status na tela:** hoje o seletor mostra 3 opções (Planejado /
-   Em tratamento / Urgente); o banco já suporta 6 (`planejado`, `aprovado`,
-   `em_andamento`, `realizado`, `cancelado`, `urgente`). Ampliamos a tela para os
-   6 valores reais do banco, ou mantemos as 3 opções simplificadas na interface e
-   fazemos o mapeamento por baixo dos panos (ex.: "Em tratamento" grava como
-   `em_andamento`)?
-3. **Reatribuição de plano entre colegas:** a regra já está escrita
-   (`docs/regras_negocio.md`: um profissional pode assumir um plano criado por um
-   colega do mesmo consultório, só pra si mesmo). Confirma que isso deve valer já
-   nesta primeira fase, ou fica pra depois?

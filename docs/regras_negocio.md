@@ -164,12 +164,23 @@ cpf no banco: 12345678909
   assumindo uma etapa especifica do tratamento). Reatribuir so e possivel para si mesmo,
   e so quando o profissional ja tem acesso legitimo ao paciente e ao consultorio - nunca
   para alguem de fora da clinica.
-- Status minimo do item:
+- Status minimo do item (andamento de aprovacao/execucao):
   - `planejado`
   - `aprovado`
   - `em_andamento`
   - `realizado`
   - `cancelado`
+- Severidade clinica e um eixo separado do status acima, nao um valor dele:
+  um item urgente pode estar em qualquer status (ex.: urgente e planejado,
+  urgente e em_andamento). Ver `itens_plano_tratamento.urgente` (booleano).
+- Uma consulta nova ("Nova consulta" na interface) nem sempre significa plano
+  novo: pode ser um problema clinico novo (novo plano) ou o retorno de um
+  tratamento ja em andamento (continuacao de um plano existente). Um paciente
+  pode ter mais de um plano em aberto ao mesmo tempo.
+- Paciente compartilhado implica plano compartilhado: qualquer profissional
+  com vinculo ativo ao paciente (via `paciente_consultorios`) pode ver os
+  planos dele, independente de quem criou. Editar continua exigindo assumir o
+  plano para si mesmo (ver regra de reatribuicao acima).
 
 ## Regras De Orcamento
 

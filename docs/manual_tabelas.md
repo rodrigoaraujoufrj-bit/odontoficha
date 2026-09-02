@@ -412,11 +412,14 @@ Dentista.
 - `material`
 - `consultas_previstas`
 - `status`
+- `urgente`
 - `ordem`
 
 ### Regras
 
 - Status minimo sugerido: `planejado`, `aprovado`, `em_andamento`, `realizado`, `cancelado`.
+- `urgente` e booleano e independente do `status`: severidade clinica, nao etapa
+  de andamento. Um item pode estar `em_andamento` e `urgente` ao mesmo tempo.
 - Deve permitir item manual sem procedimento cadastrado.
 
 ## orcamentos
