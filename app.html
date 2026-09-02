@@ -6,6 +6,7 @@
   <title>OdontoFlow | Primeiro acesso</title>
   <meta name="description" content="Primeiro acesso do profissional no OdontoFlow." />
   <link rel="icon" href="assets/odontoflow-mark.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Karla:wght@400;500;600;700&display=swap" />
   <style>
     :root {
       --bg: #f8fbfc;
@@ -33,7 +34,7 @@
 
     body {
       min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Karla", ui-sans-serif, system-ui, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: linear-gradient(180deg, #ffffff 0%, var(--bg) 58%, #ffffff 100%);
       color: var(--text);
       line-height: 1.55;
@@ -91,7 +92,7 @@
     .button {
       min-height: 44px;
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: 10px;
       padding: 11px 18px;
       background: white;
       color: var(--primary-dark);
@@ -197,20 +198,21 @@
 
     h1,
     h2 {
+      font-family: "Source Serif 4", Georgia, serif;
       line-height: 1.08;
-      letter-spacing: -0.025em;
+      letter-spacing: -0.015em;
     }
 
     h1 {
       font-size: clamp(2rem, 3.2vw, 3.15rem);
-      font-weight: 620;
+      font-weight: 600;
       max-width: 12ch;
       margin-bottom: 16px;
     }
 
     h2 {
       font-size: clamp(1.45rem, 2.35vw, 2rem);
-      font-weight: 650;
+      font-weight: 600;
       margin-bottom: 10px;
     }
 
@@ -384,7 +386,9 @@
       align-items: center;
       gap: 10px;
       color: #ffffff;
-      font-weight: 850;
+      font-family: "Source Serif 4", Georgia, serif;
+      font-weight: 600;
+      font-size: 1.05rem;
       margin-bottom: 8px;
     }
 
@@ -486,10 +490,10 @@
 
     .nav-item:hover:not(:disabled),
     .nav-item.active {
-      background: #11b7aa;
+      background: rgba(20, 184, 166, 0.16);
       color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 14px 30px rgba(17, 183, 170, 0.2);
+      border-color: transparent;
+      box-shadow: inset 2px 0 0 #14b8a6;
     }
 
     .nav-item:disabled {
@@ -765,6 +769,36 @@
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 650;
+    }
+
+    .patient-card-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .patient-avatar,
+    .patient-avatar-lg {
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      font-family: "Source Serif 4", Georgia, serif;
+      font-weight: 600;
+      display: grid;
+      place-items: center;
+    }
+
+    .patient-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 0.82rem;
+    }
+
+    .patient-avatar-lg {
+      width: 48px;
+      height: 48px;
+      font-size: 1.05rem;
     }
 
     .patient-summary {
@@ -1462,7 +1496,12 @@
 
     .patient-care-card h3 {
       margin: 0;
-      font-size: 1rem;
+      font-family: inherit;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--primary);
     }
 
     .procedure-manager-section.active {
@@ -1626,7 +1665,7 @@
 
     .mini-button {
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: 8px;
       background: white;
       color: var(--primary-dark);
       padding: 8px 11px;
@@ -2058,10 +2097,13 @@
 
                   <div id="patientSummary" class="patient-summary">
                     <div class="patient-compact-bar">
-                      <div>
-                        <div class="kicker">Atendimento</div>
-                        <strong id="summaryPatientName">Selecione um paciente</strong>
-                        <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
+                      <div class="patient-card-row">
+                        <span class="patient-avatar-lg" id="summaryPatientAvatar" aria-hidden="true">--</span>
+                        <div>
+                          <div class="kicker">Atendimento</div>
+                          <strong id="summaryPatientName">Selecione um paciente</strong>
+                          <span class="muted" id="summaryPatientMeta">A ficha aparece aqui ao lado da busca.</span>
+                        </div>
                       </div>
                       <button class="icon-action patient-details-toggle" type="button" id="togglePatientDetails" aria-expanded="false" aria-label="Ver detalhes do paciente" disabled>
                         <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -3025,12 +3067,15 @@
 
       patientList.innerHTML = filtered.map((patient) => `
         <button class="patient-card${patient.id === selectedPatientId ? " active" : ""}" type="button" data-patient-id="${patient.id}" aria-pressed="${patient.id === selectedPatientId}">
-          <span>
-            <strong>${highlightMatch(patient.nome, query, digits)}</strong>
-            <span class="patient-card-meta">
-              <span>${highlightMatch(formatPhone(patient.telefone || "") || "sem telefone", query, digits)}</span>
-              <span>${highlightMatch(patient.email || "sem e-mail", query, digits)}</span>
-              ${patient.cpf ? `<span>CPF ${highlightMatch(formatCpf(patient.cpf), query, digits)}</span>` : ""}
+          <span class="patient-card-row">
+            <span class="patient-avatar" aria-hidden="true">${escapeHtml(getInitials(patient.nome))}</span>
+            <span>
+              <strong>${highlightMatch(patient.nome, query, digits)}</strong>
+              <span class="patient-card-meta">
+                <span>${highlightMatch(formatPhone(patient.telefone || "") || "sem telefone", query, digits)}</span>
+                <span>${highlightMatch(patient.email || "sem e-mail", query, digits)}</span>
+                ${patient.cpf ? `<span>CPF ${highlightMatch(formatCpf(patient.cpf), query, digits)}</span>` : ""}
+              </span>
             </span>
           </span>
           <span class="mini-button">Abrir ficha</span>
@@ -3044,6 +3089,7 @@
       selectedPatientId = patientId;
       renderPatientList();
       document.querySelector("#summaryPatientName").textContent = patient.nome;
+      document.querySelector("#summaryPatientAvatar").textContent = getInitials(patient.nome);
       const compactDetails = [
         formatPhone(patient.telefone || "") || "sem telefone",
         patient.data_nascimento ? `${formatAge(patient.data_nascimento)} anos` : "idade não informada"
@@ -3116,6 +3162,12 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+    }
+
+    function getInitials(name) {
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return "?";
+      return (parts[0][0] + (parts[parts.length - 1][0] || "")).toUpperCase();
     }
 
     function highlightMatch(value, normalizedQuery, digitQuery) {
