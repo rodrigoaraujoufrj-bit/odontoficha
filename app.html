@@ -2230,6 +2230,15 @@
                               <input id="treatmentValue" type="number" min="0" step="10" inputmode="decimal" placeholder="0,00" />
                             </div>
                             <div class="field">
+                              <label for="treatmentStatus">Status do procedimento</label>
+                              <select id="treatmentStatus">
+                                <option value="planned">Planejado</option>
+                                <option value="care">Em tratamento</option>
+                                <option value="urgent">Urgente</option>
+                              </select>
+                              <span class="hint">Você decide a prioridade clínica, não o sistema.</span>
+                            </div>
+                            <div class="field">
                               <label for="treatmentNotes">Observação clínica</label>
                               <textarea id="treatmentNotes" placeholder="Ex.: lesão distal, trocar restauração antiga, acompanhar sensibilidade."></textarea>
                             </div>
@@ -2584,6 +2593,7 @@
     const treatmentProcedure = document.querySelector("#treatmentProcedure");
     const treatmentPriceRule = document.querySelector("#treatmentPriceRule");
     const treatmentValue = document.querySelector("#treatmentValue");
+    const treatmentStatus = document.querySelector("#treatmentStatus");
     const treatmentNotes = document.querySelector("#treatmentNotes");
     const procedureContextHint = document.querySelector("#procedureContextHint");
     const addTreatmentItem = document.querySelector("#addTreatmentItem");
@@ -3497,6 +3507,7 @@
       renderSelectedToothSummary();
       renderProcedureOptions();
       treatmentNotes.value = "";
+      treatmentStatus.value = "planned";
       addTreatmentItem.textContent = "Adicionar ao plano";
       clearTreatmentFeedback();
       clearQuoteAction();
@@ -3530,10 +3541,12 @@
     }
 
     function getTreatmentVisualStatus(item) {
-      const text = `${item.procedure || ""} ${item.notes || ""}`.toLowerCase();
-      if (text.includes("urg") || text.includes("dor") || text.includes("endod")) return "urgent";
-      if (text.includes("restaura") || text.includes("raspagem") || text.includes("sensibilidade")) return "care";
-      return "planned";
+      return item.status || "planned";
+    }
+
+    function getStatusLabel(status) {
+      const labels = { planned: "Planejado", care: "Em tratamento", urgent: "Urgente" };
+      return labels[status] || labels.planned;
     }
 
     function getToothItems(tooth) {
@@ -3752,7 +3765,7 @@
             ${item.notes ? `<div class="muted">${escapeHtml(item.notes)}</div>` : ""}
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
-          <td><span class="badge">${getTreatmentVisualStatus(item) === "urgent" ? "Urgente" : "Planejado"}</span></td>
+          <td><span class="badge">${getStatusLabel(getTreatmentVisualStatus(item))}</span></td>
           <td>
             <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento">
               <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -3788,7 +3801,7 @@
         items: treatmentItems.map((item, index) => ({
           ...item,
           index: index + 1,
-          status: getTreatmentVisualStatus(item) === "urgent" ? "Urgente" : "Planejado"
+          status: getStatusLabel(getTreatmentVisualStatus(item))
         }))
       };
     }
@@ -4331,6 +4344,7 @@
         priceRuleId: selectedRule?.id || "",
         priceRuleName: selectedRule?.nome_regra || "Valor manual",
         value,
+        status: treatmentStatus.value,
         notes: treatmentNotes.value.trim()
       };
 
@@ -4347,6 +4361,7 @@
       }
 
       treatmentNotes.value = "";
+      treatmentStatus.value = "planned";
       clearQuoteAction();
       renderQuote();
       updateSelectedToothVisual();
@@ -4400,6 +4415,7 @@
       const procedureId = item.procedureId || procedures.find((procedure) => procedure.nome === item.procedure)?.id || "";
       renderProcedureOptions(procedureId, item.priceRuleId);
       treatmentValue.value = item.value;
+      treatmentStatus.value = item.status || "planned";
       treatmentNotes.value = item.notes || "";
       addTreatmentItem.textContent = "Salvar alteração";
       highlightedTreatmentIndex = index;
