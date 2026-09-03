@@ -892,7 +892,9 @@
       font-size: 0.85rem;
     }
 
-    .envios-list {
+    .envios-list,
+    .agenda-list,
+    .agenda-patient-list {
       list-style: none;
       margin: 0;
       padding: 0;
@@ -900,7 +902,9 @@
       gap: 8px;
     }
 
-    .envios-list li {
+    .envios-list li,
+    .agenda-list li,
+    .agenda-patient-list li {
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px 12px;
@@ -918,6 +922,29 @@
       gap: 6px;
       font-weight: 800;
       color: var(--primary-dark);
+    }
+
+    .agenda-row-time {
+      display: grid;
+      gap: 2px;
+      min-width: 66px;
+    }
+
+    .agenda-patient-link {
+      border: 0;
+      background: none;
+      padding: 0;
+      font: inherit;
+      font-weight: 800;
+      color: var(--primary-dark);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .agenda-patient-list select {
+      width: auto;
+      min-height: 38px;
+      padding: 6px 8px;
     }
 
     .share-patient-form {
@@ -2125,29 +2152,16 @@
                     <div class="schedule-card primary">
                       <div class="card-topline">
                         <div>
-                          <div class="kicker">Hoje</div>
-                          <strong>Agenda ainda não conectada</strong>
+                          <div class="kicker">Agenda · próximos 7 dias</div>
+                          <strong>Seus agendamentos neste consultório</strong>
                         </div>
-                        <span class="card-mark">0</span>
+                        <span class="card-mark" id="dashboardAgendaCount">0</span>
                       </div>
-                      <p class="muted">Quando a agenda entrar no MVP, aqui aparecem os pacientes do dia e o próximo horário.</p>
-                      <div class="schedule-meta">
-                        <span>Próximo passo: vincular agenda</span>
-                        <span>Atalho: buscar paciente</span>
-                      </div>
-                    </div>
-                    <div class="schedule-card">
-                      <div class="card-topline">
-                        <div>
-                          <div class="kicker">Próximos dias</div>
-                          <strong>Sem compromissos cadastrados no OdontoFlow</strong>
-                        </div>
-                        <span class="card-mark">7d</span>
-                      </div>
-                      <p class="muted">A visão semanal deve mostrar retornos, tratamentos em andamento e pacientes sem próximo agendamento.</p>
+                      <p class="muted" id="dashboardAgendaEmpty">Nenhum agendamento nos próximos 7 dias. Crie um na ficha do paciente.</p>
+                      <ul class="agenda-list" id="dashboardAgendaList" aria-live="polite" hidden></ul>
                     </div>
                     <div class="home-note">
-                      A tela inicial agora é preparada para ser um painel de rotina. Hoje ela mostra os blocos certos; quando a agenda existir, os dados entram aqui.
+                      A agenda aqui mostra só os seus horários neste consultório. Quem tem acesso ao paciente pode ver o agendamento de um colega na ficha dele, mas só o profissional dono pode alterá-lo.
                     </div>
                   </div>
                   <div class="quick-stack">
@@ -2254,6 +2268,37 @@
                           <h3>Envios de orçamento</h3>
                           <p class="muted" id="summaryEnviosEmpty">Nenhum orçamento gerado ainda para este paciente.</p>
                           <ul class="envios-list" id="summaryEnviosList" hidden></ul>
+                        </div>
+                        <div class="patient-care-card full-width">
+                          <h3>Agendamentos</h3>
+                          <form class="grid" id="agendaForm">
+                            <div class="field">
+                              <label for="agendaInicio">Início</label>
+                              <input id="agendaInicio" type="datetime-local" required />
+                            </div>
+                            <div class="field">
+                              <label for="agendaFim">Fim (opcional)</label>
+                              <input id="agendaFim" type="datetime-local" />
+                            </div>
+                            <div class="field">
+                              <label for="agendaTipo">Tipo</label>
+                              <input id="agendaTipo" type="text" placeholder="Ex.: Consulta, Retorno, Avaliação" />
+                            </div>
+                            <label class="check-item">
+                              <input id="agendaConfirmadoWhatsapp" type="checkbox" />
+                              Confirmado por WhatsApp
+                            </label>
+                            <div class="field full">
+                              <label for="agendaObservacoes">Observação</label>
+                              <textarea id="agendaObservacoes" placeholder="Detalhes do agendamento"></textarea>
+                            </div>
+                            <div class="field full">
+                              <button class="mini-button" type="submit" id="agendaSubmitButton">Agendar</button>
+                            </div>
+                          </form>
+                          <div class="inline-feedback" id="agendaFeedback" role="status"></div>
+                          <p class="muted" id="agendaListEmpty">Nenhum agendamento para este paciente ainda.</p>
+                          <ul class="agenda-patient-list" id="agendaPatientList" hidden></ul>
                         </div>
                       </div>
                     </div>
@@ -2762,6 +2807,19 @@
     const sharePatientForm = document.querySelector("#sharePatientForm");
     const shareColleagueSelect = document.querySelector("#shareColleagueSelect");
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
+    const dashboardAgendaList = document.querySelector("#dashboardAgendaList");
+    const dashboardAgendaEmpty = document.querySelector("#dashboardAgendaEmpty");
+    const dashboardAgendaCount = document.querySelector("#dashboardAgendaCount");
+    const agendaForm = document.querySelector("#agendaForm");
+    const agendaInicio = document.querySelector("#agendaInicio");
+    const agendaFim = document.querySelector("#agendaFim");
+    const agendaTipo = document.querySelector("#agendaTipo");
+    const agendaConfirmadoWhatsapp = document.querySelector("#agendaConfirmadoWhatsapp");
+    const agendaObservacoes = document.querySelector("#agendaObservacoes");
+    const agendaSubmitButton = document.querySelector("#agendaSubmitButton");
+    const agendaFeedback = document.querySelector("#agendaFeedback");
+    const agendaListEmpty = document.querySelector("#agendaListEmpty");
+    const agendaPatientList = document.querySelector("#agendaPatientList");
     const toothGrid = document.querySelector("#toothGrid");
     const faceGrid = document.querySelector("#faceGrid");
     const pediatricToggle = document.querySelector("#pediatricToggle");
@@ -2828,6 +2886,8 @@
     let highlightedTreatmentIndex = null;
     let patientTreatmentPlans = [];
     let patientEnvios = [];
+    let patientAgendamentos = [];
+    let dashboardAgenda = [];
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
     let treatmentSessionId = 0;
@@ -3092,6 +3152,7 @@
       await loadProcedureCatalog();
       await loadConsultorioColegas();
       await loadPatients();
+      await loadDashboardAgenda();
       showDashboardTab("home");
       showView("dashboard");
     }
@@ -3243,6 +3304,156 @@
         <li>
           <span class="envio-canal">${canalLabel}</span>
           <span class="muted">${envio.quantidade_itens} ${envio.quantidade_itens === 1 ? "item" : "itens"} · ${escapeHtml(formatCurrency(envio.valor_total))}${destinatario} · ${escapeHtml(quando)}</span>
+        </li>
+      `;
+      }).join("");
+    }
+
+    const AGENDA_COLUMNS = "id, paciente_id, consultorio_id, profissional_id, data_hora_inicio, data_hora_fim, tipo, status, observacoes, confirmado_por_whatsapp, criado_em";
+
+    function getAgendaStatusLabel(status) {
+      const labels = {
+        agendado: "Agendado",
+        confirmado: "Confirmado",
+        realizado: "Realizado",
+        cancelado: "Cancelado",
+        faltou: "Faltou"
+      };
+      return labels[status] || status;
+    }
+
+    function canEditAgendamento(agendamento) {
+      return agendamento.profissional_id === currentProfissional?.id;
+    }
+
+    function formatAgendaDate(iso) {
+      return new Date(iso).toLocaleDateString("pt-BR");
+    }
+
+    function formatAgendaTime(iso) {
+      return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function setAgendaFeedback(message, type = "success") {
+      if (!agendaFeedback) return;
+      agendaFeedback.className = `inline-feedback show ${type}`;
+      agendaFeedback.textContent = message;
+    }
+
+    function clearAgendaFeedback() {
+      if (!agendaFeedback) return;
+      agendaFeedback.className = "inline-feedback";
+      agendaFeedback.textContent = "";
+    }
+
+    function resetAgendaSection() {
+      // Muda o paciente aberto: qualquer escrita assincrona de um agendamento
+      // do paciente anterior nao deve mais atualizar esta secao (guarda via
+      // selectedPatientId, igual aos outros carregadores desta ficha).
+      patientAgendamentos = [];
+      if (agendaForm) agendaForm.reset();
+      clearAgendaFeedback();
+      renderPatientAgendamentos();
+    }
+
+    async function loadDashboardAgenda() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const endWindow = new Date(startOfToday);
+      endWindow.setDate(endWindow.getDate() + 7);
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .select(AGENDA_COLUMNS)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id)
+        .neq("status", "cancelado")
+        .gte("data_hora_inicio", startOfToday.toISOString())
+        .lt("data_hora_inicio", endWindow.toISOString())
+        .order("data_hora_inicio", { ascending: true });
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      dashboardAgenda = error ? [] : (data || []);
+      renderDashboardAgenda();
+    }
+
+    function renderDashboardAgenda() {
+      if (!dashboardAgendaList || !dashboardAgendaEmpty) return;
+      if (!dashboardAgenda.length) {
+        dashboardAgendaList.hidden = true;
+        dashboardAgendaList.innerHTML = "";
+        dashboardAgendaEmpty.hidden = false;
+        dashboardAgendaCount.textContent = "0";
+        return;
+      }
+      dashboardAgendaEmpty.hidden = true;
+      dashboardAgendaList.hidden = false;
+      dashboardAgendaCount.textContent = String(dashboardAgenda.length);
+      dashboardAgendaList.innerHTML = dashboardAgenda.map((item) => {
+        const patient = currentPatients.find((candidate) => candidate.id === item.paciente_id);
+        const patientName = patient ? patient.nome : "Paciente";
+        return `
+        <li class="agenda-row">
+          <div class="agenda-row-time">
+            <strong>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</strong>
+            <span class="muted">${escapeHtml(formatAgendaTime(item.data_hora_inicio))}</span>
+          </div>
+          <button class="agenda-patient-link" type="button" data-open-agenda-patient="${escapeHtml(item.paciente_id)}">${escapeHtml(patientName)}</button>
+          <span class="muted">${escapeHtml(item.tipo || "—")}</span>
+          <span class="badge">${escapeHtml(getAgendaStatusLabel(item.status))}</span>
+          ${item.confirmado_por_whatsapp ? `<span class="badge">Confirmado via WhatsApp</span>` : ""}
+        </li>
+      `;
+      }).join("");
+    }
+
+    async function loadPatientAgendamentos(patientId) {
+      if (!patientId || !currentConsultorio?.id) return;
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .select(AGENDA_COLUMNS)
+        .eq("paciente_id", patientId)
+        .eq("consultorio_id", currentConsultorio.id)
+        .order("data_hora_inicio", { ascending: false });
+
+      if (selectedPatientId !== patientId) return;
+      patientAgendamentos = error ? [] : (data || []);
+      renderPatientAgendamentos();
+    }
+
+    function renderPatientAgendamentos() {
+      if (!agendaPatientList || !agendaListEmpty) return;
+      if (!patientAgendamentos.length) {
+        agendaPatientList.hidden = true;
+        agendaPatientList.innerHTML = "";
+        agendaListEmpty.hidden = false;
+        return;
+      }
+      agendaListEmpty.hidden = true;
+      agendaPatientList.hidden = false;
+      agendaPatientList.innerHTML = patientAgendamentos.map((item) => {
+        const isOwner = canEditAgendamento(item);
+        const ownerNote = isOwner ? "" : ` · ${escapeHtml(consultorioColegas.find((colega) => colega.id === item.profissional_id)?.nome || "outro profissional")}`;
+        const fimLabel = item.data_hora_fim ? ` – ${escapeHtml(formatAgendaTime(item.data_hora_fim))}` : "";
+        return `
+        <li data-agenda-id="${escapeHtml(item.id)}">
+          <div class="agenda-row-time">
+            <strong>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</strong>
+            <span class="muted">${escapeHtml(formatAgendaTime(item.data_hora_inicio))}${fimLabel}</span>
+          </div>
+          <span class="muted">${escapeHtml(item.tipo || "—")}${ownerNote}</span>
+          <select data-agenda-status="${escapeHtml(item.id)}" ${isOwner ? "" : "disabled"}>
+            <option value="agendado" ${item.status === "agendado" ? "selected" : ""}>Agendado</option>
+            <option value="confirmado" ${item.status === "confirmado" ? "selected" : ""}>Confirmado</option>
+            <option value="realizado" ${item.status === "realizado" ? "selected" : ""}>Realizado</option>
+            <option value="cancelado" ${item.status === "cancelado" ? "selected" : ""}>Cancelado</option>
+            <option value="faltou" ${item.status === "faltou" ? "selected" : ""}>Faltou</option>
+          </select>
+          ${item.confirmado_por_whatsapp ? `<span class="badge">Confirmado via WhatsApp</span>` : ""}
+          ${item.observacoes ? `<span class="muted">${escapeHtml(item.observacoes)}</span>` : ""}
+          <button class="mini-button" type="button" data-agenda-cancel="${escapeHtml(item.id)}" ${isOwner && item.status !== "cancelado" ? "" : "disabled"}>Cancelar</button>
         </li>
       `;
       }).join("");
@@ -3564,10 +3775,12 @@
       renderTreatmentPlanBar();
       patientEnvios = [];
       renderPatientEnvios();
+      resetAgendaSection();
       await loadPatientAnamnese(patient.id);
       await loadPatientSharing(patient.id);
       await loadPatientTreatmentPlans(patient.id);
       await loadPatientEnvios(patient.id);
+      await loadPatientAgendamentos(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -4637,6 +4850,9 @@
       currentConsultorio = null;
       currentPatients = [];
       consultorioColegas = [];
+      dashboardAgenda = [];
+      renderDashboardAgenda();
+      resetAgendaSection();
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
@@ -4772,6 +4988,117 @@
 
       shareColleagueStatus.textContent = "Paciente compartilhado.";
       await loadPatientSharing(patient.id);
+    });
+
+    agendaForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const patient = getSelectedPatient();
+      if (!patient || !currentConsultorio?.id || !currentProfissional?.id || !agendaInicio.value) return;
+
+      const patientId = selectedPatientId;
+      agendaSubmitButton.disabled = true;
+      clearAgendaFeedback();
+
+      const payload = {
+        paciente_id: patient.id,
+        consultorio_id: currentConsultorio.id,
+        profissional_id: currentProfissional.id,
+        data_hora_inicio: new Date(agendaInicio.value).toISOString(),
+        data_hora_fim: agendaFim.value ? new Date(agendaFim.value).toISOString() : null,
+        tipo: agendaTipo.value.trim() || null,
+        observacoes: agendaObservacoes.value.trim() || null,
+        confirmado_por_whatsapp: agendaConfirmadoWhatsapp.checked
+      };
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .insert(payload)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+      agendaSubmitButton.disabled = false;
+
+      if (error) {
+        setAgendaFeedback("Não foi possível salvar este agendamento.", "warning");
+        return;
+      }
+
+      patientAgendamentos.unshift(data);
+      renderPatientAgendamentos();
+      agendaForm.reset();
+      setAgendaFeedback("Agendamento criado.");
+      await loadDashboardAgenda();
+    });
+
+    agendaPatientList.addEventListener("change", async (event) => {
+      const select = event.target.closest("[data-agenda-status]");
+      if (!select) return;
+      const id = select.dataset.agendaStatus;
+      const current = patientAgendamentos.find((item) => item.id === id);
+      if (!current) return;
+
+      const patientId = selectedPatientId;
+      const previousStatus = current.status;
+      select.disabled = true;
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .update({ status: select.value })
+        .eq("id", id)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+
+      if (error) {
+        select.disabled = false;
+        select.value = previousStatus;
+        setAgendaFeedback("Não foi possível atualizar o status deste agendamento.", "warning");
+        return;
+      }
+
+      const index = patientAgendamentos.findIndex((item) => item.id === id);
+      if (index >= 0) patientAgendamentos[index] = data;
+      renderPatientAgendamentos();
+      await loadDashboardAgenda();
+    });
+
+    agendaPatientList.addEventListener("click", async (event) => {
+      const cancelButton = event.target.closest("[data-agenda-cancel]");
+      if (!cancelButton) return;
+      const id = cancelButton.dataset.agendaCancel;
+
+      const patientId = selectedPatientId;
+      cancelButton.disabled = true;
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .update({ status: "cancelado" })
+        .eq("id", id)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+
+      if (error) {
+        cancelButton.disabled = false;
+        setAgendaFeedback("Não foi possível cancelar este agendamento.", "warning");
+        return;
+      }
+
+      const index = patientAgendamentos.findIndex((item) => item.id === id);
+      if (index >= 0) patientAgendamentos[index] = data;
+      renderPatientAgendamentos();
+      await loadDashboardAgenda();
+    });
+
+    dashboardAgendaList.addEventListener("click", async (event) => {
+      const link = event.target.closest("[data-open-agenda-patient]");
+      if (!link) return;
+      showDashboardTab("patient");
+      closeMobileMenu();
+      await showPatientSummary(link.dataset.openAgendaPatient);
     });
 
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {

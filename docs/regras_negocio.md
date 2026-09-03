@@ -1,6 +1,6 @@
 # OdontoFlow - Regras de Negocio
 
-Última atualização: 2026-09-02
+Última atualização: 2026-09-03
 
 Este documento registra regras e decisoes de produto para orientar o MVP.
 
@@ -131,9 +131,20 @@ cpf no banco: 12345678909
 
 ## Regras De Agenda
 
-- Agenda deve suportar consulta e retorno.
-- Confirmacao por WhatsApp e importante, mas pode comecar manual.
-- Integracao com Google Agenda deve ser avaliada depois do MVP.
+- Agenda e nativa no MVP (decisao registrada: nao e integracao com Google
+  Agenda desde o inicio - ver `modelo_dados.md`).
+- Sem grade de calendario na v1: listas cronologicas bastam - dashboard
+  mostra os proximos 7 dias do profissional logado no consultorio atual,
+  ficha do paciente mostra o historico completo dele.
+- Agenda deve suportar consulta e retorno (campo `tipo`, texto livre).
+- Confirmacao por WhatsApp comeca manual: `confirmado_por_whatsapp` e uma
+  marca do dentista/recepcao, sem envio nem leitura automatica de mensagem.
+- So o profissional dono do agendamento pode altera-lo; um colega com acesso
+  ao paciente ve mas nao edita (sem fluxo de "assumir agendamento" no MVP).
+- Integracao com Google Agenda fica para depois do MVP e, quando existir,
+  deve ser **opt-in por profissional** (cada dentista liga para si, nunca
+  ligada por padrao para todos) - nao apenas "avaliada", ja e decisao de
+  produto tomada.
 - Status minimo:
   - `agendado`
   - `confirmado`

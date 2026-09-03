@@ -265,19 +265,27 @@ Dentista.
 
 ### Finalidade
 
-Controlar consultas, retornos e confirmacoes.
+Controlar consultas e retornos: agendamento nativo do MVP (sem grade de
+calendario ainda - so listas cronologicas, no dashboard e na ficha do
+paciente).
 
 ### Quando preencher
 
-Ao marcar uma consulta, retorno ou compromisso clinico.
+Ao marcar uma consulta, retorno ou compromisso clinico para um paciente.
 
 ### Quem preenche
 
-Recepcionista, secretaria ou dentista.
+O profissional dono do agendamento (`profissional_id`), na ficha do
+paciente. Nao existe hoje um papel de recepcionista/secretaria distinto de
+`profissionais` no OdontoFlow (ver Regras De Acesso E Permissoes em
+`regras_negocio.md`), entao quem cria e edita um agendamento e sempre um
+profissional autenticado.
 
 ### Campos obrigatorios
 
 - `paciente_id`
+- `consultorio_id`
+- `profissional_id`
 - `data_hora_inicio`
 - `status`
 
@@ -290,8 +298,23 @@ Recepcionista, secretaria ou dentista.
 
 ### Regras
 
-- Status minimo sugerido: `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`.
-- Retornos devem ser visiveis na ficha do paciente.
+- Status: `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`.
+- `tipo` e texto livre (ex.: "Consulta", "Retorno", "Avaliação") - sem enum
+  de proposito, para nao travar o vocabulario do consultorio.
+- `data_hora_fim` e opcional: o dentista pode nao saber a duracao ao marcar.
+- `confirmado_por_whatsapp` e uma marca manual (o dentista/recepcao assinala
+  que a confirmacao chegou por WhatsApp) - o OdontoFlow nao envia nem le
+  mensagens automaticamente.
+- Sem `delete`: cancelamento e soft-delete via `status = 'cancelado'`, igual
+  ao resto do dado clinico.
+- So o profissional dono (`profissional_id`) pode alterar um agendamento
+  (status, horarios, observacoes). Um colega com acesso ao mesmo
+  paciente/consultorio ve o agendamento, mas nao pode edita-lo - nao existe
+  ainda um fluxo de "assumir agendamento" (mesma situacao de
+  `itens_plano_tratamento`/`planos_tratamento` antes do "assumir plano").
+- Integracao com Google Agenda fica fora desta rodada (ver Questoes Em
+  Aberto em `modelo_dados.md`); quando existir, sera opt-in por
+  profissional, nunca ligada por padrao para todos.
 
 ## procedimentos
 
