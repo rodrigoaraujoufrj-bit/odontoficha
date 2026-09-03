@@ -192,6 +192,17 @@ cpf no banco: 12345678909
   com vinculo ativo ao paciente (via `paciente_consultorios`) pode ver os
   planos dele, independente de quem criou. Editar continua exigindo assumir o
   plano para si mesmo (ver regra de reatribuicao acima).
+- O PLANO tem seu proprio `status` (`planos_tratamento.status`), separado do
+  status de cada item (secao acima) - os dois usam o valor `aprovado` com
+  sentidos diferentes, cuidado ao ler codigo/docs. Hoje o app so movimenta o
+  status do plano entre `rascunho` e `aprovado`: o dono do plano marca
+  "Paciente aprovou o tratamento" (com confirmacao) para travar a montagem de
+  novos itens (form + editar/excluir, mesmo para o dono) e liberar o checklist
+  rapido de andamento de cada item como unico controle; "Reabrir plano para
+  edicao" (tambem so o dono, com confirmacao) volta para `rascunho` sem alterar
+  nada em nenhum item. Os demais valores aceitos pela constraint
+  (`apresentado`, `aprovado_parcial`, `em_execucao`, `concluido`, `cancelado`,
+  `substituido`) ainda nao tem fluxo no app.
 
 ## Regras De Orcamento
 

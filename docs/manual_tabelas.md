@@ -407,6 +407,18 @@ Dentista.
 
 - Um paciente pode ter mais de um plano.
 - Plano pode ser rascunho antes de virar orcamento.
+- Unica transicao de `status` coberta hoje pelo app: `rascunho` <-> `aprovado`.
+  O dono do plano clica em "Paciente aprovou o tratamento" (com confirmacao)
+  para gravar `aprovado`; isso trava o formulario de novo item e os icones de
+  editar/excluir de cada item (mesmo para o dono), e libera o checklist rapido
+  Pendente/Iniciado/Feito de cada item como unico controle interativo (ver
+  `itens_plano_tratamento`). "Reabrir plano para edicao" (tambem com
+  confirmacao, so o dono) volta `status` para `rascunho` sem tocar em nenhum
+  item - status/`data_execucao` ja gravados no checklist sobrevivem ao ciclo
+  reabrir -> aprovar de novo.
+- Os demais valores aceitos pela constraint (`apresentado`, `aprovado_parcial`,
+  `em_execucao`, `concluido`, `cancelado`, `substituido`) ainda nao tem fluxo
+  no app.
 
 ## itens_plano_tratamento
 
@@ -460,6 +472,10 @@ Dentista.
   `planejado` quanto `aprovado`; ao reverter de `em_andamento`/`realizado` para
   "Pendente" o valor gravado e `aprovado` (nunca regride para `planejado`), e
   `data_execucao` ja gravada nunca e apagada por essa reversao.
+- O checklist so aparece interativo depois que o PLANO (`planos_tratamento.status`,
+  campo diferente deste) sai de `rascunho` (ver `planos_tratamento`). Enquanto
+  o plano ainda e rascunho nao ha andamento de execucao a acompanhar, entao a
+  coluna mostra so um badge de status simples, nao clicavel.
 
 ## envios_plano_tratamento
 

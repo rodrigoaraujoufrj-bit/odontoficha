@@ -1033,6 +1033,23 @@
       padding: 10px 14px;
     }
 
+    .treatment-plan-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .plan-approved-notice {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      padding: 14px;
+    }
+
     .treatment-plan-chooser {
       border: 1px solid rgba(15, 61, 94, 0.08);
       border-radius: 12px;
@@ -1059,7 +1076,9 @@
     .treatment-plan-bar[hidden],
     .treatment-plan-chooser[hidden],
     .treatment-layout[hidden],
-    #treatmentExecutionDateField[hidden] {
+    #treatmentExecutionDateField[hidden],
+    #selectedToothCard[hidden],
+    #procedureCard[hidden] {
       display: none;
     }
 
@@ -2381,7 +2400,11 @@
                           <span class="badge" id="treatmentPlanStatusBadge">Rascunho</span>
                           <span class="muted" id="treatmentPlanOwnerNote"></span>
                         </div>
-                        <button class="mini-button" type="button" id="assumeTreatmentPlanButton" hidden>Assumir este plano</button>
+                        <div class="treatment-plan-bar-actions">
+                          <button class="mini-button" type="button" id="assumeTreatmentPlanButton" hidden>Assumir este plano</button>
+                          <button class="mini-button" type="button" id="approveTreatmentPlanButton" hidden>Paciente aprovou o tratamento</button>
+                          <button class="mini-button" type="button" id="reopenTreatmentPlanButton" hidden>Reabrir plano para edição</button>
+                        </div>
                       </div>
                       <div class="treatment-plan-chooser" id="treatmentPlanChooser" hidden>
                         <p class="muted">Este paciente tem mais de um plano em aberto. Escolha qual continuar:</p>
@@ -2439,7 +2462,10 @@
                           </div>
                         </div>
                         <div class="treatment-side">
-                          <div class="selected-tooth-card">
+                          <div class="plan-approved-notice" id="planApprovedNotice" hidden>
+                            Plano aprovado pelo paciente. A montagem de novos procedimentos fica bloqueada; use o checklist de cada procedimento na tabela ao lado para registrar o andamento. Use "Reabrir plano para edição" para voltar a editar.
+                          </div>
+                          <div class="selected-tooth-card" id="selectedToothCard">
                             <div class="section-heading">
                               <div>
                                 <strong>Dente selecionado</strong>
@@ -2461,7 +2487,7 @@
                               <span class="muted">Clique em um dente para ver procedimentos planejados nesta consulta.</span>
                             </div>
                           </div>
-                          <div class="procedure-card">
+                          <div class="procedure-card" id="procedureCard">
                             <div>
                               <strong>Procedimento sugerido</strong>
                               <p class="muted" id="procedureContextHint">Sem dente selecionado: aparecem procedimentos gerais do consultório.</p>
@@ -2885,6 +2911,11 @@
     const treatmentPlanStatusBadge = document.querySelector("#treatmentPlanStatusBadge");
     const treatmentPlanOwnerNote = document.querySelector("#treatmentPlanOwnerNote");
     const assumeTreatmentPlanButton = document.querySelector("#assumeTreatmentPlanButton");
+    const approveTreatmentPlanButton = document.querySelector("#approveTreatmentPlanButton");
+    const reopenTreatmentPlanButton = document.querySelector("#reopenTreatmentPlanButton");
+    const planApprovedNotice = document.querySelector("#planApprovedNotice");
+    const selectedToothCard = document.querySelector("#selectedToothCard");
+    const procedureCard = document.querySelector("#procedureCard");
     const treatmentPlanChooser = document.querySelector("#treatmentPlanChooser");
     const treatmentPlanList = document.querySelector("#treatmentPlanList");
     const summaryTreatmentStatus = document.querySelector("#summaryTreatmentStatus");
@@ -2933,6 +2964,7 @@
     let dashboardAgenda = [];
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
+    let treatmentPlanOwnerLocked = false;
     let treatmentSessionId = 0;
     let procedures = [];
     let priceRules = [];
@@ -3626,15 +3658,34 @@
       return currentTreatmentPlan.profissional_id === currentProfissional?.id;
     }
 
+    // Unica transicao de planos_tratamento.status coberta hoje: rascunho <->
+    // aprovado (ver approveTreatmentPlanButton/reopenTreatmentPlanButton).
+    // Qualquer outro valor da constraint (apresentado, aprovado_parcial,
+    // em_execucao, concluido, cancelado, substituido) ainda nao tem fluxo no
+    // app, então "aprovado" aqui é tratado como "não é mais rascunho".
+    function isCurrentPlanApproved() {
+      return Boolean(currentTreatmentPlan && currentTreatmentPlan.status !== "rascunho");
+    }
+
     function renderTreatmentPlanBar() {
       if (!currentTreatmentPlan) {
         treatmentPlanBar.hidden = true;
         treatmentPlanLocked = false;
+        treatmentPlanOwnerLocked = false;
+        selectedToothCard.hidden = false;
+        procedureCard.hidden = false;
+        planApprovedNotice.hidden = true;
       } else {
         treatmentPlanBar.hidden = false;
         treatmentPlanStatusBadge.textContent = getPlanStatusLabel(currentTreatmentPlan.status);
         const isOwner = canEditCurrentPlan();
-        treatmentPlanLocked = !isOwner;
+        const isApproved = isCurrentPlanApproved();
+        treatmentPlanOwnerLocked = !isOwner;
+        // Trava a montagem (form de novo item + editar/excluir de cada item)
+        // tanto por dono quanto por aprovação: uma vez aprovado, nem o próprio
+        // dono monta mais itens por ali - o checklist de andamento (gate por
+        // treatmentPlanOwnerLocked, não por isso) passa a ser o único controle.
+        treatmentPlanLocked = !isOwner || isApproved;
         if (isOwner) {
           treatmentPlanOwnerNote.textContent = "";
           assumeTreatmentPlanButton.hidden = true;
@@ -3643,6 +3694,13 @@
           treatmentPlanOwnerNote.textContent = `Plano conduzido por ${ownerName}. Assuma para editar.`;
           assumeTreatmentPlanButton.hidden = false;
         }
+        approveTreatmentPlanButton.hidden = isApproved;
+        approveTreatmentPlanButton.disabled = !isOwner;
+        reopenTreatmentPlanButton.hidden = !isApproved;
+        reopenTreatmentPlanButton.disabled = !isOwner;
+        selectedToothCard.hidden = isApproved;
+        procedureCard.hidden = isApproved;
+        planApprovedNotice.hidden = !isApproved;
       }
       // Sempre reavalia os botões de ação, mesmo sem plano atual: evita o botão
       // "Adicionar ao plano" ficar travado com o treatmentPlanLocked de um plano
@@ -4549,6 +4607,13 @@
     // não para checar o que já foi feito). "Pendente" agrupa os dois status de
     // pré-execução (planejado/aprovado); ver renderItemStatusToggle e o
     // listener de clique em treatmentPlanRows para a lógica de reversão.
+    //
+    // Só é chamada (ver renderQuote) quando o plano já saiu de "rascunho": não
+    // há andamento de execução para checar antes de o paciente aprovar o
+    // plano, então enquanto rascunho a coluna mostra um badge simples no
+    // lugar deste controle. O gate aqui é só por dono (treatmentPlanOwnerLocked),
+    // não por treatmentPlanLocked: este é justamente o controle que continua
+    // ativo para o dono depois que a montagem normal do plano é travada.
     function renderItemStatusToggle(item, index) {
       const isPendente = item.status === "planejado" || item.status === "aprovado";
       const isIniciado = item.status === "em_andamento";
@@ -4561,7 +4626,7 @@
       return `
         <div class="status-toggle" role="group" aria-label="Andamento do procedimento">
           ${segments.map(([value, label, active]) => `
-            <button class="status-toggle-btn${active ? " active" : ""}" type="button" data-status-toggle="${value}" data-item-index="${index}" ${(treatmentPlanLocked || active) ? "disabled" : ""}>${label}</button>
+            <button class="status-toggle-btn${active ? " active" : ""}" type="button" data-status-toggle="${value}" data-item-index="${index}" ${(treatmentPlanOwnerLocked || active) ? "disabled" : ""}>${label}</button>
           `).join("")}
         </div>
       `;
@@ -4596,7 +4661,7 @@
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
           <td>
-            ${renderItemStatusToggle(item, index)}
+            ${isCurrentPlanApproved() ? renderItemStatusToggle(item, index) : `<span class="badge">${escapeHtml(getItemStatusLabel(item.status))}</span>`}
             ${item.urgente ? `<span class="badge badge-urgent">Urgente</span>` : ""}
           </td>
           <td>
@@ -5269,9 +5334,88 @@
       setTreatmentFeedback("Plano assumido. Você já pode editar os procedimentos.");
     });
 
+    approveTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan || treatmentPlanOwnerLocked) return;
+      if (!getActiveItemsOfPlan(currentTreatmentPlan).length) {
+        setTreatmentFeedback("Adicione ao menos um procedimento ao plano antes de marcar como aprovado pelo paciente.", "warning");
+        return;
+      }
+
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
+      const confirmado = window.confirm("Confirmar que o paciente aprovou este plano de tratamento? A montagem de novos procedimentos ficará bloqueada até reabrir o plano.");
+      if (!confirmado || sessionAtClick !== treatmentSessionId) return;
+
+      approveTreatmentPlanButton.disabled = true;
+      approveTreatmentPlanButton.textContent = "Aprovando...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "aprovado" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      approveTreatmentPlanButton.disabled = false;
+      approveTreatmentPlanButton.textContent = "Paciente aprovou o tratamento";
+
+      // Mesma guarda de sessão do restante dos writes do plano: se o dentista
+      // já trocou de paciente/fluxo enquanto o UPDATE estava em voo, o plano
+      // foi aprovado de verdade no banco, mas a tela atual é sobre outra coisa.
+      if (sessionAtClick !== treatmentSessionId) return;
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível registrar a aprovação do plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano marcado como aprovado pelo paciente. Use o checklist de cada procedimento para registrar o andamento.");
+    });
+
+    reopenTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan || treatmentPlanOwnerLocked) return;
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
+      const confirmado = window.confirm("Reabrir este plano para edição? O andamento já registrado em cada procedimento (checklist) não será alterado.");
+      if (!confirmado || sessionAtClick !== treatmentSessionId) return;
+
+      reopenTreatmentPlanButton.disabled = true;
+      reopenTreatmentPlanButton.textContent = "Reabrindo...";
+
+      // Só toca planos_tratamento.status: nenhum item de itens_plano_tratamento
+      // é lido ou escrito aqui, então status/data_execucao já marcados no
+      // checklist sobrevivem intactos a um reabrir-e-aprovar-de-novo.
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "rascunho" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      reopenTreatmentPlanButton.disabled = false;
+      reopenTreatmentPlanButton.textContent = "Reabrir plano para edição";
+
+      if (sessionAtClick !== treatmentSessionId) return;
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível reabrir este plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano reaberto para edição. O andamento já registrado em cada procedimento foi mantido.");
+    });
+
     toothGrid.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tooth]");
-      if (!button) return;
+      if (!button || isCurrentPlanApproved()) return;
       if (selectedTooth === button.dataset.tooth) {
         selectedTooth = "";
         selectedFaces = [];
@@ -5355,7 +5499,9 @@
 
     addTreatmentItem.addEventListener("click", async () => {
       if (treatmentPlanLocked) {
-        setTreatmentFeedback("Assuma este plano antes de adicionar ou editar procedimentos.", "warning");
+        setTreatmentFeedback(isCurrentPlanApproved()
+          ? "Este plano já foi aprovado pelo paciente. Reabra-o para adicionar ou editar procedimentos."
+          : "Assuma este plano antes de adicionar ou editar procedimentos.", "warning");
         return;
       }
 
@@ -5424,9 +5570,11 @@
         addTreatmentItem.disabled = treatmentPlanLocked;
         if (error) {
           await refreshCurrentPlanOwnership();
-          setTreatmentFeedback(treatmentPlanLocked
-            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
-            : "Não foi possível salvar este procedimento no plano.", "warning");
+          setTreatmentFeedback(isCurrentPlanApproved()
+            ? "Este plano foi aprovado pelo paciente. Reabra-o para continuar editando."
+            : (treatmentPlanLocked
+              ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+              : "Não foi possível salvar este procedimento no plano."), "warning");
           return;
         }
 
@@ -5449,9 +5597,11 @@
         addTreatmentItem.disabled = treatmentPlanLocked;
         if (error) {
           await refreshCurrentPlanOwnership();
-          setTreatmentFeedback(treatmentPlanLocked
-            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
-            : "Não foi possível salvar a alteração deste procedimento.", "warning");
+          setTreatmentFeedback(isCurrentPlanApproved()
+            ? "Este plano foi aprovado pelo paciente. Reabra-o para continuar editando."
+            : (treatmentPlanLocked
+              ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+              : "Não foi possível salvar a alteração deste procedimento."), "warning");
           return;
         }
 
@@ -5499,7 +5649,7 @@
       const statusToggleButton = event.target.closest("[data-status-toggle]");
 
       if (statusToggleButton) {
-        if (treatmentPlanLocked) return;
+        if (treatmentPlanOwnerLocked) return;
         const index = Number(statusToggleButton.dataset.itemIndex);
         const item = treatmentItems[index];
         if (!item) return;
@@ -5542,7 +5692,7 @@
 
         if (error) {
           await refreshCurrentPlanOwnership();
-          setTreatmentFeedback(treatmentPlanLocked
+          setTreatmentFeedback(treatmentPlanOwnerLocked
             ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
             : "Não foi possível atualizar o andamento deste procedimento.", "warning");
           return;
