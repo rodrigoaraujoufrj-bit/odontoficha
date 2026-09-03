@@ -3224,14 +3224,7 @@
         canal,
         valor_total: total,
         quantidade_itens: treatmentItems.length,
-        itens_snapshot: treatmentItems.map((item) => ({
-          tooth: item.tooth,
-          face: item.face,
-          procedure: item.procedure,
-          value: item.value,
-          status: item.status,
-          urgente: item.urgente
-        })),
+        item_ids: treatmentItems.map((item) => item.dbId).filter(Boolean),
         ...extra
       };
 

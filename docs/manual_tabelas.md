@@ -422,6 +422,50 @@ Dentista.
   de andamento. Um item pode estar `em_andamento` e `urgente` ao mesmo tempo.
 - Deve permitir item manual sem procedimento cadastrado.
 
+## envios_plano_tratamento
+
+### Finalidade
+
+Registrar que um orcamento foi gerado em PDF ou preparado/aberto no WhatsApp,
+para o dentista conseguir consultar depois o que foi enviado ao paciente sem
+depender da memoria. Nao e a tabela `orcamentos` (proposta, com fluxo de
+aprovacao/recusa) - e soh um log de envio.
+
+### Quando preencher
+
+Automaticamente, quando o dentista clica em "Imprimir PDF" ou "Abrir WhatsApp"
+na tela de atendimento.
+
+### Quem preenche
+
+O sistema, em nome do profissional que estava com o plano aberto.
+
+### Campos obrigatorios
+
+- `plano_tratamento_id`
+- `profissional_id`
+- `canal` (`pdf` ou `whatsapp`)
+
+### Campos opcionais
+
+- `valor_total`
+- `quantidade_itens`
+- `item_ids`
+- `destinatario_telefone` (soh quando `canal = whatsapp`)
+
+### Regras
+
+- E historico: nao tem `update` nem `delete`, so `insert`/`select`.
+- Por decisao de manter o uso de espaco no banco baixo, `item_ids` guarda so os
+  ids dos itens de `itens_plano_tratamento` incluidos no envio - nao duplica o
+  conteudo deles. Como esses itens nunca sao apagados de verdade (so
+  `status = cancelado`), os ids sempre resolvem para dados reais; a
+  contrapartida e que, se um item for editado depois do envio, reconstruir o
+  envio mostra o valor atual do item, nao o valor exato de quando foi enviado.
+- Nao confirma entrega nem leitura da mensagem: o WhatsApp e aberto via link
+  manual (`wa.me`), nao pela API oficial, entao so registramos que o dentista
+  clicou em enviar.
+
 ## orcamentos
 
 ### Finalidade

@@ -3,9 +3,17 @@
 -- Nao e a tabela "orcamentos" completa (com fluxo de aprovacao/recusa) prevista
 -- em docs/modelo_dados.md como "Tabela Futura" - essa continua fora de escopo,
 -- por decisao ja registrada. Isto e mais simples: um log imutavel de quando um
--- orcamento foi gerado em PDF ou preparado/aberto no WhatsApp, com um retrato
--- dos itens naquele momento, para o dentista conseguir ver depois o que foi
--- enviado ao paciente sem precisar confiar na memoria.
+-- orcamento foi gerado em PDF ou preparado/aberto no WhatsApp, para o dentista
+-- conseguir ver depois o que foi enviado ao paciente sem precisar confiar na
+-- memoria.
+--
+-- Por decisao de manter o uso de espaco no banco baixo, isto NAO duplica o
+-- conteudo dos itens (nome, valor, status etc.) a cada envio - guarda so os
+-- ids de itens_plano_tratamento referenciados. Como esses itens nunca sao
+-- apagados de verdade (so soft-delete via status='cancelado'), os ids sempre
+-- resolvem para dados reais; o preco e que, se um item for editado depois do
+-- envio, o "retrato" que se reconstroi a partir do id mostra o valor atual,
+-- nao o valor exato de quando foi enviado.
 --
 -- Envio nao e edicao do plano: qualquer profissional com acesso legitimo ao
 -- paciente/consultorio pode gerar e registrar um envio, mesmo sem ser o dono
@@ -18,7 +26,7 @@ create table if not exists public.envios_plano_tratamento (
   canal text not null,
   valor_total numeric(12,2) not null default 0,
   quantidade_itens integer not null default 0,
-  itens_snapshot jsonb not null default '[]'::jsonb,
+  item_ids uuid[] not null default '{}'::uuid[],
   destinatario_telefone text,
   criado_em timestamptz not null default now(),
 
@@ -66,5 +74,5 @@ with check (
 
 comment on table public.envios_plano_tratamento is
   'Log imutavel de geracao/envio de orcamento (PDF ou WhatsApp). Sem update/delete: e historico, nao dado editavel.';
-comment on column public.envios_plano_tratamento.itens_snapshot is
-  'Copia dos itens do plano no momento do envio (dente, face, procedimento, valor, status) - o plano pode mudar depois.';
+comment on column public.envios_plano_tratamento.item_ids is
+  'Ids de itens_plano_tratamento incluidos neste envio (referencia, nao copia - ver nota de espaco no topo do arquivo).';
