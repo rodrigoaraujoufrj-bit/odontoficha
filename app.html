@@ -894,7 +894,8 @@
 
     .envios-list,
     .agenda-list,
-    .agenda-patient-list {
+    .agenda-patient-list,
+    .financeiro-list {
       list-style: none;
       margin: 0;
       padding: 0;
@@ -904,7 +905,8 @@
 
     .envios-list li,
     .agenda-list li,
-    .agenda-patient-list li {
+    .agenda-patient-list li,
+    .financeiro-list li {
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 10px 12px;
@@ -1879,6 +1881,51 @@
       color: var(--success);
     }
 
+    .period-toggle {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .period-toggle-btn {
+      border: none;
+      border-left: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 6px 9px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .period-toggle-btn:first-child {
+      border-left: none;
+    }
+
+    .period-toggle-btn.active {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    .financeiro-total-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-soft);
+    }
+
+    .financeiro-total-row strong {
+      font-size: 1.15rem;
+      color: var(--primary-dark);
+    }
+
     .loading {
       min-height: 220px;
       display: grid;
@@ -2224,6 +2271,26 @@
                     </div>
                     <div class="home-note">
                       A agenda aqui mostra só os seus horários neste consultório. Quem tem acesso ao paciente pode ver o agendamento de um colega na ficha dele, mas só o profissional dono pode alterá-lo.
+                    </div>
+                    <div class="schedule-card financeiro-card" id="dashboardFinanceiroCard">
+                      <div class="card-topline">
+                        <div>
+                          <div class="kicker">Financeiro · consultório atual</div>
+                          <strong>Ganhos por procedimento</strong>
+                        </div>
+                      </div>
+                      <div class="period-toggle" id="dashboardFinanceiroPeriod">
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="hoje">Hoje</button>
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="semana">Esta semana</button>
+                        <button class="period-toggle-btn active" type="button" data-financeiro-period="mes">Este mês</button>
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="tudo">Tudo</button>
+                      </div>
+                      <div class="financeiro-total-row">
+                        <span class="muted">Total no período</span>
+                        <strong id="dashboardFinanceiroTotal">R$ 0,00</strong>
+                      </div>
+                      <p class="muted" id="dashboardFinanceiroEmpty">Nenhum ganho registrado no período.</p>
+                      <ul class="financeiro-list" id="dashboardFinanceiroList" aria-live="polite" hidden></ul>
                     </div>
                   </div>
                   <div class="quick-stack">
@@ -2879,6 +2946,10 @@
     const dashboardAgendaList = document.querySelector("#dashboardAgendaList");
     const dashboardAgendaEmpty = document.querySelector("#dashboardAgendaEmpty");
     const dashboardAgendaCount = document.querySelector("#dashboardAgendaCount");
+    const dashboardFinanceiroPeriod = document.querySelector("#dashboardFinanceiroPeriod");
+    const dashboardFinanceiroTotal = document.querySelector("#dashboardFinanceiroTotal");
+    const dashboardFinanceiroEmpty = document.querySelector("#dashboardFinanceiroEmpty");
+    const dashboardFinanceiroList = document.querySelector("#dashboardFinanceiroList");
     const agendaForm = document.querySelector("#agendaForm");
     const agendaInicio = document.querySelector("#agendaInicio");
     const agendaFim = document.querySelector("#agendaFim");
@@ -2962,6 +3033,8 @@
     let patientEnvios = [];
     let patientAgendamentos = [];
     let dashboardAgenda = [];
+    let dashboardFinanceiroItems = [];
+    let dashboardFinanceiroPeriodFilter = "mes";
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
     let treatmentPlanOwnerLocked = false;
@@ -3228,6 +3301,7 @@
       await loadConsultorioColegas();
       await loadPatients();
       await loadDashboardAgenda();
+      await loadDashboardFinanceiro();
       showDashboardTab("home");
       showView("dashboard");
     }
@@ -3315,7 +3389,7 @@
       }
     }
 
-    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, data_execucao, criado_em";
+    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, data_execucao, registrado_como_historico, criado_em";
 
     async function loadPatientTreatmentPlans(patientId) {
       if (!patientId || !currentConsultorio?.id) return;
@@ -3484,6 +3558,82 @@
       }).join("");
     }
 
+    // Itens ganham consultorio_id/profissional_id so por heranca do plano
+    // (itens_plano_tratamento nao carrega essas colunas), por isso o escopo
+    // atual/profissional entra como filtro no plano, e os itens vem embutidos.
+    async function loadDashboardFinanceiro() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const profissionalAtLoad = currentProfissional.id;
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, consultorio_id, profissional_id, itens_plano_tratamento(${PLAN_ITEM_COLUMNS})`)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id);
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtLoad) return;
+      dashboardFinanceiroItems = error ? [] : (data || []).flatMap((plan) => plan.itens_plano_tratamento || []);
+      renderDashboardFinanceiro();
+    }
+
+    function isDateWithinFinanceiroPeriod(rawDate, period) {
+      if (period === "tudo") return true;
+      if (!rawDate) return false;
+      const date = new Date(rawDate.length === 10 ? `${rawDate}T00:00:00` : rawDate);
+      if (Number.isNaN(date.getTime())) return false;
+      const now = new Date();
+      if (period === "hoje") return date.toDateString() === now.toDateString();
+      if (period === "semana") {
+        const startOfWeek = new Date(now);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        return date >= startOfWeek;
+      }
+      if (period === "mes") return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+      return true;
+    }
+
+    function renderDashboardFinanceiro() {
+      if (!dashboardFinanceiroList || !dashboardFinanceiroEmpty || !dashboardFinanceiroTotal) return;
+
+      const earned = dashboardFinanceiroItems.filter((row) =>
+        row.status === "realizado" && !row.registrado_como_historico
+        && isDateWithinFinanceiroPeriod(row.data_execucao ?? row.criado_em, dashboardFinanceiroPeriodFilter)
+      );
+
+      const groups = new Map();
+      for (const row of earned) {
+        const nome = row.procedimento_nome || "Procedimento";
+        const valor = Number(row.valor_final ?? row.valor_estimado ?? 0);
+        const entry = groups.get(nome) || { nome, quantidade: 0, total: 0 };
+        entry.quantidade += 1;
+        entry.total += valor;
+        groups.set(nome, entry);
+      }
+      const grupos = [...groups.values()].sort((a, b) => b.total - a.total);
+      const totalGeral = grupos.reduce((soma, grupo) => soma + grupo.total, 0);
+
+      dashboardFinanceiroTotal.textContent = formatCurrency(totalGeral);
+
+      if (!grupos.length) {
+        dashboardFinanceiroList.hidden = true;
+        dashboardFinanceiroList.innerHTML = "";
+        dashboardFinanceiroEmpty.hidden = false;
+        return;
+      }
+      dashboardFinanceiroEmpty.hidden = true;
+      dashboardFinanceiroList.hidden = false;
+      dashboardFinanceiroList.innerHTML = grupos.map((grupo) => `
+        <li>
+          <strong>${escapeHtml(grupo.nome)}</strong>
+          <span class="muted">${grupo.quantidade} ${grupo.quantidade === 1 ? "item" : "itens"}</span>
+          <span class="badge">${escapeHtml(formatCurrency(grupo.total))}</span>
+        </li>
+      `).join("");
+    }
+
     async function loadPatientAgendamentos(patientId) {
       if (!patientId || !currentConsultorio?.id) return;
       const { data, error } = await supabase
@@ -3649,6 +3799,7 @@
         urgente: Boolean(row.urgente),
         notes: row.observacao || "",
         dataExecucao: row.data_execucao || null,
+        registradoComoHistorico: Boolean(row.registrado_como_historico),
         criadoEm: row.criado_em || null
       };
     }
@@ -4989,6 +5140,16 @@
       dashboardAgenda = [];
       renderDashboardAgenda();
       resetAgendaSection();
+      // Sem isso, o filtro de período (e o botão marcado como ativo) do card
+      // financeiro sobrevivia à troca de sessão: um profissional saía com
+      // "Tudo" selecionado e o próximo já entrava vendo os próprios ganhos
+      // filtrados por essa escolha alheia, em vez do padrão "Este mês".
+      dashboardFinanceiroItems = [];
+      dashboardFinanceiroPeriodFilter = "mes";
+      dashboardFinanceiroPeriod.querySelectorAll(".period-toggle-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.financeiroPeriod === "mes");
+      });
+      renderDashboardFinanceiro();
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
@@ -5235,6 +5396,16 @@
       showDashboardTab("patient");
       closeMobileMenu();
       await showPatientSummary(link.dataset.openAgendaPatient);
+    });
+
+    dashboardFinanceiroPeriod.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-financeiro-period]");
+      if (!button) return;
+      dashboardFinanceiroPeriodFilter = button.dataset.financeiroPeriod;
+      dashboardFinanceiroPeriod.querySelectorAll(".period-toggle-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn === button);
+      });
+      renderDashboardFinanceiro();
     });
 
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {
@@ -5493,7 +5664,8 @@
         status: item.status,
         urgente: item.urgente,
         ordem: item.ordem,
-        data_execucao: item.dataExecucao || null
+        data_execucao: item.dataExecucao || null,
+        registrado_como_historico: Boolean(item.registradoComoHistorico)
       };
     }
 
@@ -5546,7 +5718,14 @@
         dataExecucao: editingItem
           ? (editingItem.dataExecucao ?? null)
           : (treatmentAlreadyDone.checked ? (treatmentExecutionDate.value || null)
-            : (treatmentStatus.value === "realizado" ? todayIsoDate() : null))
+            : (treatmentStatus.value === "realizado" ? todayIsoDate() : null)),
+        // Mesmo motivo do dataExecucao acima: editar um item por qualquer
+        // outro motivo nao pode reescrever silenciosamente esta origem so
+        // porque o checkbox "Ja foi realizado antes" esta desmarcado no form
+        // (ele nunca vem marcado ao reabrir um item existente para edicao).
+        registradoComoHistorico: editingItem
+          ? Boolean(editingItem.registradoComoHistorico)
+          : treatmentAlreadyDone.checked
       };
 
       addTreatmentItem.disabled = true;

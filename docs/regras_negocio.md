@@ -229,6 +229,12 @@ cpf no banco: 12345678909
   - quanto falta pagar
 - Pagamento pode estar ligado a paciente, orcamento ou plano.
 - Nao construir financeiro completo antes de validar o fluxo clinico.
+- Dashboard "Ganhos por procedimento" e so leitura/relatorio: sem cobranca ou
+  pagamento no app. Soma `itens_plano_tratamento` com `status = 'realizado'` e
+  `registrado_como_historico = false` do profissional/consultorio atual,
+  agrupado por procedimento, filtrado por periodo (Hoje/Esta semana/Este
+  mes/Tudo). Item historico (checkbox "Ja foi realizado antes") nunca entra,
+  mesmo `realizado`.
 
 ## Regras De Laboratorio
 

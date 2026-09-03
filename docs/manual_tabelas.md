@@ -450,6 +450,7 @@ Dentista.
 - `urgente`
 - `ordem`
 - `data_execucao`
+- `registrado_como_historico`
 
 ### Regras
 
@@ -476,6 +477,14 @@ Dentista.
   campo diferente deste) sai de `rascunho` (ver `planos_tratamento`). Enquanto
   o plano ainda e rascunho nao ha andamento de execucao a acompanhar, entao a
   coluna mostra so um badge de status simples, nao clicavel.
+- `registrado_como_historico` e ligado automaticamente quando o item e criado
+  pelo checkbox "Ja foi realizado antes (historico/exame inicial)" (que tambem
+  forca `status = 'realizado'` e libera `data_execucao` manual). Editar o item
+  depois preserva esse valor, nunca reavalia pelo estado do checkbox no
+  formulario. Relatorios financeiros/ganhos devem excluir todo item com
+  `registrado_como_historico = true`, mesmo estando `realizado`: ele so
+  registra trabalho ja feito antes (tipicamente por outro profissional), nao
+  algo que este consultorio executou ou recebeu.
 
 ## envios_plano_tratamento
 
