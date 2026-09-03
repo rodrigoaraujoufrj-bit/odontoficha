@@ -2754,6 +2754,7 @@
     let patientTreatmentPlans = [];
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
+    let treatmentSessionId = 0;
     let procedures = [];
     let priceRules = [];
     let procedureStorageMode = "local";
@@ -3079,6 +3080,7 @@
         consultorio_uuid: currentConsultorio.id
       });
 
+      if (selectedPatientId !== patientId) return;
       const linked = (error ? [] : data || []).filter((profissional) => profissional.id !== currentProfissional?.id);
 
       summarySharedList.innerHTML = linked.length
@@ -3112,6 +3114,7 @@
         .eq("consultorio_id", currentConsultorio.id)
         .order("criado_em", { ascending: false });
 
+      if (selectedPatientId !== patientId) return;
       patientTreatmentPlans = error ? [] : (data || []);
       renderTreatmentStatusSummary();
     }
@@ -3161,7 +3164,35 @@
         realizado: "Realizado",
         cancelado: "Cancelado"
       };
-      return labels[status] || labels.planejado;
+      return labels[status] || status;
+    }
+
+    function nextOrdemForPlan(plan) {
+      const existing = (plan?.itens_plano_tratamento || []).map((row) => row.ordem || 0);
+      return existing.length ? Math.max(...existing) + 1 : 1;
+    }
+
+    async function syncPlanTotal(plan) {
+      if (!plan) return;
+      const total = (plan.itens_plano_tratamento || [])
+        .filter((row) => row.status !== "cancelado")
+        .reduce((sum, row) => sum + Number(row.valor_final ?? row.valor_estimado ?? 0), 0);
+      const { error } = await supabase.from("planos_tratamento").update({ valor_total_estimado: total }).eq("id", plan.id);
+      if (!error) plan.valor_total_estimado = total;
+    }
+
+    async function refreshCurrentPlanOwnership() {
+      if (!currentTreatmentPlan) return;
+      const { data } = await supabase
+        .from("planos_tratamento")
+        .select("id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em")
+        .eq("id", currentTreatmentPlan.id)
+        .maybeSingle();
+      if (!data) return;
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
     }
 
     function mapDbItemToUiItem(row) {
@@ -3192,20 +3223,23 @@
       if (!currentTreatmentPlan) {
         treatmentPlanBar.hidden = true;
         treatmentPlanLocked = false;
-        return;
-      }
-      treatmentPlanBar.hidden = false;
-      treatmentPlanStatusBadge.textContent = getPlanStatusLabel(currentTreatmentPlan.status);
-      const isOwner = canEditCurrentPlan();
-      treatmentPlanLocked = !isOwner;
-      if (isOwner) {
-        treatmentPlanOwnerNote.textContent = "";
-        assumeTreatmentPlanButton.hidden = true;
       } else {
-        const ownerName = consultorioColegas.find((colega) => colega.id === currentTreatmentPlan.profissional_id)?.nome || "outro profissional do consultório";
-        treatmentPlanOwnerNote.textContent = `Plano conduzido por ${ownerName}. Assuma para editar.`;
-        assumeTreatmentPlanButton.hidden = false;
+        treatmentPlanBar.hidden = false;
+        treatmentPlanStatusBadge.textContent = getPlanStatusLabel(currentTreatmentPlan.status);
+        const isOwner = canEditCurrentPlan();
+        treatmentPlanLocked = !isOwner;
+        if (isOwner) {
+          treatmentPlanOwnerNote.textContent = "";
+          assumeTreatmentPlanButton.hidden = true;
+        } else {
+          const ownerName = consultorioColegas.find((colega) => colega.id === currentTreatmentPlan.profissional_id)?.nome || "outro profissional do consultório";
+          treatmentPlanOwnerNote.textContent = `Plano conduzido por ${ownerName}. Assuma para editar.`;
+          assumeTreatmentPlanButton.hidden = false;
+        }
       }
+      // Sempre reavalia os botões de ação, mesmo sem plano atual: evita o botão
+      // "Adicionar ao plano" ficar travado com o treatmentPlanLocked de um plano
+      // bloqueado que acabou de sair de cena (troca de paciente/fluxo).
       renderProcedureOptions(treatmentProcedure.value);
       renderQuote();
     }
@@ -3238,6 +3272,7 @@
       if (currentTreatmentPlan) return currentTreatmentPlan;
       if (!selectedPatientId || !currentConsultorio?.id || !currentProfissional?.id) return null;
 
+      const sessionAtStart = treatmentSessionId;
       const { data, error } = await supabase
         .from("planos_tratamento")
         .insert({
@@ -3254,6 +3289,10 @@
         setTreatmentFeedback("Não foi possível criar o plano de tratamento.", "warning");
         return null;
       }
+      // Se o dentista já trocou de paciente/fluxo enquanto o insert estava em
+      // voo, o plano foi criado corretamente no banco, mas não deve mais ser
+      // amarrado ao estado da tela atual (evita vazar plano de outro contexto).
+      if (sessionAtStart !== treatmentSessionId) return null;
 
       currentTreatmentPlan = { ...data, itens_plano_tratamento: [] };
       patientTreatmentPlans.unshift(currentTreatmentPlan);
@@ -3386,6 +3425,7 @@
         .limit(1)
         .maybeSingle();
 
+      if (selectedPatientId !== patientId) return;
       if (error) {
         document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
         document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
@@ -3809,6 +3849,11 @@
     }
 
     function resetTreatmentDraft(items = []) {
+      // Muda o contexto do rascunho (novo paciente, novo fluxo, novo plano
+      // escolhido): qualquer escrita assíncrona iniciada antes disso (criar
+      // plano, adicionar/editar/excluir item, assumir plano) passa a ser
+      // considerada obsoleta e não deve mais alterar o estado desta tela.
+      treatmentSessionId += 1;
       selectedTooth = "";
       selectedFaces = [];
       treatmentItems = items;
@@ -3820,14 +3865,12 @@
       });
       faceGrid.querySelectorAll(".face-button").forEach((button) => button.classList.remove("active"));
       renderSelectedToothSummary();
-      renderProcedureOptions();
       treatmentNotes.value = "";
       treatmentStatus.value = "planejado";
       treatmentUrgent.checked = false;
       addTreatmentItem.textContent = "Adicionar ao plano";
       clearTreatmentFeedback();
       clearQuoteAction();
-      renderQuote();
     }
 
     function setTreatmentFeedback(message, type = "success") {
@@ -4586,18 +4629,25 @@
 
     assumeTreatmentPlanButton.addEventListener("click", async () => {
       if (!currentTreatmentPlan) return;
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
       assumeTreatmentPlanButton.disabled = true;
       assumeTreatmentPlanButton.textContent = "Assumindo...";
 
       const { data, error } = await supabase
         .from("planos_tratamento")
         .update({ profissional_id: currentProfissional.id })
-        .eq("id", currentTreatmentPlan.id)
+        .eq("id", planId)
         .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
         .single();
 
       assumeTreatmentPlanButton.disabled = false;
       assumeTreatmentPlanButton.textContent = "Assumir este plano";
+
+      // O dentista pode ter trocado de paciente/fluxo enquanto o UPDATE estava
+      // em voo: o plano já foi assumido de verdade no banco, mas não deve mais
+      // sobrescrever o estado de uma tela que já é sobre outra coisa.
+      if (sessionAtClick !== treatmentSessionId) return;
 
       if (error) {
         setTreatmentFeedback("Não foi possível assumir este plano.", "warning");
@@ -4711,11 +4761,12 @@
         return;
       }
 
+      const sessionAtClick = treatmentSessionId;
       const value = Number(treatmentValue.value || 0);
       const editingItem = editingTreatmentIndex === null ? null : treatmentItems[editingTreatmentIndex];
       const nextItem = {
         dbId: editingItem?.dbId,
-        ordem: editingItem?.ordem || treatmentItems.length + 1,
+        ordem: editingItem?.ordem,
         tooth: selectedProcedure.exige_dente ? selectedTooth : "",
         faces: [...selectedFaces],
         face: selectedProcedure.exige_face && selectedFaces.length ? selectedFaces.join(", ") : "geral",
@@ -4732,21 +4783,27 @@
       addTreatmentItem.disabled = true;
 
       const plan = await ensureTreatmentPlan();
+      if (sessionAtClick !== treatmentSessionId) return;
       if (!plan) {
         addTreatmentItem.disabled = treatmentPlanLocked;
         return;
       }
 
       if (editingTreatmentIndex === null) {
+        nextItem.ordem = nextOrdemForPlan(plan);
         const { data, error } = await supabase
           .from("itens_plano_tratamento")
           .insert(buildItemPayload(nextItem, plan.id))
           .select(PLAN_ITEM_COLUMNS)
           .single();
 
+        if (sessionAtClick !== treatmentSessionId) return;
         addTreatmentItem.disabled = treatmentPlanLocked;
         if (error) {
-          setTreatmentFeedback("Não foi possível salvar este procedimento no plano.", "warning");
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(treatmentPlanLocked
+            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+            : "Não foi possível salvar este procedimento no plano.", "warning");
           return;
         }
 
@@ -4756,6 +4813,7 @@
         plan.itens_plano_tratamento.push(data);
         highlightedTreatmentIndex = treatmentItems.length - 1;
         setTreatmentFeedback("Procedimento adicionado ao plano.");
+        await syncPlanTotal(plan);
       } else {
         const { data, error } = await supabase
           .from("itens_plano_tratamento")
@@ -4764,19 +4822,36 @@
           .select(PLAN_ITEM_COLUMNS)
           .single();
 
+        if (sessionAtClick !== treatmentSessionId) return;
         addTreatmentItem.disabled = treatmentPlanLocked;
         if (error) {
-          setTreatmentFeedback("Não foi possível salvar a alteração deste procedimento.", "warning");
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(treatmentPlanLocked
+            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+            : "Não foi possível salvar a alteração deste procedimento.", "warning");
           return;
         }
 
-        highlightedTreatmentIndex = editingTreatmentIndex;
-        treatmentItems[editingTreatmentIndex] = mapDbItemToUiItem(data);
         const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
         if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex] = data;
+
+        // Usa a referência do item (não o índice capturado no clique) porque o
+        // array pode ter sido reordenado por uma exclusão concorrente enquanto
+        // este update estava em voo.
+        const currentIndex = treatmentItems.indexOf(editingItem);
+        if (currentIndex !== -1) {
+          if (data.status === "cancelado") {
+            treatmentItems.splice(currentIndex, 1);
+            setTreatmentFeedback("Procedimento marcado como cancelado e removido do plano ativo.", "warning");
+          } else {
+            highlightedTreatmentIndex = currentIndex;
+            treatmentItems[currentIndex] = mapDbItemToUiItem(data);
+            setTreatmentFeedback("Procedimento atualizado no plano.");
+          }
+        }
         editingTreatmentIndex = null;
         addTreatmentItem.textContent = "Adicionar ao plano";
-        setTreatmentFeedback("Procedimento atualizado no plano.");
+        await syncPlanTotal(plan);
       }
 
       renderTreatmentStatusSummary();
@@ -4802,39 +4877,48 @@
         const removed = treatmentItems[index];
         if (!removed) return;
 
-        deleteButton.disabled = true;
+        const sessionAtClick = treatmentSessionId;
         const plan = currentTreatmentPlan;
-        const { error } = removed.dbId && plan
-          ? await supabase.from("itens_plano_tratamento").update({ status: "cancelado" }).eq("id", removed.dbId)
-          : { error: null };
+        deleteButton.disabled = true;
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update({ status: "cancelado" })
+          .eq("id", removed.dbId)
+          .select("id, status")
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
 
         if (error) {
           deleteButton.disabled = false;
+          await refreshCurrentPlanOwnership();
           setTreatmentFeedback("Não foi possível remover este procedimento.", "warning");
           return;
         }
 
-        treatmentItems.splice(index, 1);
+        // Localiza pela referência do item, não pelo índice capturado no
+        // clique: outra exclusão pode ter resolvido primeiro e reindexado o
+        // array enquanto este UPDATE estava em voo.
+        const currentIndex = treatmentItems.indexOf(removed);
+        if (currentIndex === -1) return;
+        treatmentItems.splice(currentIndex, 1);
         if (plan) {
-          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === removed.dbId);
+          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
           if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex].status = "cancelado";
         }
-        if (editingTreatmentIndex === index) {
+        if (editingTreatmentIndex === currentIndex) {
           editingTreatmentIndex = null;
           addTreatmentItem.textContent = "Adicionar ao plano";
-        }
-        if (editingTreatmentIndex !== null && editingTreatmentIndex > index) {
+        } else if (editingTreatmentIndex !== null && editingTreatmentIndex > currentIndex) {
           editingTreatmentIndex -= 1;
         }
         highlightedTreatmentIndex = null;
-        setTreatmentFeedback(
-          removed ? `Procedimento removido: ${removed.procedure}.` : "Procedimento removido.",
-          "warning"
-        );
+        setTreatmentFeedback(`Procedimento removido: ${removed.procedure}.`, "warning");
         renderTreatmentStatusSummary();
         clearQuoteAction();
         renderQuote();
         updateSelectedToothVisual();
+        await syncPlanTotal(plan);
         return;
       }
 
@@ -5002,6 +5086,7 @@
 
     renderToothGrid();
     resetTreatmentDraft();
+    renderTreatmentPlanBar();
     loadSession();
   </script>
 </body>
