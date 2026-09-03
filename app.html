@@ -1460,6 +1460,13 @@
       border-color: #fecaca;
     }
 
+    .icon-action:disabled {
+      color: var(--muted);
+      background: #f8fafc;
+      border-color: var(--line);
+      cursor: not-allowed;
+    }
+
     .icon-action svg {
       width: 14px;
       height: 14px;
@@ -3248,12 +3255,15 @@
       treatmentPlanChooser.hidden = false;
       treatmentLayout.hidden = true;
       treatmentPlanBar.hidden = true;
-      treatmentPlanList.innerHTML = plans.map((plan) => `
+      treatmentPlanList.innerHTML = plans.map((plan) => {
+        const itemCount = getActiveItemsOfPlan(plan).length;
+        return `
         <button class="mini-button treatment-plan-option" type="button" data-plan-id="${plan.id}">
           <strong>${escapeHtml(plan.titulo || "Plano de tratamento")}</strong>
-          <span class="muted">${escapeHtml(getPlanStatusLabel(plan.status))} · ${getActiveItemsOfPlan(plan).length} itens${plan.profissional_id !== currentProfissional?.id ? " · de outro profissional" : ""}</span>
+          <span class="muted">${escapeHtml(getPlanStatusLabel(plan.status))} · ${itemCount} ${itemCount === 1 ? "item" : "itens"}${plan.profissional_id !== currentProfissional?.id ? " · de outro profissional" : ""}</span>
         </button>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function selectTreatmentPlan(plan) {
