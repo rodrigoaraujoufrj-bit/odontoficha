@@ -414,6 +414,7 @@ Dentista.
 - `status`
 - `urgente`
 - `ordem`
+- `data_execucao`
 
 ### Regras
 
@@ -421,6 +422,15 @@ Dentista.
 - `urgente` e booleano e independente do `status`: severidade clinica, nao etapa
   de andamento. Um item pode estar `em_andamento` e `urgente` ao mesmo tempo.
 - Deve permitir item manual sem procedimento cadastrado.
+- `data_execucao` e diferente de `criado_em`: `criado_em` e so auditoria de
+  quando a linha foi criada no sistema (imutavel); `data_execucao` e quando o
+  procedimento de fato aconteceu na boca do paciente. Pode ficar em branco
+  quando a data exata nao e conhecida, e serve principalmente para registrar
+  trabalho pre-existente feito por outro profissional antes do paciente entrar
+  no OdontoFlow (achado de exame inicial/historico).
+- `face` aceita `"Gengiva"` como valor, junto com `"Raiz"`: os dois nao sao uma
+  face de esmalte no sentido estrito (V/L/P/M/D/O), mas convivem no mesmo campo
+  em vez de precisar de uma coluna separada para local anatomico.
 
 ## envios_plano_tratamento
 

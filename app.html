@@ -1031,7 +1031,8 @@
 
     .treatment-plan-bar[hidden],
     .treatment-plan-chooser[hidden],
-    .treatment-layout[hidden] {
+    .treatment-layout[hidden],
+    #treatmentExecutionDateField[hidden] {
       display: none;
     }
 
@@ -1159,6 +1160,12 @@
       fill: rgba(20, 184, 166, 0.2);
       stroke: var(--primary);
       stroke-width: 2;
+    }
+
+    .tooth-node.has-history .tooth-shape {
+      fill: rgba(100, 119, 129, 0.1);
+      stroke: var(--muted);
+      stroke-dasharray: 3 2;
     }
 
     .tooth-node.has-plan .tooth-shape {
@@ -1354,6 +1361,11 @@
       background: #dc2626;
     }
 
+    .legend-dot.history {
+      background: transparent;
+      border: 1.5px dashed var(--muted);
+    }
+
     .selected-tooth-summary {
       border: 1px dashed rgba(15, 61, 94, 0.14);
       border-radius: 10px;
@@ -1372,6 +1384,13 @@
       margin: 0;
       padding-left: 18px;
       color: var(--muted);
+    }
+
+    .tooth-history {
+      border-top: 1px dashed rgba(15, 61, 94, 0.14);
+      padding-top: 7px;
+      display: grid;
+      gap: 4px;
     }
 
     .selected-tooth-card,
@@ -2298,6 +2317,7 @@
                             <span class="legend-chip"><span class="legend-dot planned" aria-hidden="true"></span>Planejado</span>
                             <span class="legend-chip"><span class="legend-dot care" aria-hidden="true"></span>Em tratamento</span>
                             <span class="legend-chip"><span class="legend-dot urgent" aria-hidden="true"></span>Urgente</span>
+                            <span class="legend-chip"><span class="legend-dot history" aria-hidden="true"></span>Histórico anterior</span>
                           </div>
                           <div class="plan-card">
                             <div class="section-heading">
@@ -2346,6 +2366,7 @@
                               <button class="face-button" type="button" data-face="D">Distal</button>
                               <button class="face-button" type="button" data-face="O">Oclusal</button>
                               <button class="face-button" type="button" data-face="Raiz">Raiz</button>
+                              <button class="face-button" type="button" data-face="Gengiva">Gengiva</button>
                             </div>
                             <div class="selected-tooth-summary" id="selectedToothSummary">
                               <strong>Nenhum dente selecionado</strong>
@@ -2384,6 +2405,15 @@
                               <input id="treatmentUrgent" type="checkbox" />
                               Urgente (severidade clínica)
                             </label>
+                            <label class="check-item">
+                              <input id="treatmentAlreadyDone" type="checkbox" />
+                              Já foi realizado antes (histórico/exame inicial)
+                            </label>
+                            <div class="field" id="treatmentExecutionDateField" hidden>
+                              <label for="treatmentExecutionDate">Data aproximada</label>
+                              <input id="treatmentExecutionDate" type="date" />
+                              <span class="hint">Deixe em branco se não souber a data exata.</span>
+                            </div>
                             <div class="field">
                               <label for="treatmentNotes">Observação clínica</label>
                               <textarea id="treatmentNotes" placeholder="Ex.: lesão distal, trocar restauração antiga, acompanhar sensibilidade."></textarea>
@@ -2743,6 +2773,9 @@
     const treatmentValue = document.querySelector("#treatmentValue");
     const treatmentStatus = document.querySelector("#treatmentStatus");
     const treatmentUrgent = document.querySelector("#treatmentUrgent");
+    const treatmentAlreadyDone = document.querySelector("#treatmentAlreadyDone");
+    const treatmentExecutionDateField = document.querySelector("#treatmentExecutionDateField");
+    const treatmentExecutionDate = document.querySelector("#treatmentExecutionDate");
     const treatmentNotes = document.querySelector("#treatmentNotes");
     const procedureContextHint = document.querySelector("#procedureContextHint");
     const addTreatmentItem = document.querySelector("#addTreatmentItem");
@@ -3146,7 +3179,7 @@
       }
     }
 
-    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, criado_em";
+    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, data_execucao, criado_em";
 
     async function loadPatientTreatmentPlans(patientId) {
       if (!patientId || !currentConsultorio?.id) return;
@@ -3324,7 +3357,9 @@
         value: Number(row.valor_final ?? row.valor_estimado ?? 0),
         status: row.status || "planejado",
         urgente: Boolean(row.urgente),
-        notes: row.observacao || ""
+        notes: row.observacao || "",
+        dataExecucao: row.data_execucao || null,
+        criadoEm: row.criado_em || null
       };
     }
 
@@ -3981,13 +4016,16 @@
       highlightedTreatmentIndex = null;
       selectedToothLabel.textContent = "--";
       toothGrid.querySelectorAll(".tooth-node").forEach((button) => {
-        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi", "has-plan", "has-care", "has-urgent");
+        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi", "has-plan", "has-care", "has-urgent", "has-history");
       });
       faceGrid.querySelectorAll(".face-button").forEach((button) => button.classList.remove("active"));
       renderSelectedToothSummary();
       treatmentNotes.value = "";
       treatmentStatus.value = "planejado";
       treatmentUrgent.checked = false;
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       addTreatmentItem.textContent = "Adicionar ao plano";
       clearTreatmentFeedback();
       clearQuoteAction();
@@ -4023,6 +4061,23 @@
       return treatmentItems.filter((item) => item.tooth === tooth);
     }
 
+    function getToothHistory(tooth) {
+      if (!tooth) return [];
+      const currentIds = new Set(treatmentItems.filter((item) => item.dbId).map((item) => item.dbId));
+      return patientTreatmentPlans
+        .flatMap((plan) => plan.itens_plano_tratamento || [])
+        .filter((row) => row.numero_dente === tooth && row.status !== "cancelado" && !currentIds.has(row.id))
+        .map(mapDbItemToUiItem)
+        .sort((a, b) => new Date(a.dataExecucao || a.criadoEm || 0) - new Date(b.dataExecucao || b.criadoEm || 0));
+    }
+
+    function formatItemDate(item) {
+      const raw = item.dataExecucao || item.criadoEm;
+      if (!raw) return "data não informada";
+      const date = new Date(raw.length === 10 ? `${raw}T00:00:00` : raw);
+      return date.toLocaleDateString("pt-BR");
+    }
+
     function renderSelectedToothSummary() {
       if (!selectedTooth) {
         selectedToothSummary.innerHTML = `
@@ -4033,27 +4088,46 @@
       }
 
       const items = getToothItems(selectedTooth);
-      if (!items.length) {
-        selectedToothSummary.innerHTML = `
+      const history = getToothHistory(selectedTooth);
+
+      const currentBlock = items.length
+        ? `
+          <strong>Dente ${escapeHtml(selectedTooth)} · ${items.length} ${items.length === 1 ? "procedimento" : "procedimentos"} nesta consulta</strong>
+          <ul>
+            ${items.map((item) => `<li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")}</li>`).join("")}
+          </ul>
+        `
+        : `
           <strong>Dente ${escapeHtml(selectedTooth)}</strong>
           <span class="muted">Sem procedimento planejado nesta consulta.</span>
         `;
-        return;
-      }
 
-      selectedToothSummary.innerHTML = `
-        <strong>Dente ${escapeHtml(selectedTooth)} · ${items.length} ${items.length === 1 ? "procedimento" : "procedimentos"}</strong>
-        <ul>
-          ${items.map((item) => `
-            <li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")}</li>
-          `).join("")}
-        </ul>
-      `;
+      const historyBlock = history.length
+        ? `
+          <div class="tooth-history">
+            <span class="muted">Histórico anterior neste dente:</span>
+            <ul>
+              ${history.map((item) => `
+                <li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")} · ${escapeHtml(getItemStatusLabel(item.status))} · ${escapeHtml(formatItemDate(item))}</li>
+              `).join("")}
+            </ul>
+          </div>
+        `
+        : "";
+
+      selectedToothSummary.innerHTML = currentBlock + historyBlock;
     }
 
     function updateSelectedToothVisual() {
       const faceClasses = ["face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi"];
-      const statusClasses = ["has-plan", "has-care", "has-urgent"];
+      const statusClasses = ["has-plan", "has-care", "has-urgent", "has-history"];
+      const currentIds = new Set(treatmentItems.filter((item) => item.dbId).map((item) => item.dbId));
+      const historicalToothSet = new Set(
+        patientTreatmentPlans
+          .flatMap((plan) => plan.itens_plano_tratamento || [])
+          .filter((row) => row.numero_dente && row.status !== "cancelado" && !currentIds.has(row.id))
+          .map((row) => row.numero_dente)
+      );
       toothGrid.querySelectorAll(".tooth-node").forEach((node) => {
         const isActive = node.dataset.tooth === selectedTooth;
         const plannedItems = getToothItems(node.dataset.tooth);
@@ -4068,6 +4142,8 @@
           node.classList.add("has-plan");
           if (hasCare) node.classList.add("has-care");
           if (hasUrgent) node.classList.add("has-urgent");
+        } else if (historicalToothSet.has(node.dataset.tooth)) {
+          node.classList.add("has-history");
         }
         visualFaces.forEach((face) => node.classList.add(faceClass(face)));
         if (visualFaces.length > 1) node.classList.add("face-multi");
@@ -4855,6 +4931,11 @@
       treatmentValue.value = rule?.valor ?? "";
     });
 
+    treatmentAlreadyDone.addEventListener("change", () => {
+      treatmentExecutionDateField.hidden = !treatmentAlreadyDone.checked;
+      if (treatmentAlreadyDone.checked) treatmentStatus.value = "realizado";
+    });
+
     function buildItemPayload(item, planId) {
       return {
         plano_tratamento_id: planId,
@@ -4869,7 +4950,8 @@
         observacao: item.notes || null,
         status: item.status,
         urgente: item.urgente,
-        ordem: item.ordem
+        ordem: item.ordem,
+        data_execucao: item.dataExecucao || null
       };
     }
 
@@ -4911,7 +4993,16 @@
         value,
         status: treatmentStatus.value,
         urgente: treatmentUrgent.checked,
-        notes: treatmentNotes.value.trim()
+        notes: treatmentNotes.value.trim(),
+        // Editar um item preserva a data_execucao gravada, mesmo quando ela é
+        // nula (ex.: "já realizado antes" salvo sem data por não se saber a
+        // exata): usar "||" aqui reabriria essa data a cada edição só porque o
+        // status continua "realizado", reescrevendo silenciosamente um dado
+        // que o dentista deixou em branco de propósito.
+        dataExecucao: editingItem
+          ? (editingItem.dataExecucao ?? null)
+          : (treatmentAlreadyDone.checked ? (treatmentExecutionDate.value || null)
+            : (treatmentStatus.value === "realizado" ? new Date().toISOString().slice(0, 10) : null))
       };
 
       addTreatmentItem.disabled = true;
@@ -4992,6 +5083,9 @@
       treatmentNotes.value = "";
       treatmentStatus.value = "planejado";
       treatmentUrgent.checked = false;
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       clearQuoteAction();
       renderQuote();
       updateSelectedToothVisual();
@@ -5077,6 +5171,13 @@
       treatmentStatus.value = item.status || "planejado";
       treatmentUrgent.checked = Boolean(item.urgente);
       treatmentNotes.value = item.notes || "";
+      // dataExecucao de um item existente é preservada na gravação (buildItemPayload
+      // usa editingItem?.dataExecucao), então o rascunho do checkbox/data não deve
+      // sobreviver de uma edição para outra: sem isso, marcar "já realizado" num item
+      // e trocar de item antes de salvar vazava esse estado para o item errado.
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       addTreatmentItem.textContent = "Salvar alteração";
       highlightedTreatmentIndex = index;
       setTreatmentFeedback("Editando procedimento selecionado. Ajuste os dados e salve a alteração.");
