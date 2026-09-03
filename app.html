@@ -1819,6 +1819,25 @@
       margin-top: auto;
     }
 
+    .mfa-secret {
+      display: inline-block;
+      word-break: break-all;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+    }
+
+    #mfaQrImage {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: white;
+      padding: 8px;
+    }
+
     .mini-button {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -2107,6 +2126,20 @@
           </form>
         </div>
 
+        <div id="mfaChallengeView" class="view">
+          <div class="kicker">Verificação em duas etapas</div>
+          <h2>Digite o código do seu aplicativo autenticador</h2>
+          <p class="lead">Sua conta tem a verificação em duas etapas ativada. Abra o aplicativo autenticador (Google Authenticator, Authy, etc.) e informe o código de 6 dígitos.</p>
+          <form class="form" id="mfaChallengeForm">
+            <div class="field">
+              <label for="mfaChallengeCode">Código</label>
+              <input id="mfaChallengeCode" name="mfaChallengeCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="000000" />
+            </div>
+            <div id="mfaChallengeStatus" class="status" role="status"></div>
+            <button class="button button-primary" type="submit">Confirmar</button>
+          </form>
+        </div>
+
         <div id="onboardingView" class="view">
           <div class="kicker">Cadastro inicial</div>
           <h2 id="onboardingTitle">Perfil profissional e consultório</h2>
@@ -2319,6 +2352,59 @@
                       <strong>Orçamentos pendentes</strong>
                       <span>Futuro: planos enviados e ainda não respondidos.</span>
                     </button>
+                  </div>
+                </div>
+
+                <div class="schedule-card" id="mfaCard">
+                  <div class="card-topline">
+                    <div>
+                      <div class="kicker">Segurança da conta</div>
+                      <strong>Verificação em duas etapas</strong>
+                    </div>
+                  </div>
+                  <p class="muted">Peça um código do seu aplicativo autenticador a cada novo login, além da senha, para proteger o acesso aos dados dos seus pacientes. É opcional.</p>
+
+                  <div id="mfaInactiveState">
+                    <button class="button button-primary" type="button" id="mfaEnableButton">Ativar verificação em duas etapas</button>
+                  </div>
+
+                  <div id="mfaActiveState" hidden>
+                    <div class="status show success">Verificação em duas etapas ativada nesta conta.</div>
+                    <div id="mfaActiveStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-danger" type="button" id="mfaDisableButton">Desativar</button>
+                    </div>
+                  </div>
+
+                  <div id="mfaEnrollPanel" hidden>
+                    <p class="muted">Escaneie o QR code com um aplicativo autenticador (Google Authenticator, Authy, etc.) ou digite o código manualmente abaixo. <strong>Ao confirmar, sua sessão em outros dispositivos será encerrada.</strong></p>
+                    <img id="mfaQrImage" alt="QR code para configurar a verificação em duas etapas" width="180" height="180" />
+                    <div class="field">
+                      <label for="mfaSecretText">Código manual (se não puder escanear o QR code)</label>
+                      <code id="mfaSecretText" class="mfa-secret"></code>
+                    </div>
+                    <div class="field">
+                      <label for="mfaEnrollCode">Código de 6 dígitos do aplicativo</label>
+                      <input id="mfaEnrollCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                    </div>
+                    <div id="mfaEnrollStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-primary" type="button" id="mfaConfirmEnrollButton">Confirmar código</button>
+                      <button class="button" type="button" id="mfaCancelEnrollButton">Cancelar</button>
+                    </div>
+                  </div>
+
+                  <div id="mfaDisableChallengePanel" hidden>
+                    <p class="muted">Para desativar, confirme um código atual do seu aplicativo autenticador.</p>
+                    <div class="field">
+                      <label for="mfaDisableChallengeCode">Código de 6 dígitos do aplicativo</label>
+                      <input id="mfaDisableChallengeCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                    </div>
+                    <div id="mfaDisableChallengeStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-danger" type="button" id="mfaConfirmDisableButton">Confirmar e desativar</button>
+                      <button class="button" type="button" id="mfaCancelDisableButton">Cancelar</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2937,6 +3023,7 @@
     const views = {
       loading: document.querySelector("#loadingView"),
       login: document.querySelector("#loginView"),
+      mfaChallenge: document.querySelector("#mfaChallengeView"),
       onboarding: document.querySelector("#onboardingView"),
       dashboard: document.querySelector("#dashboardView")
     };
@@ -2946,6 +3033,27 @@
     const signOutButton = document.querySelector("#signOutButton");
     const loginStatus = document.querySelector("#loginStatus");
     const onboardingStatus = document.querySelector("#onboardingStatus");
+    const mfaChallengeForm = document.querySelector("#mfaChallengeForm");
+    const mfaChallengeCode = document.querySelector("#mfaChallengeCode");
+    const mfaChallengeStatus = document.querySelector("#mfaChallengeStatus");
+    const mfaCard = document.querySelector("#mfaCard");
+    const mfaInactiveState = document.querySelector("#mfaInactiveState");
+    const mfaActiveState = document.querySelector("#mfaActiveState");
+    const mfaActiveStatus = document.querySelector("#mfaActiveStatus");
+    const mfaEnableButton = document.querySelector("#mfaEnableButton");
+    const mfaDisableButton = document.querySelector("#mfaDisableButton");
+    const mfaEnrollPanel = document.querySelector("#mfaEnrollPanel");
+    const mfaQrImage = document.querySelector("#mfaQrImage");
+    const mfaSecretText = document.querySelector("#mfaSecretText");
+    const mfaEnrollCode = document.querySelector("#mfaEnrollCode");
+    const mfaEnrollStatus = document.querySelector("#mfaEnrollStatus");
+    const mfaConfirmEnrollButton = document.querySelector("#mfaConfirmEnrollButton");
+    const mfaCancelEnrollButton = document.querySelector("#mfaCancelEnrollButton");
+    const mfaDisableChallengePanel = document.querySelector("#mfaDisableChallengePanel");
+    const mfaDisableChallengeCode = document.querySelector("#mfaDisableChallengeCode");
+    const mfaDisableChallengeStatus = document.querySelector("#mfaDisableChallengeStatus");
+    const mfaConfirmDisableButton = document.querySelector("#mfaConfirmDisableButton");
+    const mfaCancelDisableButton = document.querySelector("#mfaCancelDisableButton");
     const patientForm = document.querySelector("#patientForm");
     const patientStatus = document.querySelector("#patientStatus");
     const patientSearch = document.querySelector("#patientSearch");
@@ -3067,6 +3175,9 @@
     let priceRules = [];
     let procedureStorageMode = "local";
     let onboardingMode = "completo";
+    let loginMfaFactorId = null;
+    let mfaEnrollFactorId = null;
+    let mfaActiveFactorId = null;
 
     const defaultProcedures = [
       {
@@ -3230,7 +3341,33 @@
         return;
       }
 
+      await proceedPastAuth();
+    }
+
+    // Verifica se a sessão atual já cumpriu o segundo fator (aal2) quando o
+    // profissional tem um fator TOTP verificado. currentLevel !== nextLevel
+    // com nextLevel "aal2" é exatamente o sinal do Supabase de "fator
+    // verificado existe, mas esta sessão ainda não passou pelo desafio".
+    // Profissionais sem fator algum têm currentLevel === nextLevel sempre
+    // (ambos "aal1") e seguem direto, sem nenhuma tela nova.
+    async function proceedPastAuth() {
+      const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!error && data && data.currentLevel === "aal1" && data.nextLevel === "aal2") {
+        const challengeStarted = await prepareMfaLoginChallenge();
+        if (challengeStarted) return;
+      }
       await loadProfile();
+    }
+
+    async function prepareMfaLoginChallenge() {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      const factor = !error && data ? (data.totp || []).find((f) => f.status === "verified") : null;
+      if (!factor) return false;
+      loginMfaFactorId = factor.id;
+      mfaChallengeForm.reset();
+      clearStatus(mfaChallengeStatus);
+      showView("mfaChallenge");
+      return true;
     }
 
     async function loadProfile() {
@@ -3326,6 +3463,7 @@
       await loadPatients();
       await loadDashboardAgenda();
       await loadDashboardFinanceiro();
+      await refreshMfaStatus();
       showDashboardTab("home");
       showView("dashboard");
     }
@@ -5316,7 +5454,7 @@
       }
 
       currentUser = data.user;
-      await loadProfile();
+      await proceedPastAuth();
     });
 
     onboardingForm.addEventListener("submit", async (event) => {
@@ -5400,6 +5538,214 @@
       }
     });
 
+    // ============================================================
+    // Verificação em duas etapas (MFA/TOTP) - opcional, ver docs/2fa_recuperacao.md
+    // ============================================================
+
+    // Sincroniza o card "Segurança da conta" com o estado real de fatores no
+    // Supabase (não confia em nenhuma flag local): sempre re-consulta
+    // listFactors() e também fecha qualquer painel de desafio/matrícula que
+    // tenha ficado aberto de uma interação anterior.
+    async function refreshMfaStatus() {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      const verified = !error && data ? (data.totp || []).find((f) => f.status === "verified") : null;
+      mfaActiveFactorId = verified ? verified.id : null;
+      mfaEnrollFactorId = null;
+
+      mfaEnrollPanel.hidden = true;
+      mfaDisableChallengePanel.hidden = true;
+      mfaEnrollCode.value = "";
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaEnrollStatus);
+      clearStatus(mfaDisableChallengeStatus);
+      clearStatus(mfaActiveStatus);
+
+      mfaInactiveState.hidden = !!mfaActiveFactorId;
+      mfaActiveState.hidden = !mfaActiveFactorId;
+    }
+
+    // Reseta toda a UI de MFA para o estado inicial (usado no sign-out, para
+    // não vazar QR code/estado de matrícula de um profissional para a
+    // próxima sessão que fizer login na mesma aba).
+    function resetMfaUiState() {
+      loginMfaFactorId = null;
+      mfaEnrollFactorId = null;
+      mfaActiveFactorId = null;
+      mfaChallengeForm.reset();
+      clearStatus(mfaChallengeStatus);
+      mfaEnrollPanel.hidden = true;
+      mfaDisableChallengePanel.hidden = true;
+      mfaActiveState.hidden = true;
+      mfaInactiveState.hidden = false;
+      mfaEnrollCode.value = "";
+      mfaDisableChallengeCode.value = "";
+      mfaQrImage.removeAttribute("src");
+      mfaSecretText.textContent = "";
+      clearStatus(mfaEnrollStatus);
+      clearStatus(mfaDisableChallengeStatus);
+      clearStatus(mfaActiveStatus);
+    }
+
+    mfaChallengeForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus(mfaChallengeStatus);
+      const submit = mfaChallengeForm.querySelector("button[type='submit']");
+      submit.disabled = true;
+      submit.textContent = "Confirmando...";
+      try {
+        const code = mfaChallengeCode.value.trim();
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: loginMfaFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: loginMfaFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        loginMfaFactorId = null;
+        mfaChallengeForm.reset();
+        await loadProfile();
+      } catch (error) {
+        setStatus(mfaChallengeStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Confirmar";
+      }
+    });
+
+    mfaEnableButton.addEventListener("click", async () => {
+      clearStatus(mfaEnrollStatus);
+      mfaEnableButton.disabled = true;
+      mfaEnableButton.textContent = "Preparando...";
+      try {
+        // Uma tentativa de ativação anterior pode ter sido abandonada (aba
+        // fechada antes de confirmar o código): o Supabase deixa um fator
+        // "unverified" pendurado, e chamar enroll() de novo nessas condições
+        // pode falhar. Limpa qualquer fator não verificado antes de começar.
+        const { data: listData } = await supabase.auth.mfa.listFactors();
+        const stale = (listData?.totp || []).filter((f) => f.status !== "verified");
+        for (const factor of stale) {
+          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        }
+
+        const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "OdontoFlow" });
+        if (error) throw error;
+
+        mfaEnrollFactorId = data.id;
+        const qrSvg = data.totp?.qr_code || "";
+        mfaQrImage.src = qrSvg.startsWith("data:") ? qrSvg : `data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`;
+        mfaSecretText.textContent = data.totp?.secret || "";
+        mfaEnrollCode.value = "";
+        clearStatus(mfaEnrollStatus);
+        mfaInactiveState.hidden = true;
+        mfaEnrollPanel.hidden = false;
+        mfaEnrollCode.focus();
+      } catch (error) {
+        setStatus(mfaEnrollStatus, "error", error.message || "Não foi possível iniciar a ativação agora.");
+      } finally {
+        mfaEnableButton.disabled = false;
+        mfaEnableButton.textContent = "Ativar verificação em duas etapas";
+      }
+    });
+
+    mfaConfirmEnrollButton.addEventListener("click", async () => {
+      clearStatus(mfaEnrollStatus);
+      const code = mfaEnrollCode.value.trim();
+      if (!/^\d{6}$/.test(code)) {
+        setStatus(mfaEnrollStatus, "error", "Digite o código de 6 dígitos do aplicativo autenticador.");
+        return;
+      }
+      mfaConfirmEnrollButton.disabled = true;
+      mfaConfirmEnrollButton.textContent = "Confirmando...";
+      try {
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaEnrollFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: mfaEnrollFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        mfaEnrollFactorId = null;
+        await refreshMfaStatus();
+      } catch (error) {
+        setStatus(mfaEnrollStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        mfaConfirmEnrollButton.disabled = false;
+        mfaConfirmEnrollButton.textContent = "Confirmar código";
+      }
+    });
+
+    mfaCancelEnrollButton.addEventListener("click", async () => {
+      const factorId = mfaEnrollFactorId;
+      mfaEnrollFactorId = null;
+      mfaEnrollPanel.hidden = true;
+      mfaInactiveState.hidden = false;
+      mfaEnrollCode.value = "";
+      clearStatus(mfaEnrollStatus);
+      if (factorId) {
+        await supabase.auth.mfa.unenroll({ factorId }).catch(() => {});
+      }
+    });
+
+    mfaDisableButton.addEventListener("click", async () => {
+      clearStatus(mfaActiveStatus);
+      const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!error && data && data.currentLevel === "aal2") {
+        mfaDisableButton.disabled = true;
+        mfaDisableButton.textContent = "Desativando...";
+        try {
+          const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: mfaActiveFactorId });
+          if (unenrollError) throw unenrollError;
+          await refreshMfaStatus();
+        } catch (err) {
+          setStatus(mfaActiveStatus, "error", err.message || "Não foi possível desativar agora.");
+        } finally {
+          mfaDisableButton.disabled = false;
+          mfaDisableButton.textContent = "Desativar";
+        }
+        return;
+      }
+
+      // Sessão ainda em aal1: o Supabase exige aal2 para remover um fator
+      // verificado, então pede um desafio primeiro em vez de mostrar o erro
+      // cru da API.
+      mfaActiveState.hidden = true;
+      mfaDisableChallengePanel.hidden = false;
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaDisableChallengeStatus);
+      mfaDisableChallengeCode.focus();
+    });
+
+    mfaConfirmDisableButton.addEventListener("click", async () => {
+      clearStatus(mfaDisableChallengeStatus);
+      const code = mfaDisableChallengeCode.value.trim();
+      if (!/^\d{6}$/.test(code)) {
+        setStatus(mfaDisableChallengeStatus, "error", "Digite o código de 6 dígitos do aplicativo autenticador.");
+        return;
+      }
+      mfaConfirmDisableButton.disabled = true;
+      mfaConfirmDisableButton.textContent = "Confirmando...";
+      try {
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaActiveFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: mfaActiveFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: mfaActiveFactorId });
+        if (unenrollError) throw unenrollError;
+
+        mfaDisableChallengePanel.hidden = true;
+        await refreshMfaStatus();
+      } catch (error) {
+        setStatus(mfaDisableChallengeStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        mfaConfirmDisableButton.disabled = false;
+        mfaConfirmDisableButton.textContent = "Confirmar e desativar";
+      }
+    });
+
+    mfaCancelDisableButton.addEventListener("click", () => {
+      mfaDisableChallengePanel.hidden = true;
+      mfaActiveState.hidden = false;
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaDisableChallengeStatus);
+    });
+
     signOutButton.addEventListener("click", async () => {
       await supabase.auth.signOut();
       currentUser = null;
@@ -5420,6 +5766,7 @@
         btn.classList.toggle("active", btn.dataset.financeiroPeriod === "mes");
       });
       renderDashboardFinanceiro();
+      resetMfaUiState();
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
