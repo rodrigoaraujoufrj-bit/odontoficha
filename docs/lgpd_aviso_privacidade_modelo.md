@@ -50,7 +50,7 @@ Você pode, a qualquer momento, solicitar diretamente a nós (contato acima):
 - Informação sobre com quem compartilhamos seus dados.
 - Revogação de consentimento, quando o tratamento depender dele.
 
-Responderemos em prazo razoável, observando que alguns dados clínicos precisam ser mantidos por obrigação legal (ver seção 4) mesmo após um pedido de exclusão.
+Responderemos em prazo razoável, observando que alguns dados clínicos precisam ser mantidos por obrigação legal (ver seção 4) mesmo após um pedido de exclusão. Para agilizar um pedido de acesso ou portabilidade, o consultório pode gerar pelo OdontoFlow um documento com todos os seus dados (cadastro, anamnese, planos de tratamento e histórico) em poucos cliques.
 
 ### 7. Segurança
 

@@ -969,6 +969,19 @@
       align-items: center;
     }
 
+    .patient-consent-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 4px 0 8px;
+    }
+
+    .patient-consent-row .check-item {
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+
     .consultation-panel {
       display: none;
       border: 1px solid rgba(20, 184, 166, 0.16);
@@ -2369,6 +2382,13 @@
                         </div>
                       </div>
                       <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
+                      <div class="patient-consent-row">
+                        <label class="check-item">
+                          <input type="checkbox" id="whatsappConsentCheckbox" />
+                          Paciente consentiu em receber comunicação por WhatsApp
+                        </label>
+                        <span class="muted" id="whatsappConsentDate"></span>
+                      </div>
                       <div class="patient-care-grid">
                         <div class="patient-care-card">
                           <h3>Anamnese</h3>
@@ -2434,6 +2454,7 @@
                     <div class="card-actions patient-next-actions">
                       <button class="button button-primary" type="button" id="consultationButton">Iniciar atendimento</button>
                       <button class="mini-button" type="button" data-open-history>Histórico</button>
+                      <button class="mini-button" type="button" id="exportPatientDataButton">Exportar dados do paciente</button>
                     </div>
                   </div>
                   <div class="consultation-panel" id="consultationPanel">
@@ -2943,6 +2964,9 @@
     const sharePatientForm = document.querySelector("#sharePatientForm");
     const shareColleagueSelect = document.querySelector("#shareColleagueSelect");
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
+    const whatsappConsentCheckbox = document.querySelector("#whatsappConsentCheckbox");
+    const whatsappConsentDate = document.querySelector("#whatsappConsentDate");
+    const exportPatientDataButton = document.querySelector("#exportPatientDataButton");
     const dashboardAgendaList = document.querySelector("#dashboardAgendaList");
     const dashboardAgendaEmpty = document.querySelector("#dashboardAgendaEmpty");
     const dashboardAgendaCount = document.querySelector("#dashboardAgendaCount");
@@ -3325,7 +3349,7 @@
       if (!currentProfissional?.id || !currentConsultorio?.id) return;
       const { data, error } = await supabase
         .from("paciente_consultorios")
-        .select("pacientes(id, nome, telefone, email, cpf, data_nascimento, observacoes, criado_em, arquivado_em)")
+        .select("pacientes(id, nome, telefone, email, cpf, data_nascimento, observacoes, consentimento_whatsapp_em, criado_em, arquivado_em)")
         .eq("consultorio_id", currentConsultorio.id)
         .eq("ativo", true);
 
@@ -4015,6 +4039,7 @@
       document.querySelector("#summaryPatientEmail").textContent = patient.email || "-";
       document.querySelector("#summaryPatientCpf").textContent = formatCpf(patient.cpf || "") || "-";
       document.querySelector("#summaryPatientNotes").textContent = patient.observacoes || "Sem observações administrativas.";
+      renderWhatsappConsent(patient);
       document.querySelector("#summaryAnamneseStatus").textContent = "Verificando anamnese...";
       document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
@@ -4080,6 +4105,39 @@
       document.querySelector("#summaryAnamneseDetails").textContent = details.length
         ? details.join(" · ")
         : "Anamnese existe, mas sem observações de destaque.";
+    }
+
+    function renderWhatsappConsent(patient) {
+      whatsappConsentCheckbox.disabled = false;
+      whatsappConsentCheckbox.checked = Boolean(patient.consentimento_whatsapp_em);
+      whatsappConsentDate.textContent = patient.consentimento_whatsapp_em
+        ? `Consentiu em ${new Date(patient.consentimento_whatsapp_em).toLocaleDateString("pt-BR")}`
+        : "";
+    }
+
+    async function handleWhatsappConsentChange() {
+      const patient = getSelectedPatient();
+      if (!patient) return;
+      const patientId = patient.id;
+      const previousValue = patient.consentimento_whatsapp_em;
+      const novoValor = whatsappConsentCheckbox.checked ? new Date().toISOString() : null;
+      whatsappConsentCheckbox.disabled = true;
+
+      const { error } = await supabase
+        .from("pacientes")
+        .update({ consentimento_whatsapp_em: novoValor })
+        .eq("id", patientId);
+
+      if (error) {
+        if (selectedPatientId === patientId) {
+          whatsappConsentCheckbox.disabled = false;
+          whatsappConsentCheckbox.checked = Boolean(previousValue);
+        }
+        return;
+      }
+
+      patient.consentimento_whatsapp_em = novoValor;
+      if (selectedPatientId === patientId) renderWhatsappConsent(patient);
     }
 
     function escapeHtml(value) {
@@ -5023,6 +5081,218 @@
       printWindow.document.close();
       setQuoteAction("Previa de impressao aberta. Use salvar como PDF no navegador.");
       await logEnvioOrcamento("pdf");
+    }
+
+    const ANAMNESE_EXPORT_COLUMNS = "queixa_principal, historico_medico, alergias, medicamentos_uso_continuo, doencas_sistemicas, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, observacoes_clinicas, preenchida_em, criado_em";
+
+    async function loadAnamneseForExport(patientId) {
+      const { data, error } = await supabase
+        .from("anamneses")
+        .select(ANAMNESE_EXPORT_COLUMNS)
+        .eq("paciente_id", patientId)
+        .order("preenchida_em", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+      return error ? null : data;
+    }
+
+    function formatTimestampBR(value) {
+      if (!value) return "-";
+      const date = new Date(value.length === 10 ? `${value}T00:00:00` : value);
+      if (Number.isNaN(date.getTime())) return "-";
+      return date.toLocaleString("pt-BR");
+    }
+
+    // Reaproveita o CSS de impressao ja endurecido em buildPrintableQuoteHtml
+    // (table-layout fixo, larguras explicitas via colgroup, quebras de pagina
+    // seguras) - aqui sem enfase de preco/marca porque o objetivo e completude
+    // dos dados (LGPD acesso/portabilidade), nao a apresentacao do orcamento.
+    function buildPatientExportHtml(patient, anamnese, plans, agendamentos, envios) {
+      const generatedAt = new Date().toLocaleString("pt-BR");
+
+      const anamneseRows = anamnese ? [
+        ["Queixa principal", anamnese.queixa_principal],
+        ["Alergias", anamnese.alergias],
+        ["Medicamentos em uso", anamnese.medicamentos_uso_continuo],
+        ["Histórico médico relevante", anamnese.historico_medico],
+        ["Doenças sistêmicas", anamnese.doencas_sistemicas],
+        ["Observações clínicas", anamnese.observacoes_clinicas],
+        ["Gestante", anamnese.gestante ? "Sim" : "Não"],
+        ["Sangramento excessivo", anamnese.sangramento_excessivo ? "Sim" : "Não"],
+        ["Diabetes", anamnese.possui_diabetes ? "Sim" : "Não"],
+        ["Hipertensão", anamnese.possui_hipertensao ? "Sim" : "Não"],
+        ["Cardiopatia", anamnese.possui_cardiopatia ? "Sim" : "Não"],
+        ["Preenchida em", formatTimestampBR(anamnese.preenchida_em)]
+      ] : [];
+
+      const anamneseHtml = anamnese
+        ? `<table>
+            <colgroup><col style="width:35%"><col style="width:65%"></colgroup>
+            <tbody>
+              ${anamneseRows.map(([label, value]) => `
+                <tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value || "-")}</td></tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhuma anamnese cadastrada para este paciente.</p>`;
+
+      const plansHtml = plans.length
+        ? plans.map((plan) => {
+            const items = plan.itens_plano_tratamento || [];
+            const itemRows = items.length
+              ? items.map((item) => `
+                  <tr>
+                    <td>${escapeHtml(item.numero_dente || "-")}</td>
+                    <td>${escapeHtml((item.faces_dente || []).join(", ") || "-")}</td>
+                    <td>${escapeHtml(item.procedimento_nome || "-")}</td>
+                    <td>${escapeHtml(getItemStatusLabel(item.status))}</td>
+                    <td>${escapeHtml(formatCurrency(item.valor_final ?? item.valor_estimado ?? 0))}</td>
+                    <td>${escapeHtml(formatTimestampBR(item.data_execucao || item.criado_em))}</td>
+                  </tr>
+                `).join("")
+              : `<tr><td colspan="6">Nenhum procedimento neste plano.</td></tr>`;
+            return `
+              <section class="plan-block">
+                <h3>${escapeHtml(plan.titulo || "Plano de tratamento")} <span class="muted">— ${escapeHtml(getPlanStatusLabel(plan.status))}</span></h3>
+                <p class="muted">Criado em ${escapeHtml(formatTimestampBR(plan.criado_em))} · Total estimado ${escapeHtml(formatCurrency(plan.valor_total_estimado || 0))}${plan.observacoes ? ` · ${escapeHtml(plan.observacoes)}` : ""}</p>
+                <table>
+                  <colgroup>
+                    <col style="width:8%"><col style="width:12%"><col style="width:32%">
+                    <col style="width:14%"><col style="width:14%"><col style="width:20%">
+                  </colgroup>
+                  <thead>
+                    <tr><th>Dente</th><th>Face</th><th>Procedimento</th><th>Status</th><th>Valor</th><th>Data</th></tr>
+                  </thead>
+                  <tbody>${itemRows}</tbody>
+                </table>
+              </section>
+            `;
+          }).join("")
+        : `<p class="muted">Nenhum plano de tratamento registrado para este paciente.</p>`;
+
+      const agendaHtml = agendamentos.length
+        ? `<table>
+            <colgroup>
+              <col style="width:14%"><col style="width:10%"><col style="width:16%">
+              <col style="width:14%"><col style="width:14%"><col style="width:32%">
+            </colgroup>
+            <thead>
+              <tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Status</th><th>Confirmado via WhatsApp</th><th>Observação</th></tr>
+            </thead>
+            <tbody>
+              ${agendamentos.map((item) => `
+                <tr>
+                  <td>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</td>
+                  <td>${escapeHtml(formatAgendaTime(item.data_hora_inicio))}</td>
+                  <td>${escapeHtml(item.tipo || "-")}</td>
+                  <td>${escapeHtml(getAgendaStatusLabel(item.status))}</td>
+                  <td>${item.confirmado_por_whatsapp ? "Sim" : "Não"}</td>
+                  <td>${escapeHtml(item.observacoes || "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhum agendamento registrado para este paciente.</p>`;
+
+      const enviosHtml = envios.length
+        ? `<table>
+            <colgroup>
+              <col style="width:22%"><col style="width:16%"><col style="width:18%">
+              <col style="width:18%"><col style="width:26%">
+            </colgroup>
+            <thead>
+              <tr><th>Data</th><th>Canal</th><th>Valor</th><th>Itens</th><th>Telefone</th></tr>
+            </thead>
+            <tbody>
+              ${envios.map((envio) => `
+                <tr>
+                  <td>${escapeHtml(formatTimestampBR(envio.criado_em))}</td>
+                  <td>${envio.canal === "whatsapp" ? "WhatsApp" : "PDF"}</td>
+                  <td>${escapeHtml(formatCurrency(envio.valor_total))}</td>
+                  <td>${envio.quantidade_itens}</td>
+                  <td>${escapeHtml(envio.destinatario_telefone ? formatPhone(envio.destinatario_telefone) : "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhum envio de orçamento registrado para este paciente.</p>`;
+
+      return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Dados pessoais - ${escapeHtml(patient.nome)}</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; word-break: break-word; overflow-wrap: break-word; }
+    header { border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; break-inside: avoid; page-break-inside: avoid; }
+    h1 { font-size: 22px; margin: 0 0 6px; color: #0f3d5e; }
+    h2 { font-size: 15px; margin: 26px 0 10px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
+    h3 { font-size: 13px; margin: 16px 0 4px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
+    p { margin: 3px 0; }
+    .muted { color: #71838d; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { border-bottom: 1px solid #d8e7ea; padding: 8px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; font-size: 12px; }
+    th { background: #eef9f7; color: #0f3d5e; text-transform: uppercase; font-size: 11px; }
+    .plan-block { break-inside: avoid; page-break-inside: avoid; margin-bottom: 14px; }
+    section { margin-bottom: 10px; }
+    @media print {
+      body { padding: 18mm; }
+      header, .plan-block { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dados pessoais — ${escapeHtml(patient.nome)}</h1>
+    <p class="muted">Exportado em ${escapeHtml(generatedAt)} · ${escapeHtml(currentConsultorio?.nome || "Consultório")}</p>
+  </header>
+
+  <h2>Dados pessoais</h2>
+  <table>
+    <colgroup><col style="width:35%"><col style="width:65%"></colgroup>
+    <tbody>
+      <tr><td><strong>Nome</strong></td><td>${escapeHtml(patient.nome)}</td></tr>
+      <tr><td><strong>Telefone</strong></td><td>${escapeHtml(formatPhone(patient.telefone || "") || "-")}</td></tr>
+      <tr><td><strong>E-mail</strong></td><td>${escapeHtml(patient.email || "-")}</td></tr>
+      <tr><td><strong>CPF</strong></td><td>${escapeHtml(formatCpf(patient.cpf || "") || "-")}</td></tr>
+      <tr><td><strong>Data de nascimento</strong></td><td>${escapeHtml(patient.data_nascimento ? formatDate(patient.data_nascimento) : "-")}</td></tr>
+      <tr><td><strong>Observações</strong></td><td>${escapeHtml(patient.observacoes || "-")}</td></tr>
+      <tr><td><strong>Cadastrado em</strong></td><td>${escapeHtml(formatTimestampBR(patient.criado_em))}</td></tr>
+      <tr><td><strong>Consentimento WhatsApp</strong></td><td>${patient.consentimento_whatsapp_em ? escapeHtml(`Consentiu em ${formatTimestampBR(patient.consentimento_whatsapp_em)}`) : "Sem consentimento registrado"}</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Anamnese</h2>
+  ${anamneseHtml}
+
+  <h2>Planos de tratamento</h2>
+  ${plansHtml}
+
+  <h2>Agendamentos</h2>
+  ${agendaHtml}
+
+  <h2>Histórico de envios de orçamento</h2>
+  ${enviosHtml}
+
+  <script>window.addEventListener("load", () => window.print());<\/script>
+</body>
+</html>`;
+    }
+
+    async function exportPatientData() {
+      const patient = getSelectedPatient();
+      if (!patient) return;
+      const anamnese = await loadAnamneseForExport(patient.id);
+      if (selectedPatientId !== patient.id) return;
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) return;
+      printWindow.document.open();
+      printWindow.document.write(buildPatientExportHtml(patient, anamnese, patientTreatmentPlans, patientAgendamentos, patientEnvios));
+      printWindow.document.close();
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -5978,6 +6248,8 @@
     prepareWhatsappButton.addEventListener("click", prepareWhatsappMessage);
     openWhatsappButton.addEventListener("click", openWhatsapp);
     printQuoteButton.addEventListener("click", printQuote);
+    exportPatientDataButton.addEventListener("click", exportPatientData);
+    whatsappConsentCheckbox.addEventListener("change", handleWhatsappConsentChange);
     whatsappMessage.addEventListener("input", () => {
       openWhatsappButton.disabled = !treatmentItems.length || !whatsappMessage.value.trim();
     });

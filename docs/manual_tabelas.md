@@ -142,6 +142,7 @@ Dentista, recepcionista ou secretaria.
 - `cpf`
 - `data_nascimento`
 - `observacoes`
+- `consentimento_whatsapp_em`
 
 ### Regras
 
@@ -152,6 +153,7 @@ Dentista, recepcionista ou secretaria.
 - Telefone deve ser salvo apenas com digitos.
 - CPF deve ser salvo apenas com digitos e ter 11 digitos quando preenchido.
 - Validacao de digitos verificadores do CPF deve ser implementada antes de uso real amplo.
+- `consentimento_whatsapp_em`: null = sem consentimento registrado; timestamp = quando o paciente consentiu em receber comunicacao por WhatsApp; desmarcar na UI limpa de volta para null (revogacao real, nao so oculta na tela).
 
 ### Exemplo
 
