@@ -1817,6 +1817,49 @@
       margin-left: 6px;
     }
 
+    .status-toggle {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .status-toggle-btn {
+      border: none;
+      border-left: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 6px 9px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .status-toggle-btn:first-child {
+      border-left: none;
+    }
+
+    .status-toggle-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .status-toggle-btn.active[data-status-toggle="pendente"] {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    .status-toggle-btn.active[data-status-toggle="iniciado"] {
+      background: rgba(245, 158, 11, 0.16);
+      color: #92400e;
+    }
+
+    .status-toggle-btn.active[data-status-toggle="feito"] {
+      background: rgba(22, 163, 74, 0.14);
+      color: var(--success);
+    }
+
     .loading {
       min-height: 220px;
       display: grid;
@@ -3525,6 +3568,10 @@
       return labels[status] || status;
     }
 
+    function todayIsoDate() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
     function nextOrdemForPlan(plan) {
       const existing = (plan?.itens_plano_tratamento || []).map((row) => row.ordem || 0);
       return existing.length ? Math.max(...existing) + 1 : 1;
@@ -4496,6 +4543,30 @@
       `;
     }
 
+    // Checklist rápido de andamento (Pendente/Iniciado/Feito) para marcar
+    // progresso durante a execução, sem abrir o formulário completo de edição
+    // (que tem campos de procedimento/dente/face pensados para MONTAR o plano,
+    // não para checar o que já foi feito). "Pendente" agrupa os dois status de
+    // pré-execução (planejado/aprovado); ver renderItemStatusToggle e o
+    // listener de clique em treatmentPlanRows para a lógica de reversão.
+    function renderItemStatusToggle(item, index) {
+      const isPendente = item.status === "planejado" || item.status === "aprovado";
+      const isIniciado = item.status === "em_andamento";
+      const isFeito = item.status === "realizado";
+      const segments = [
+        ["pendente", "Pendente", isPendente],
+        ["iniciado", "Iniciado", isIniciado],
+        ["feito", "Feito", isFeito]
+      ];
+      return `
+        <div class="status-toggle" role="group" aria-label="Andamento do procedimento">
+          ${segments.map(([value, label, active]) => `
+            <button class="status-toggle-btn${active ? " active" : ""}" type="button" data-status-toggle="${value}" data-item-index="${index}" ${(treatmentPlanLocked || active) ? "disabled" : ""}>${label}</button>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function renderQuote() {
       quoteItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
       planItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
@@ -4525,7 +4596,7 @@
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
           <td>
-            <span class="badge">${escapeHtml(getItemStatusLabel(item.status))}</span>
+            ${renderItemStatusToggle(item, index)}
             ${item.urgente ? `<span class="badge badge-urgent">Urgente</span>` : ""}
           </td>
           <td>
@@ -5329,7 +5400,7 @@
         dataExecucao: editingItem
           ? (editingItem.dataExecucao ?? null)
           : (treatmentAlreadyDone.checked ? (treatmentExecutionDate.value || null)
-            : (treatmentStatus.value === "realizado" ? new Date().toISOString().slice(0, 10) : null))
+            : (treatmentStatus.value === "realizado" ? todayIsoDate() : null))
       };
 
       addTreatmentItem.disabled = true;
@@ -5425,6 +5496,69 @@
     treatmentPlanRows.addEventListener("click", async (event) => {
       const editButton = event.target.closest("[data-edit-treatment]");
       const deleteButton = event.target.closest("[data-delete-treatment]");
+      const statusToggleButton = event.target.closest("[data-status-toggle]");
+
+      if (statusToggleButton) {
+        if (treatmentPlanLocked) return;
+        const index = Number(statusToggleButton.dataset.itemIndex);
+        const item = treatmentItems[index];
+        if (!item) return;
+
+        const segment = statusToggleButton.dataset.statusToggle;
+        let nextStatus = null;
+        if (segment === "iniciado" && item.status !== "em_andamento") nextStatus = "em_andamento";
+        else if (segment === "feito" && item.status !== "realizado") nextStatus = "realizado";
+        // "Pendente" só é alvo de escrita quando vem de iniciado/realizado: o
+        // item já chegou a ser executado, então "não feito" aqui volta para
+        // aprovado (aprovação do procedimento em si), não para planejado (que
+        // regrediria a aprovação clínica já dada). Clicar em Pendente estando
+        // em planejado/aprovado é no-op (o botão já vem desabilitado por já
+        // estar ativo, mas a checagem fica aqui também por segurança).
+        else if (segment === "pendente" && (item.status === "em_andamento" || item.status === "realizado")) nextStatus = "aprovado";
+        if (!nextStatus) return;
+
+        const sessionAtClick = treatmentSessionId;
+        const plan = currentTreatmentPlan;
+        const toggleGroup = statusToggleButton.closest(".status-toggle");
+        toggleGroup?.querySelectorAll("button").forEach((btn) => { btn.disabled = true; });
+
+        const payload = { status: nextStatus };
+        // Mesma regra de auto-stamp usada ao criar um item novo já como
+        // "realizado" (ver todayIsoDate/nextItem acima): só carimba a data de
+        // hoje se ainda não houver data_execucao gravada, nunca sobrescreve
+        // uma data já existente (backdatada ou de uma marcação anterior).
+        if (nextStatus === "realizado" && !item.dataExecucao) {
+          payload.data_execucao = todayIsoDate();
+        }
+
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update(payload)
+          .eq("id", item.dbId)
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
+
+        if (error) {
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(treatmentPlanLocked
+            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+            : "Não foi possível atualizar o andamento deste procedimento.", "warning");
+          return;
+        }
+
+        const currentIndex = treatmentItems.indexOf(item);
+        if (currentIndex === -1) return;
+        treatmentItems[currentIndex] = mapDbItemToUiItem(data);
+        if (plan) {
+          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
+          if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex] = data;
+        }
+        setTreatmentFeedback(`Andamento atualizado: ${getItemStatusLabel(nextStatus)}.`);
+        renderQuote();
+        return;
+      }
 
       if (deleteButton) {
         if (treatmentPlanLocked) return;

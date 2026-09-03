@@ -454,6 +454,12 @@ Dentista.
 - `face` aceita `"Gengiva"` como valor, junto com `"Raiz"`: os dois nao sao uma
   face de esmalte no sentido estrito (V/L/P/M/D/O), mas convivem no mesmo campo
   em vez de precisar de uma coluna separada para local anatomico.
+- O checklist rapido Pendente/Iniciado/Feito na linha do item (fora do
+  formulario completo de editar) e so um atalho de UI para os mesmos valores
+  de `status` acima - nao introduz conceito novo. "Pendente" cobre tanto
+  `planejado` quanto `aprovado`; ao reverter de `em_andamento`/`realizado` para
+  "Pendente" o valor gravado e `aprovado` (nunca regride para `planejado`), e
+  `data_execucao` ja gravada nunca e apagada por essa reversao.
 
 ## envios_plano_tratamento
 
