@@ -892,6 +892,34 @@
       font-size: 0.85rem;
     }
 
+    .envios-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .envios-list li {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+    }
+
+    .envio-canal {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
     .share-patient-form {
       display: flex;
       gap: 8px;
@@ -2203,6 +2231,11 @@
                           </form>
                           <p class="muted" id="shareColleagueStatus"></p>
                         </div>
+                        <div class="patient-care-card full-width">
+                          <h3>Envios de orçamento</h3>
+                          <p class="muted" id="summaryEnviosEmpty">Nenhum orçamento gerado ainda para este paciente.</p>
+                          <ul class="envios-list" id="summaryEnviosList" hidden></ul>
+                        </div>
                       </div>
                     </div>
                     <div class="card-actions patient-next-actions">
@@ -2694,6 +2727,8 @@
     const togglePatientDetails = document.querySelector("#togglePatientDetails");
     const patientDetailsPanel = document.querySelector("#patientDetailsPanel");
     const summarySharedList = document.querySelector("#summarySharedList");
+    const summaryEnviosEmpty = document.querySelector("#summaryEnviosEmpty");
+    const summaryEnviosList = document.querySelector("#summaryEnviosList");
     const sharePatientForm = document.querySelector("#sharePatientForm");
     const shareColleagueSelect = document.querySelector("#shareColleagueSelect");
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
@@ -2759,6 +2794,7 @@
     let editingTreatmentIndex = null;
     let highlightedTreatmentIndex = null;
     let patientTreatmentPlans = [];
+    let patientEnvios = [];
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
     let treatmentSessionId = 0;
@@ -3134,6 +3170,84 @@
       return (plan.itens_plano_tratamento || []).filter((item) => item.status !== "cancelado");
     }
 
+    async function loadPatientEnvios(patientId) {
+      if (!patientId) return;
+      const planIds = patientTreatmentPlans.map((plan) => plan.id);
+      if (!planIds.length) {
+        if (selectedPatientId === patientId) { patientEnvios = []; renderPatientEnvios(); }
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("envios_plano_tratamento")
+        .select("id, plano_tratamento_id, profissional_id, canal, valor_total, quantidade_itens, destinatario_telefone, criado_em")
+        .in("plano_tratamento_id", planIds)
+        .order("criado_em", { ascending: false })
+        .limit(20);
+
+      if (selectedPatientId !== patientId) return;
+      patientEnvios = error ? [] : (data || []);
+      renderPatientEnvios();
+    }
+
+    function renderPatientEnvios() {
+      if (!summaryEnviosList || !summaryEnviosEmpty) return;
+      if (!patientEnvios.length) {
+        summaryEnviosEmpty.hidden = false;
+        summaryEnviosList.hidden = true;
+        summaryEnviosList.innerHTML = "";
+        return;
+      }
+      summaryEnviosEmpty.hidden = true;
+      summaryEnviosList.hidden = false;
+      summaryEnviosList.innerHTML = patientEnvios.map((envio) => {
+        const canalLabel = envio.canal === "whatsapp" ? "WhatsApp" : "PDF";
+        const quando = new Date(envio.criado_em).toLocaleString("pt-BR");
+        const destinatario = envio.canal === "whatsapp" && envio.destinatario_telefone
+          ? ` · para ${escapeHtml(formatPhone(envio.destinatario_telefone))}`
+          : "";
+        return `
+        <li>
+          <span class="envio-canal">${canalLabel}</span>
+          <span class="muted">${envio.quantidade_itens} ${envio.quantidade_itens === 1 ? "item" : "itens"} · ${escapeHtml(formatCurrency(envio.valor_total))}${destinatario} · ${escapeHtml(quando)}</span>
+        </li>
+      `;
+      }).join("");
+    }
+
+    async function logEnvioOrcamento(canal, extra = {}) {
+      if (!currentTreatmentPlan?.id || !currentProfissional?.id) return;
+      const total = treatmentItems.reduce((sum, item) => sum + item.value, 0);
+      const payload = {
+        plano_tratamento_id: currentTreatmentPlan.id,
+        profissional_id: currentProfissional.id,
+        canal,
+        valor_total: total,
+        quantidade_itens: treatmentItems.length,
+        itens_snapshot: treatmentItems.map((item) => ({
+          tooth: item.tooth,
+          face: item.face,
+          procedure: item.procedure,
+          value: item.value,
+          status: item.status,
+          urgente: item.urgente
+        })),
+        ...extra
+      };
+
+      const { data, error } = await supabase
+        .from("envios_plano_tratamento")
+        .insert(payload)
+        .select("id, plano_tratamento_id, profissional_id, canal, valor_total, quantidade_itens, destinatario_telefone, criado_em")
+        .single();
+
+      if (error) return;
+      if (currentTreatmentPlan.paciente_id === selectedPatientId) {
+        patientEnvios.unshift(data);
+        renderPatientEnvios();
+      }
+    }
+
     function renderTreatmentStatusSummary() {
       if (!summaryTreatmentStatus) return;
       if (!patientTreatmentPlans.length) {
@@ -3420,9 +3534,12 @@
       treatmentLayout.hidden = false;
       resetTreatmentDraft();
       renderTreatmentPlanBar();
+      patientEnvios = [];
+      renderPatientEnvios();
       await loadPatientAnamnese(patient.id);
       await loadPatientSharing(patient.id);
       await loadPatientTreatmentPlans(patient.id);
+      await loadPatientEnvios(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -4209,7 +4326,7 @@
       whatsappMessage.focus();
     }
 
-    function openWhatsapp() {
+    async function openWhatsapp() {
       const patient = getSelectedPatient();
       const phoneDigits = onlyDigits(patient?.telefone || "");
       if (!patient) {
@@ -4224,6 +4341,7 @@
       const url = `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(whatsappMessage.value.trim())}`;
       window.open(url, "_blank", "noopener,noreferrer");
       setQuoteAction("WhatsApp Web aberto em nova aba. Confirme o envio por la.");
+      await logEnvioOrcamento("whatsapp", { destinatario_telefone: phoneDigits });
     }
 
     function buildPrintableQuoteHtml() {
@@ -4253,22 +4371,34 @@
   <title>Plano de tratamento - ${escapeHtml(patientName)}</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; }
-    header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; }
-    img { width: 170px; height: auto; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; word-break: break-word; overflow-wrap: break-word; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; break-inside: avoid; page-break-inside: avoid; }
+    img { width: 170px; max-width: 100%; height: auto; }
     h1 { font-size: 24px; margin: 0 0 6px; color: #0f3d5e; }
-    h2 { font-size: 15px; margin: 22px 0 10px; color: #0f3d5e; }
+    h2 { font-size: 15px; margin: 22px 0 10px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
     p { margin: 3px 0; }
     .muted { color: #71838d; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
-    .box { border: 1px solid #d8e7ea; border-radius: 10px; padding: 10px; background: #fbfdff; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; break-inside: avoid; page-break-inside: avoid; }
+    .box { border: 1px solid #d8e7ea; border-radius: 10px; padding: 10px; background: #fbfdff; min-width: 0; }
     .box strong { display: block; color: #0f3d5e; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border-bottom: 1px solid #d8e7ea; padding: 10px 8px; text-align: left; vertical-align: top; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+    th:nth-child(1), td:nth-child(1) { width: 6%; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; }
+    th:nth-child(3), td:nth-child(3) { width: 10%; }
+    th:nth-child(4), td:nth-child(4) { width: 40%; }
+    th:nth-child(5), td:nth-child(5) { width: 14%; }
+    th:nth-child(6), td:nth-child(6) { width: 20%; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { border-bottom: 1px solid #d8e7ea; padding: 10px 8px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
     th { background: #eef9f7; color: #0f3d5e; font-size: 12px; text-transform: uppercase; }
-    .total { margin-top: 18px; padding: 14px; border-radius: 12px; background: #0f3d5e; color: #ffffff; display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; }
-    .note { margin-top: 18px; border-left: 4px solid #14b8a6; padding: 10px 12px; color: #435766; background: #f7fdfc; }
-    @media print { body { padding: 18mm; } }
+    .total { margin-top: 18px; padding: 14px; border-radius: 12px; background: #0f3d5e; color: #ffffff; display: flex; justify-content: space-between; gap: 12px; font-size: 18px; font-weight: 800; break-inside: avoid; page-break-inside: avoid; }
+    .note { margin-top: 18px; border-left: 4px solid #14b8a6; padding: 10px 12px; color: #435766; background: #f7fdfc; break-inside: avoid; page-break-inside: avoid; }
+    @media print {
+      body { padding: 18mm; }
+      .total, .note, header, .grid { break-inside: avoid; page-break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -4309,7 +4439,7 @@
 </html>`;
     }
 
-    function printQuote() {
+    async function printQuote() {
       if (!treatmentItems.length) {
         setQuoteAction("Adicione ao menos um procedimento ao plano.", "warning");
         return;
@@ -4323,6 +4453,7 @@
       printWindow.document.write(buildPrintableQuoteHtml());
       printWindow.document.close();
       setQuoteAction("Previa de impressao aberta. Use salvar como PDF no navegador.");
+      await logEnvioOrcamento("pdf");
     }
 
     loginForm.addEventListener("submit", async (event) => {
