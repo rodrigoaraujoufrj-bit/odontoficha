@@ -1664,6 +1664,14 @@
       display: block;
     }
 
+    .anamnese-edit-form {
+      display: none;
+    }
+
+    .anamnese-edit-form.active {
+      display: grid;
+    }
+
     .procedure-manager-layout {
       display: grid;
       grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
@@ -2251,13 +2259,13 @@
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></span>
                     <span>Agenda</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-patient title="Selecione um paciente para abrir a ficha clínica dele">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></span>
-                    <span>Ficha clínica</span><small>em breve</small>
+                    <span>Ficha clínica</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-patient title="Selecione um paciente para ver os tratamentos dele">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 3.5c1.5 0 2.2.8 3.5.8s2-.8 3.5-.8c2.5 0 4 2.2 3.3 5.4l-1.8 8.2c-.4 1.9-2.9 2-3.4.1l-.7-2.7c-.2-.8-1.4-.8-1.6 0l-.7 2.7c-.5 1.9-3 1.8-3.4-.1L5.2 8.9C4.5 5.7 6 3.5 8.5 3.5z"/></svg></span>
-                    <span>Tratamentos</span><small>em breve</small>
+                    <span>Tratamentos</span>
                   </button>
                 </div>
                 <div class="nav-group">
@@ -2480,15 +2488,41 @@
                           <h3>Anamnese</h3>
                           <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
                           <p class="muted" id="summaryAnamneseDetails">Quando existir anamnese cadastrada, o resumo aparece aqui na ficha do paciente.</p>
-                          <button class="mini-button" type="button" disabled>Editar em Meu consultório</button>
+                          <button class="mini-button" type="button" id="editAnamneseButton">Editar anamnese</button>
+                          <form class="grid anamnese-edit-form" id="anamneseEditForm">
+                            <div class="field full">
+                              <label for="anamneseEditQueixa">Queixa principal</label>
+                              <textarea id="anamneseEditQueixa" placeholder="O que trouxe o paciente ao atendimento?"></textarea>
+                            </div>
+                            <div class="field">
+                              <label for="anamneseEditAlergias">Alergias</label>
+                              <textarea id="anamneseEditAlergias" placeholder="Medicamentos, látex, anestésicos..."></textarea>
+                            </div>
+                            <div class="field">
+                              <label for="anamneseEditMedicamentos">Medicamentos em uso</label>
+                              <textarea id="anamneseEditMedicamentos" placeholder="Uso contínuo ou recente."></textarea>
+                            </div>
+                            <div class="field full">
+                              <label for="anamneseEditHistorico">Histórico médico relevante</label>
+                              <textarea id="anamneseEditHistorico" placeholder="Cirurgias, condições, acompanhamento médico, observações importantes."></textarea>
+                            </div>
+                            <div class="check-grid">
+                              <label class="check-item"><input type="checkbox" id="anamneseEditDiabetes" /> Diabetes</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditHipertensao" /> Hipertensão</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditCardiopatia" /> Cardiopatia</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditGestante" /> Gestante</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditSangramento" /> Sangramento excessivo</label>
+                            </div>
+                            <div class="field full card-actions">
+                              <button class="mini-button" type="submit" id="anamneseEditSaveButton">Salvar anamnese</button>
+                              <button class="mini-button" type="button" id="anamneseEditCancelButton">Cancelar</button>
+                            </div>
+                            <div class="inline-feedback" id="anamneseFeedback" role="status"></div>
+                          </form>
                         </div>
                         <div class="patient-care-card">
                           <h3>Tratamento em andamento</h3>
                           <p class="muted" id="summaryTreatmentStatus">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
-                          <div class="card-actions">
-                            <button class="mini-button" type="button" disabled>Novo tratamento</button>
-                            <button class="mini-button" type="button" disabled>Gerar orçamento</button>
-                          </div>
                         </div>
                         <div class="patient-care-card full-width">
                           <h3>Compartilhado com</h3>
@@ -3076,6 +3110,20 @@
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
     const whatsappConsentCheckbox = document.querySelector("#whatsappConsentCheckbox");
     const whatsappConsentDate = document.querySelector("#whatsappConsentDate");
+    const editAnamneseButton = document.querySelector("#editAnamneseButton");
+    const anamneseEditForm = document.querySelector("#anamneseEditForm");
+    const anamneseEditQueixa = document.querySelector("#anamneseEditQueixa");
+    const anamneseEditAlergias = document.querySelector("#anamneseEditAlergias");
+    const anamneseEditMedicamentos = document.querySelector("#anamneseEditMedicamentos");
+    const anamneseEditHistorico = document.querySelector("#anamneseEditHistorico");
+    const anamneseEditDiabetes = document.querySelector("#anamneseEditDiabetes");
+    const anamneseEditHipertensao = document.querySelector("#anamneseEditHipertensao");
+    const anamneseEditCardiopatia = document.querySelector("#anamneseEditCardiopatia");
+    const anamneseEditGestante = document.querySelector("#anamneseEditGestante");
+    const anamneseEditSangramento = document.querySelector("#anamneseEditSangramento");
+    const anamneseEditSaveButton = document.querySelector("#anamneseEditSaveButton");
+    const anamneseEditCancelButton = document.querySelector("#anamneseEditCancelButton");
+    const anamneseFeedback = document.querySelector("#anamneseFeedback");
     const exportPatientDataButton = document.querySelector("#exportPatientDataButton");
     const dashboardAgendaList = document.querySelector("#dashboardAgendaList");
     const dashboardAgendaEmpty = document.querySelector("#dashboardAgendaEmpty");
@@ -3165,6 +3213,7 @@
     let highlightedTreatmentIndex = null;
     let patientTreatmentPlans = [];
     let patientEnvios = [];
+    let currentPatientAnamnese = null;
     let patientAgendamentos = [];
     let dashboardAgenda = [];
     let dashboardFinanceiroItems = [];
@@ -4213,6 +4262,7 @@
       patientEnvios = [];
       renderPatientEnvios();
       resetAgendaSection();
+      resetAnamneseEditSection();
       await loadPatientAnamnese(patient.id);
       await loadPatientSharing(patient.id);
       await loadPatientTreatmentPlans(patient.id);
@@ -4221,25 +4271,45 @@
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    async function loadPatientAnamnese(patientId) {
-      const { data, error } = await supabase
-        .from("anamneses")
-        .select("queixa_principal, alergias, medicamentos_uso_continuo, historico_medico, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, preenchida_em, atualizado_em")
-        .eq("paciente_id", patientId)
-        .order("preenchida_em", { ascending: false, nullsFirst: false })
-        .limit(1)
-        .maybeSingle();
+    const ANAMNESE_SUMMARY_COLUMNS = "id, queixa_principal, alergias, medicamentos_uso_continuo, historico_medico, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, preenchida_em, atualizado_em";
 
-      if (selectedPatientId !== patientId) return;
-      if (error) {
-        document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
-        document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
-        return;
-      }
+    function resetAnamneseEditSection() {
+      // Muda o paciente aberto: fecha e limpa o formulario de edicao de
+      // anamnese para nao vazar rascunho de um paciente para outro (mesma
+      // guarda de selectedPatientId usada pelos outros carregadores desta
+      // ficha).
+      currentPatientAnamnese = null;
+      anamneseEditForm.classList.remove("active");
+      anamneseEditForm.reset();
+      clearAnamneseFeedback();
+    }
 
+    function fillAnamneseEditForm(data) {
+      anamneseEditQueixa.value = data?.queixa_principal || "";
+      anamneseEditAlergias.value = data?.alergias || "";
+      anamneseEditMedicamentos.value = data?.medicamentos_uso_continuo || "";
+      anamneseEditHistorico.value = data?.historico_medico || "";
+      anamneseEditDiabetes.checked = Boolean(data?.possui_diabetes);
+      anamneseEditHipertensao.checked = Boolean(data?.possui_hipertensao);
+      anamneseEditCardiopatia.checked = Boolean(data?.possui_cardiopatia);
+      anamneseEditGestante.checked = Boolean(data?.gestante);
+      anamneseEditSangramento.checked = Boolean(data?.sangramento_excessivo);
+    }
+
+    function setAnamneseFeedback(message, type = "success") {
+      anamneseFeedback.className = `inline-feedback show ${type}`;
+      anamneseFeedback.textContent = message;
+    }
+
+    function clearAnamneseFeedback() {
+      anamneseFeedback.className = "inline-feedback";
+      anamneseFeedback.textContent = "";
+    }
+
+    function renderAnamneseSummary(data) {
       if (!data) {
         document.querySelector("#summaryAnamneseStatus").textContent = "Sem anamnese cadastrada";
-        document.querySelector("#summaryAnamneseDetails").textContent = "Se o dentista quiser preencher depois, isso deve ficar em Meu consultório > Pacientes > Anamnese.";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Use o botão \"Editar anamnese\" logo abaixo para registrar agora.";
         return;
       }
 
@@ -4261,6 +4331,27 @@
       document.querySelector("#summaryAnamneseDetails").textContent = details.length
         ? details.join(" · ")
         : "Anamnese existe, mas sem observações de destaque.";
+    }
+
+    async function loadPatientAnamnese(patientId) {
+      const { data, error } = await supabase
+        .from("anamneses")
+        .select(ANAMNESE_SUMMARY_COLUMNS)
+        .eq("paciente_id", patientId)
+        .order("preenchida_em", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (selectedPatientId !== patientId) return;
+      if (error) {
+        currentPatientAnamnese = null;
+        document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
+        return;
+      }
+
+      currentPatientAnamnese = data;
+      renderAnamneseSummary(data);
     }
 
     function renderWhatsappConsent(patient) {
@@ -5895,6 +5986,71 @@
       const card = event.target.closest("[data-patient-id]");
       if (!card) return;
       await showPatientSummary(card.dataset.patientId);
+    });
+
+    editAnamneseButton.addEventListener("click", () => {
+      const isOpening = !anamneseEditForm.classList.contains("active");
+      if (isOpening) fillAnamneseEditForm(currentPatientAnamnese);
+      anamneseEditForm.classList.toggle("active", isOpening);
+      clearAnamneseFeedback();
+    });
+
+    anamneseEditCancelButton.addEventListener("click", () => {
+      anamneseEditForm.classList.remove("active");
+      clearAnamneseFeedback();
+    });
+
+    anamneseEditForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const patient = getSelectedPatient();
+      if (!patient || !currentProfissional?.id) return;
+
+      const patientId = selectedPatientId;
+      const existing = currentPatientAnamnese;
+      anamneseEditSaveButton.disabled = true;
+      setAnamneseFeedback("Salvando...");
+
+      const anamnese = {
+        queixa_principal: anamneseEditQueixa.value.trim() || null,
+        historico_medico: anamneseEditHistorico.value.trim() || null,
+        alergias: anamneseEditAlergias.value.trim() || null,
+        medicamentos_uso_continuo: anamneseEditMedicamentos.value.trim() || null,
+        possui_diabetes: anamneseEditDiabetes.checked,
+        possui_hipertensao: anamneseEditHipertensao.checked,
+        possui_cardiopatia: anamneseEditCardiopatia.checked,
+        gestante: anamneseEditGestante.checked,
+        sangramento_excessivo: anamneseEditSangramento.checked
+      };
+
+      // Se ja existe uma linha de anamnese para este paciente, atualiza-a
+      // (o payload nunca inclui profissional_id, entao a RLS reavalia o
+      // check contra o profissional_id ja gravado na linha - mesma
+      // disciplina de "dono nao muda no update" usada em planos_tratamento).
+      // Sem linha existente (paciente cadastrado sem anamnese, ou anamnese
+      // nunca preenchida), insere uma nova.
+      const query = existing?.id
+        ? supabase.from("anamneses").update({ ...anamnese, preenchida_em: new Date().toISOString() }).eq("id", existing.id)
+        : supabase.from("anamneses").insert({
+            paciente_id: patient.id,
+            profissional_id: currentProfissional.id,
+            ...anamnese,
+            preenchida_em: new Date().toISOString()
+          });
+
+      const { data, error } = await query.select(ANAMNESE_SUMMARY_COLUMNS).single();
+
+      if (selectedPatientId !== patientId) return;
+      anamneseEditSaveButton.disabled = false;
+
+      if (error) {
+        setAnamneseFeedback("Não foi possível salvar a anamnese.", "warning");
+        return;
+      }
+
+      currentPatientAnamnese = data;
+      renderAnamneseSummary(data);
+      anamneseEditForm.classList.remove("active");
+      setAnamneseFeedback("Anamnese atualizada.");
     });
 
     sharePatientForm.addEventListener("submit", async (event) => {
