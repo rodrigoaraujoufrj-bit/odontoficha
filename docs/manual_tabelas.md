@@ -142,6 +142,7 @@ Dentista, recepcionista ou secretaria.
 - `cpf`
 - `data_nascimento`
 - `observacoes`
+- `consentimento_whatsapp_em`
 
 ### Regras
 
@@ -152,6 +153,7 @@ Dentista, recepcionista ou secretaria.
 - Telefone deve ser salvo apenas com digitos.
 - CPF deve ser salvo apenas com digitos e ter 11 digitos quando preenchido.
 - Validacao de digitos verificadores do CPF deve ser implementada antes de uso real amplo.
+- `consentimento_whatsapp_em`: null = sem consentimento registrado; timestamp = quando o paciente consentiu em receber comunicacao por WhatsApp; desmarcar na UI limpa de volta para null (revogacao real, nao so oculta na tela).
 
 ### Exemplo
 
@@ -265,19 +267,27 @@ Dentista.
 
 ### Finalidade
 
-Controlar consultas, retornos e confirmacoes.
+Controlar consultas e retornos: agendamento nativo do MVP (sem grade de
+calendario ainda - so listas cronologicas, no dashboard e na ficha do
+paciente).
 
 ### Quando preencher
 
-Ao marcar uma consulta, retorno ou compromisso clinico.
+Ao marcar uma consulta, retorno ou compromisso clinico para um paciente.
 
 ### Quem preenche
 
-Recepcionista, secretaria ou dentista.
+O profissional dono do agendamento (`profissional_id`), na ficha do
+paciente. Nao existe hoje um papel de recepcionista/secretaria distinto de
+`profissionais` no OdontoFlow (ver Regras De Acesso E Permissoes em
+`regras_negocio.md`), entao quem cria e edita um agendamento e sempre um
+profissional autenticado.
 
 ### Campos obrigatorios
 
 - `paciente_id`
+- `consultorio_id`
+- `profissional_id`
 - `data_hora_inicio`
 - `status`
 
@@ -290,8 +300,23 @@ Recepcionista, secretaria ou dentista.
 
 ### Regras
 
-- Status minimo sugerido: `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`.
-- Retornos devem ser visiveis na ficha do paciente.
+- Status: `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`.
+- `tipo` e texto livre (ex.: "Consulta", "Retorno", "Avaliação") - sem enum
+  de proposito, para nao travar o vocabulario do consultorio.
+- `data_hora_fim` e opcional: o dentista pode nao saber a duracao ao marcar.
+- `confirmado_por_whatsapp` e uma marca manual (o dentista/recepcao assinala
+  que a confirmacao chegou por WhatsApp) - o OdontoFlow nao envia nem le
+  mensagens automaticamente.
+- Sem `delete`: cancelamento e soft-delete via `status = 'cancelado'`, igual
+  ao resto do dado clinico.
+- So o profissional dono (`profissional_id`) pode alterar um agendamento
+  (status, horarios, observacoes). Um colega com acesso ao mesmo
+  paciente/consultorio ve o agendamento, mas nao pode edita-lo - nao existe
+  ainda um fluxo de "assumir agendamento" (mesma situacao de
+  `itens_plano_tratamento`/`planos_tratamento` antes do "assumir plano").
+- Integracao com Google Agenda fica fora desta rodada (ver Questoes Em
+  Aberto em `modelo_dados.md`); quando existir, sera opt-in por
+  profissional, nunca ligada por padrao para todos.
 
 ## procedimentos
 
@@ -384,6 +409,18 @@ Dentista.
 
 - Um paciente pode ter mais de um plano.
 - Plano pode ser rascunho antes de virar orcamento.
+- Unica transicao de `status` coberta hoje pelo app: `rascunho` <-> `aprovado`.
+  O dono do plano clica em "Paciente aprovou o tratamento" (com confirmacao)
+  para gravar `aprovado`; isso trava o formulario de novo item e os icones de
+  editar/excluir de cada item (mesmo para o dono), e libera o checklist rapido
+  Pendente/Iniciado/Feito de cada item como unico controle interativo (ver
+  `itens_plano_tratamento`). "Reabrir plano para edicao" (tambem com
+  confirmacao, so o dono) volta `status` para `rascunho` sem tocar em nenhum
+  item - status/`data_execucao` ja gravados no checklist sobrevivem ao ciclo
+  reabrir -> aprovar de novo.
+- Os demais valores aceitos pela constraint (`apresentado`, `aprovado_parcial`,
+  `em_execucao`, `concluido`, `cancelado`, `substituido`) ainda nao tem fluxo
+  no app.
 
 ## itens_plano_tratamento
 
@@ -412,12 +449,88 @@ Dentista.
 - `material`
 - `consultas_previstas`
 - `status`
+- `urgente`
 - `ordem`
+- `data_execucao`
+- `registrado_como_historico`
 
 ### Regras
 
 - Status minimo sugerido: `planejado`, `aprovado`, `em_andamento`, `realizado`, `cancelado`.
+- `urgente` e booleano e independente do `status`: severidade clinica, nao etapa
+  de andamento. Um item pode estar `em_andamento` e `urgente` ao mesmo tempo.
 - Deve permitir item manual sem procedimento cadastrado.
+- `data_execucao` e diferente de `criado_em`: `criado_em` e so auditoria de
+  quando a linha foi criada no sistema (imutavel); `data_execucao` e quando o
+  procedimento de fato aconteceu na boca do paciente. Pode ficar em branco
+  quando a data exata nao e conhecida, e serve principalmente para registrar
+  trabalho pre-existente feito por outro profissional antes do paciente entrar
+  no OdontoFlow (achado de exame inicial/historico).
+- `face` aceita `"Gengiva"` como valor, junto com `"Raiz"`: os dois nao sao uma
+  face de esmalte no sentido estrito (V/L/P/M/D/O), mas convivem no mesmo campo
+  em vez de precisar de uma coluna separada para local anatomico.
+- O checklist rapido Pendente/Iniciado/Feito na linha do item (fora do
+  formulario completo de editar) e so um atalho de UI para os mesmos valores
+  de `status` acima - nao introduz conceito novo. "Pendente" cobre tanto
+  `planejado` quanto `aprovado`; ao reverter de `em_andamento`/`realizado` para
+  "Pendente" o valor gravado e `aprovado` (nunca regride para `planejado`), e
+  `data_execucao` ja gravada nunca e apagada por essa reversao.
+- O checklist so aparece interativo depois que o PLANO (`planos_tratamento.status`,
+  campo diferente deste) sai de `rascunho` (ver `planos_tratamento`). Enquanto
+  o plano ainda e rascunho nao ha andamento de execucao a acompanhar, entao a
+  coluna mostra so um badge de status simples, nao clicavel.
+- `registrado_como_historico` e ligado automaticamente quando o item e criado
+  pelo checkbox "Ja foi realizado antes (historico/exame inicial)" (que tambem
+  forca `status = 'realizado'` e libera `data_execucao` manual). Editar o item
+  depois preserva esse valor, nunca reavalia pelo estado do checkbox no
+  formulario. Relatorios financeiros/ganhos devem excluir todo item com
+  `registrado_como_historico = true`, mesmo estando `realizado`: ele so
+  registra trabalho ja feito antes (tipicamente por outro profissional), nao
+  algo que este consultorio executou ou recebeu.
+
+## envios_plano_tratamento
+
+### Finalidade
+
+Registrar que um orcamento foi gerado em PDF ou preparado/aberto no WhatsApp,
+para o dentista conseguir consultar depois o que foi enviado ao paciente sem
+depender da memoria. Nao e a tabela `orcamentos` (proposta, com fluxo de
+aprovacao/recusa) - e soh um log de envio.
+
+### Quando preencher
+
+Automaticamente, quando o dentista clica em "Imprimir PDF" ou "Abrir WhatsApp"
+na tela de atendimento.
+
+### Quem preenche
+
+O sistema, em nome do profissional que estava com o plano aberto.
+
+### Campos obrigatorios
+
+- `plano_tratamento_id`
+- `profissional_id`
+- `canal` (`pdf` ou `whatsapp`)
+
+### Campos opcionais
+
+- `valor_total`
+- `quantidade_itens`
+- `item_ids`
+- `destinatario_telefone` (soh quando `canal = whatsapp`)
+
+### Regras
+
+- E historico: nao tem `update` nem `delete`, so `insert`/`select`.
+- Por decisao de manter o uso de espaco no banco baixo, `item_ids` guarda so os
+  ids dos itens de `itens_plano_tratamento` incluidos no envio - nao duplica o
+  conteudo deles. Como esses itens nunca sao apagados de verdade (so
+  `status = cancelado`), os ids sempre resolvem para dados reais; a
+  contrapartida e que, se um item for editado depois do envio, reconstruir o
+  envio mostra o valor atual do item, nao o valor exato de quando foi enviado.
+- Nao confirma entrega nem leitura da mensagem: o WhatsApp e aberto via link
+  manual (`wa.me`), nao pela API oficial, entao so registramos que o dentista
+  clicou em enviar.
 
 ## orcamentos
 

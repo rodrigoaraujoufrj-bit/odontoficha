@@ -1,6 +1,6 @@
 # OdontoFlow - Regras de Negocio
 
-Última atualização: 2026-09-02
+Última atualização: 2026-09-03
 
 Este documento registra regras e decisoes de produto para orientar o MVP.
 
@@ -131,9 +131,20 @@ cpf no banco: 12345678909
 
 ## Regras De Agenda
 
-- Agenda deve suportar consulta e retorno.
-- Confirmacao por WhatsApp e importante, mas pode comecar manual.
-- Integracao com Google Agenda deve ser avaliada depois do MVP.
+- Agenda e nativa no MVP (decisao registrada: nao e integracao com Google
+  Agenda desde o inicio - ver `modelo_dados.md`).
+- Sem grade de calendario na v1: listas cronologicas bastam - dashboard
+  mostra os proximos 7 dias do profissional logado no consultorio atual,
+  ficha do paciente mostra o historico completo dele.
+- Agenda deve suportar consulta e retorno (campo `tipo`, texto livre).
+- Confirmacao por WhatsApp comeca manual: `confirmado_por_whatsapp` e uma
+  marca do dentista/recepcao, sem envio nem leitura automatica de mensagem.
+- So o profissional dono do agendamento pode altera-lo; um colega com acesso
+  ao paciente ve mas nao edita (sem fluxo de "assumir agendamento" no MVP).
+- Integracao com Google Agenda fica para depois do MVP e, quando existir,
+  deve ser **opt-in por profissional** (cada dentista liga para si, nunca
+  ligada por padrao para todos) - nao apenas "avaliada", ja e decisao de
+  produto tomada.
 - Status minimo:
   - `agendado`
   - `confirmado`
@@ -164,12 +175,34 @@ cpf no banco: 12345678909
   assumindo uma etapa especifica do tratamento). Reatribuir so e possivel para si mesmo,
   e so quando o profissional ja tem acesso legitimo ao paciente e ao consultorio - nunca
   para alguem de fora da clinica.
-- Status minimo do item:
+- Status minimo do item (andamento de aprovacao/execucao):
   - `planejado`
   - `aprovado`
   - `em_andamento`
   - `realizado`
   - `cancelado`
+- Severidade clinica e um eixo separado do status acima, nao um valor dele:
+  um item urgente pode estar em qualquer status (ex.: urgente e planejado,
+  urgente e em_andamento). Ver `itens_plano_tratamento.urgente` (booleano).
+- Uma consulta nova ("Nova consulta" na interface) nem sempre significa plano
+  novo: pode ser um problema clinico novo (novo plano) ou o retorno de um
+  tratamento ja em andamento (continuacao de um plano existente). Um paciente
+  pode ter mais de um plano em aberto ao mesmo tempo.
+- Paciente compartilhado implica plano compartilhado: qualquer profissional
+  com vinculo ativo ao paciente (via `paciente_consultorios`) pode ver os
+  planos dele, independente de quem criou. Editar continua exigindo assumir o
+  plano para si mesmo (ver regra de reatribuicao acima).
+- O PLANO tem seu proprio `status` (`planos_tratamento.status`), separado do
+  status de cada item (secao acima) - os dois usam o valor `aprovado` com
+  sentidos diferentes, cuidado ao ler codigo/docs. Hoje o app so movimenta o
+  status do plano entre `rascunho` e `aprovado`: o dono do plano marca
+  "Paciente aprovou o tratamento" (com confirmacao) para travar a montagem de
+  novos itens (form + editar/excluir, mesmo para o dono) e liberar o checklist
+  rapido de andamento de cada item como unico controle; "Reabrir plano para
+  edicao" (tambem so o dono, com confirmacao) volta para `rascunho` sem alterar
+  nada em nenhum item. Os demais valores aceitos pela constraint
+  (`apresentado`, `aprovado_parcial`, `em_execucao`, `concluido`, `cancelado`,
+  `substituido`) ainda nao tem fluxo no app.
 
 ## Regras De Orcamento
 
@@ -196,6 +229,12 @@ cpf no banco: 12345678909
   - quanto falta pagar
 - Pagamento pode estar ligado a paciente, orcamento ou plano.
 - Nao construir financeiro completo antes de validar o fluxo clinico.
+- Dashboard "Ganhos por procedimento" e so leitura/relatorio: sem cobranca ou
+  pagamento no app. Soma `itens_plano_tratamento` com `status = 'realizado'` e
+  `registrado_como_historico = false` do profissional/consultorio atual,
+  agrupado por procedimento, filtrado por periodo (Hoje/Esta semana/Este
+  mes/Tudo). Item historico (checkbox "Ja foi realizado antes") nunca entra,
+  mesmo `realizado`.
 
 ## Regras De Laboratorio
 

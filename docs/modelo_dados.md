@@ -1,6 +1,6 @@
 # OdontoFlow - Modelo de Dados
 
-Última atualização: 2026-09-02
+Última atualização: 2026-09-03
 
 Este documento descreve a proposta inicial de modelo de dados do OdontoFlow. Os nomes de tabelas e campos devem seguir o padrao `pt_br` em `snake_case`.
 
@@ -149,12 +149,17 @@ Campos provaveis:
 
 ### agendamentos
 
-Controla consultas, retornos e confirmacoes.
+Controla consultas e retornos. Implementado como agendamento nativo do MVP:
+sem grade de calendario ainda, so listas cronologicas (dashboard mostra os
+proximos 7 dias do profissional logado; a ficha do paciente mostra o
+historico completo dele). Ver `agendamentos` em `manual_tabelas.md`.
 
-Campos provaveis:
+Campos:
 
 - `id`
 - `paciente_id`
+- `consultorio_id`
+- `profissional_id`
 - `data_hora_inicio`
 - `data_hora_fim`
 - `tipo`
@@ -162,7 +167,10 @@ Campos provaveis:
 - `observacoes`
 - `confirmado_por_whatsapp`
 - `criado_em`
-- `atualizado_em`
+
+Sem `atualizado_em`/trigger nesta rodada: a tabela e pequena e mudanca de
+status/horario nao precisa hoje de auditoria de "quando foi a ultima
+edicao" - pode entrar depois se aparecer essa necessidade.
 
 ### procedimentos
 
@@ -361,7 +369,6 @@ Campos provaveis:
 ## Questoes Em Aberto
 
 - Como tratar dentistas que atendem em varios locais.
-- Se agenda sera nativa ou integracao com Google Agenda no MVP.
 - Se laboratorio entra no MVP completo ou apenas como controle simples de etapas.
 - Nivel inicial do odontograma: texto por dente, selecao de face ou interface visual.
 - Como representar faces do dente sem atrasar o MVP v1.

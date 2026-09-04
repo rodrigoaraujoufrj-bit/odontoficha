@@ -806,7 +806,7 @@
       border-radius: 16px;
       background: #ffffff;
       padding: 14px;
-      display: grid;
+      display: none;
       gap: 12px;
       margin-bottom: 18px;
       box-shadow: 0 10px 30px rgba(15, 61, 94, 0.045);
@@ -892,6 +892,63 @@
       font-size: 0.85rem;
     }
 
+    .envios-list,
+    .agenda-list,
+    .agenda-patient-list,
+    .financeiro-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .envios-list li,
+    .agenda-list li,
+    .agenda-patient-list li,
+    .financeiro-list li {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.88rem;
+    }
+
+    .envio-canal {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .agenda-row-time {
+      display: grid;
+      gap: 2px;
+      min-width: 66px;
+    }
+
+    .agenda-patient-link {
+      border: 0;
+      background: none;
+      padding: 0;
+      font: inherit;
+      font-weight: 800;
+      color: var(--primary-dark);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .agenda-patient-list select {
+      width: auto;
+      min-height: 38px;
+      padding: 6px 8px;
+    }
+
     .share-patient-form {
       display: flex;
       gap: 8px;
@@ -910,6 +967,19 @@
 
     .patient-next-actions {
       align-items: center;
+    }
+
+    .patient-consent-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 4px 0 8px;
+    }
+
+    .patient-consent-row .check-item {
+      padding: 8px 12px;
+      font-weight: 700;
     }
 
     .consultation-panel {
@@ -964,6 +1034,67 @@
 
     .treatment-builder.active {
       display: grid;
+    }
+
+    .treatment-plan-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      padding: 10px 14px;
+    }
+
+    .treatment-plan-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .plan-approved-notice {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      padding: 14px;
+    }
+
+    .treatment-plan-chooser {
+      border: 1px solid rgba(15, 61, 94, 0.08);
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .treatment-plan-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .treatment-plan-option {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .treatment-plan-bar[hidden],
+    .treatment-plan-chooser[hidden],
+    .treatment-layout[hidden],
+    #treatmentExecutionDateField[hidden],
+    #selectedToothCard[hidden],
+    #procedureCard[hidden] {
+      display: none;
     }
 
     .treatment-layout {
@@ -1090,6 +1221,12 @@
       fill: rgba(20, 184, 166, 0.2);
       stroke: var(--primary);
       stroke-width: 2;
+    }
+
+    .tooth-node.has-history .tooth-shape {
+      fill: rgba(100, 119, 129, 0.1);
+      stroke: var(--muted);
+      stroke-dasharray: 3 2;
     }
 
     .tooth-node.has-plan .tooth-shape {
@@ -1285,6 +1422,11 @@
       background: #dc2626;
     }
 
+    .legend-dot.history {
+      background: transparent;
+      border: 1.5px dashed var(--muted);
+    }
+
     .selected-tooth-summary {
       border: 1px dashed rgba(15, 61, 94, 0.14);
       border-radius: 10px;
@@ -1303,6 +1445,13 @@
       margin: 0;
       padding-left: 18px;
       color: var(--muted);
+    }
+
+    .tooth-history {
+      border-top: 1px dashed rgba(15, 61, 94, 0.14);
+      padding-top: 7px;
+      display: grid;
+      gap: 4px;
     }
 
     .selected-tooth-card,
@@ -1419,6 +1568,13 @@
       border-color: #fecaca;
     }
 
+    .icon-action:disabled {
+      color: var(--muted);
+      background: #f8fafc;
+      border-color: var(--line);
+      cursor: not-allowed;
+    }
+
     .icon-action svg {
       width: 14px;
       height: 14px;
@@ -1506,6 +1662,14 @@
 
     .procedure-manager-section.active {
       display: block;
+    }
+
+    .anamnese-edit-form {
+      display: none;
+    }
+
+    .anamnese-edit-form.active {
+      display: grid;
     }
 
     .procedure-manager-layout {
@@ -1663,6 +1827,25 @@
       margin-top: auto;
     }
 
+    .mfa-secret {
+      display: inline-block;
+      word-break: break-all;
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+    }
+
+    #mfaQrImage {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: white;
+      padding: 8px;
+    }
+
     .mini-button {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -1687,6 +1870,100 @@
       color: var(--primary-dark);
       font-size: 0.82rem;
       font-weight: 850;
+    }
+
+    .badge-urgent {
+      background: rgba(220, 38, 38, 0.12);
+      color: var(--danger);
+      margin-left: 6px;
+    }
+
+    .status-toggle {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .status-toggle-btn {
+      border: none;
+      border-left: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 6px 9px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .status-toggle-btn:first-child {
+      border-left: none;
+    }
+
+    .status-toggle-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .status-toggle-btn.active[data-status-toggle="pendente"] {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    .status-toggle-btn.active[data-status-toggle="iniciado"] {
+      background: rgba(245, 158, 11, 0.16);
+      color: #92400e;
+    }
+
+    .status-toggle-btn.active[data-status-toggle="feito"] {
+      background: rgba(22, 163, 74, 0.14);
+      color: var(--success);
+    }
+
+    .period-toggle {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .period-toggle-btn {
+      border: none;
+      border-left: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 6px 9px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .period-toggle-btn:first-child {
+      border-left: none;
+    }
+
+    .period-toggle-btn.active {
+      background: var(--surface-soft);
+      color: var(--primary-dark);
+    }
+
+    .financeiro-total-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-soft);
+    }
+
+    .financeiro-total-row strong {
+      font-size: 1.15rem;
+      color: var(--primary-dark);
     }
 
     .loading {
@@ -1857,6 +2134,20 @@
           </form>
         </div>
 
+        <div id="mfaChallengeView" class="view">
+          <div class="kicker">Verificação em duas etapas</div>
+          <h2>Digite o código do seu aplicativo autenticador</h2>
+          <p class="lead">Sua conta tem a verificação em duas etapas ativada. Abra o aplicativo autenticador (Google Authenticator, Authy, etc.) e informe o código de 6 dígitos.</p>
+          <form class="form" id="mfaChallengeForm">
+            <div class="field">
+              <label for="mfaChallengeCode">Código</label>
+              <input id="mfaChallengeCode" name="mfaChallengeCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="000000" />
+            </div>
+            <div id="mfaChallengeStatus" class="status" role="status"></div>
+            <button class="button button-primary" type="submit">Confirmar</button>
+          </form>
+        </div>
+
         <div id="onboardingView" class="view">
           <div class="kicker">Cadastro inicial</div>
           <h2 id="onboardingTitle">Perfil profissional e consultório</h2>
@@ -1964,28 +2255,28 @@
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
                     <span>Pacientes</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-home data-scroll-target="#dashboardAgendaCard">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18"/></svg></span>
-                    <span>Agenda</span><small>em breve</small>
+                    <span>Agenda</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-patient title="Selecione um paciente para abrir a ficha clínica dele">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></span>
-                    <span>Ficha clínica</span><small>em breve</small>
+                    <span>Ficha clínica</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-patient title="Selecione um paciente para ver os tratamentos dele">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8.5 3.5c1.5 0 2.2.8 3.5.8s2-.8 3.5-.8c2.5 0 4 2.2 3.3 5.4l-1.8 8.2c-.4 1.9-2.9 2-3.4.1l-.7-2.7c-.2-.8-1.4-.8-1.6 0l-.7 2.7c-.5 1.9-3 1.8-3.4-.1L5.2 8.9C4.5 5.7 6 3.5 8.5 3.5z"/></svg></span>
-                    <span>Tratamentos</span><small>em breve</small>
+                    <span>Tratamentos</span>
                   </button>
                 </div>
                 <div class="nav-group">
                   <div class="nav-group-title">Gestão</div>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-home data-scroll-target="#dashboardFinanceiroCard">
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-                    <span>Financeiro</span><small>em breve</small>
+                    <span>Financeiro</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-orcamentos>
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11h6"/><path d="M9 15h6"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8l4 4v12a2 2 0 0 1-2 2z"/></svg></span>
-                    <span>Orçamentos</span><small>em breve</small>
+                    <span>Orçamentos</span>
                   </button>
                   <button class="nav-item" type="button" data-open-clinic>
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
@@ -2021,32 +2312,39 @@
                 <p class="lead" id="dashboardSubtitle">Abra o dia olhando o que precisa de atenção: agenda, pacientes e próximos passos.</p>
                 <div class="week-overview">
                   <div class="schedule-stack">
-                    <div class="schedule-card primary">
+                    <div class="schedule-card primary" id="dashboardAgendaCard">
                       <div class="card-topline">
                         <div>
-                          <div class="kicker">Hoje</div>
-                          <strong>Agenda ainda não conectada</strong>
+                          <div class="kicker">Agenda · próximos 7 dias</div>
+                          <strong>Seus agendamentos neste consultório</strong>
                         </div>
-                        <span class="card-mark">0</span>
+                        <span class="card-mark" id="dashboardAgendaCount">0</span>
                       </div>
-                      <p class="muted">Quando a agenda entrar no MVP, aqui aparecem os pacientes do dia e o próximo horário.</p>
-                      <div class="schedule-meta">
-                        <span>Próximo passo: vincular agenda</span>
-                        <span>Atalho: buscar paciente</span>
-                      </div>
-                    </div>
-                    <div class="schedule-card">
-                      <div class="card-topline">
-                        <div>
-                          <div class="kicker">Próximos dias</div>
-                          <strong>Sem compromissos cadastrados no OdontoFlow</strong>
-                        </div>
-                        <span class="card-mark">7d</span>
-                      </div>
-                      <p class="muted">A visão semanal deve mostrar retornos, tratamentos em andamento e pacientes sem próximo agendamento.</p>
+                      <p class="muted" id="dashboardAgendaEmpty">Nenhum agendamento nos próximos 7 dias. Crie um na ficha do paciente.</p>
+                      <ul class="agenda-list" id="dashboardAgendaList" aria-live="polite" hidden></ul>
                     </div>
                     <div class="home-note">
-                      A tela inicial agora é preparada para ser um painel de rotina. Hoje ela mostra os blocos certos; quando a agenda existir, os dados entram aqui.
+                      A agenda aqui mostra só os seus horários neste consultório. Quem tem acesso ao paciente pode ver o agendamento de um colega na ficha dele, mas só o profissional dono pode alterá-lo.
+                    </div>
+                    <div class="schedule-card financeiro-card" id="dashboardFinanceiroCard">
+                      <div class="card-topline">
+                        <div>
+                          <div class="kicker">Financeiro · consultório atual</div>
+                          <strong>Ganhos por procedimento</strong>
+                        </div>
+                      </div>
+                      <div class="period-toggle" id="dashboardFinanceiroPeriod">
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="hoje">Hoje</button>
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="semana">Esta semana</button>
+                        <button class="period-toggle-btn active" type="button" data-financeiro-period="mes">Este mês</button>
+                        <button class="period-toggle-btn" type="button" data-financeiro-period="tudo">Tudo</button>
+                      </div>
+                      <div class="financeiro-total-row">
+                        <span class="muted">Total no período</span>
+                        <strong id="dashboardFinanceiroTotal">R$ 0,00</strong>
+                      </div>
+                      <p class="muted" id="dashboardFinanceiroEmpty">Nenhum ganho registrado no período.</p>
+                      <ul class="financeiro-list" id="dashboardFinanceiroList" aria-live="polite" hidden></ul>
                     </div>
                   </div>
                   <div class="quick-stack">
@@ -2058,10 +2356,63 @@
                       <strong>Cadastrar paciente</strong>
                       <span>Cadastro administrativo em Meu consultório.</span>
                     </button>
-                    <button class="button action-card" type="button" disabled>
+                    <button class="button action-card" type="button" data-open-orcamentos>
                       <strong>Orçamentos pendentes</strong>
-                      <span>Futuro: planos enviados e ainda não respondidos.</span>
+                      <span id="dashboardOrcamentosPendentesSummary">Nenhum pendente</span>
                     </button>
+                  </div>
+                </div>
+
+                <div class="schedule-card" id="mfaCard">
+                  <div class="card-topline">
+                    <div>
+                      <div class="kicker">Segurança da conta</div>
+                      <strong>Verificação em duas etapas</strong>
+                    </div>
+                  </div>
+                  <p class="muted">Peça um código do seu aplicativo autenticador a cada novo login, além da senha, para proteger o acesso aos dados dos seus pacientes. É opcional.</p>
+
+                  <div id="mfaInactiveState">
+                    <button class="button button-primary" type="button" id="mfaEnableButton">Ativar verificação em duas etapas</button>
+                  </div>
+
+                  <div id="mfaActiveState" hidden>
+                    <div class="status show success">Verificação em duas etapas ativada nesta conta.</div>
+                    <div id="mfaActiveStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-danger" type="button" id="mfaDisableButton">Desativar</button>
+                    </div>
+                  </div>
+
+                  <div id="mfaEnrollPanel" hidden>
+                    <p class="muted">Escaneie o QR code com um aplicativo autenticador (Google Authenticator, Authy, etc.) ou digite o código manualmente abaixo. <strong>Ao confirmar, sua sessão em outros dispositivos será encerrada.</strong></p>
+                    <img id="mfaQrImage" alt="QR code para configurar a verificação em duas etapas" width="180" height="180" />
+                    <div class="field">
+                      <label for="mfaSecretText">Código manual (se não puder escanear o QR code)</label>
+                      <code id="mfaSecretText" class="mfa-secret"></code>
+                    </div>
+                    <div class="field">
+                      <label for="mfaEnrollCode">Código de 6 dígitos do aplicativo</label>
+                      <input id="mfaEnrollCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                    </div>
+                    <div id="mfaEnrollStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-primary" type="button" id="mfaConfirmEnrollButton">Confirmar código</button>
+                      <button class="button" type="button" id="mfaCancelEnrollButton">Cancelar</button>
+                    </div>
+                  </div>
+
+                  <div id="mfaDisableChallengePanel" hidden>
+                    <p class="muted">Para desativar, confirme um código atual do seu aplicativo autenticador.</p>
+                    <div class="field">
+                      <label for="mfaDisableChallengeCode">Código de 6 dígitos do aplicativo</label>
+                      <input id="mfaDisableChallengeCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" />
+                    </div>
+                    <div id="mfaDisableChallengeStatus" class="status" role="status"></div>
+                    <div class="card-actions">
+                      <button class="button button-danger" type="button" id="mfaConfirmDisableButton">Confirmar e desativar</button>
+                      <button class="button" type="button" id="mfaCancelDisableButton">Cancelar</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2125,20 +2476,53 @@
                         </div>
                       </div>
                       <p class="muted" id="summaryPatientNotes">Sem observações administrativas.</p>
+                      <div class="patient-consent-row">
+                        <label class="check-item">
+                          <input type="checkbox" id="whatsappConsentCheckbox" />
+                          Paciente consentiu em receber comunicação por WhatsApp
+                        </label>
+                        <span class="muted" id="whatsappConsentDate"></span>
+                      </div>
                       <div class="patient-care-grid">
                         <div class="patient-care-card">
                           <h3>Anamnese</h3>
                           <strong id="summaryAnamneseStatus">Selecione um paciente</strong>
                           <p class="muted" id="summaryAnamneseDetails">Quando existir anamnese cadastrada, o resumo aparece aqui na ficha do paciente.</p>
-                          <button class="mini-button" type="button" disabled>Editar em Meu consultório</button>
+                          <button class="mini-button" type="button" id="editAnamneseButton">Editar anamnese</button>
+                          <form class="grid anamnese-edit-form" id="anamneseEditForm">
+                            <div class="field full">
+                              <label for="anamneseEditQueixa">Queixa principal</label>
+                              <textarea id="anamneseEditQueixa" placeholder="O que trouxe o paciente ao atendimento?"></textarea>
+                            </div>
+                            <div class="field">
+                              <label for="anamneseEditAlergias">Alergias</label>
+                              <textarea id="anamneseEditAlergias" placeholder="Medicamentos, látex, anestésicos..."></textarea>
+                            </div>
+                            <div class="field">
+                              <label for="anamneseEditMedicamentos">Medicamentos em uso</label>
+                              <textarea id="anamneseEditMedicamentos" placeholder="Uso contínuo ou recente."></textarea>
+                            </div>
+                            <div class="field full">
+                              <label for="anamneseEditHistorico">Histórico médico relevante</label>
+                              <textarea id="anamneseEditHistorico" placeholder="Cirurgias, condições, acompanhamento médico, observações importantes."></textarea>
+                            </div>
+                            <div class="check-grid">
+                              <label class="check-item"><input type="checkbox" id="anamneseEditDiabetes" /> Diabetes</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditHipertensao" /> Hipertensão</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditCardiopatia" /> Cardiopatia</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditGestante" /> Gestante</label>
+                              <label class="check-item"><input type="checkbox" id="anamneseEditSangramento" /> Sangramento excessivo</label>
+                            </div>
+                            <div class="field full card-actions">
+                              <button class="mini-button" type="submit" id="anamneseEditSaveButton">Salvar anamnese</button>
+                              <button class="mini-button" type="button" id="anamneseEditCancelButton">Cancelar</button>
+                            </div>
+                            <div class="inline-feedback" id="anamneseFeedback" role="status"></div>
+                          </form>
                         </div>
                         <div class="patient-care-card">
                           <h3>Tratamento em andamento</h3>
-                          <p class="muted">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
-                          <div class="card-actions">
-                            <button class="mini-button" type="button" disabled>Novo tratamento</button>
-                            <button class="mini-button" type="button" disabled>Gerar orçamento</button>
-                          </div>
+                          <p class="muted" id="summaryTreatmentStatus">Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.</p>
                         </div>
                         <div class="patient-care-card full-width">
                           <h3>Compartilhado com</h3>
@@ -2149,12 +2533,50 @@
                           </form>
                           <p class="muted" id="shareColleagueStatus"></p>
                         </div>
+                        <div class="patient-care-card full-width">
+                          <h3>Envios de orçamento</h3>
+                          <p class="muted" id="summaryEnviosEmpty">Nenhum orçamento gerado ainda para este paciente.</p>
+                          <ul class="envios-list" id="summaryEnviosList" hidden></ul>
+                        </div>
+                        <div class="patient-care-card full-width">
+                          <h3>Agendamentos</h3>
+                          <form class="grid" id="agendaForm">
+                            <div class="field">
+                              <label for="agendaInicio">Início</label>
+                              <input id="agendaInicio" type="datetime-local" required />
+                            </div>
+                            <div class="field">
+                              <label for="agendaFim">Fim (opcional)</label>
+                              <input id="agendaFim" type="datetime-local" />
+                            </div>
+                            <div class="field">
+                              <label for="agendaTipo">Tipo</label>
+                              <input id="agendaTipo" type="text" placeholder="Ex.: Consulta, Retorno, Avaliação" />
+                            </div>
+                            <label class="check-item">
+                              <input id="agendaConfirmadoWhatsapp" type="checkbox" />
+                              Confirmado por WhatsApp
+                            </label>
+                            <div class="field full">
+                              <label for="agendaObservacoes">Observação</label>
+                              <textarea id="agendaObservacoes" placeholder="Detalhes do agendamento"></textarea>
+                            </div>
+                            <div class="field full">
+                              <button class="mini-button" type="submit" id="agendaSubmitButton">Agendar</button>
+                            </div>
+                          </form>
+                          <div class="inline-feedback" id="agendaFeedback" role="status"></div>
+                          <p class="muted" id="agendaListEmpty">Nenhum agendamento para este paciente ainda.</p>
+                          <ul class="agenda-patient-list" id="agendaPatientList" hidden></ul>
+                        </div>
                       </div>
                     </div>
                     <div class="card-actions patient-next-actions">
                       <button class="button button-primary" type="button" id="consultationButton">Iniciar atendimento</button>
                       <button class="mini-button" type="button" data-open-history>Histórico</button>
+                      <button class="mini-button" type="button" id="exportPatientDataButton">Exportar dados do paciente</button>
                     </div>
+                    <div class="inline-feedback" id="consultationGuardFeedback" role="status"></div>
                   </div>
                   <div class="consultation-panel" id="consultationPanel">
                     <div>
@@ -2182,7 +2604,22 @@
                         <strong>Montar plano inicial</strong>
                         <p class="muted">Selecione dente, face e procedimento. O resumo abaixo já simula o orçamento da consulta.</p>
                       </div>
-                      <div class="treatment-layout">
+                      <div class="treatment-plan-bar" id="treatmentPlanBar" hidden>
+                        <div>
+                          <span class="badge" id="treatmentPlanStatusBadge">Rascunho</span>
+                          <span class="muted" id="treatmentPlanOwnerNote"></span>
+                        </div>
+                        <div class="treatment-plan-bar-actions">
+                          <button class="mini-button" type="button" id="assumeTreatmentPlanButton" hidden>Assumir este plano</button>
+                          <button class="mini-button" type="button" id="approveTreatmentPlanButton" hidden>Paciente aprovou o tratamento</button>
+                          <button class="mini-button" type="button" id="reopenTreatmentPlanButton" hidden>Reabrir plano para edição</button>
+                        </div>
+                      </div>
+                      <div class="treatment-plan-chooser" id="treatmentPlanChooser" hidden>
+                        <p class="muted">Este paciente tem mais de um plano em aberto. Escolha qual continuar:</p>
+                        <div class="treatment-plan-list" id="treatmentPlanList"></div>
+                      </div>
+                      <div class="treatment-layout" id="treatmentLayout">
                         <div class="odontogram-mini">
                           <div class="odontogram-header">
                             <div>
@@ -2200,6 +2637,7 @@
                             <span class="legend-chip"><span class="legend-dot planned" aria-hidden="true"></span>Planejado</span>
                             <span class="legend-chip"><span class="legend-dot care" aria-hidden="true"></span>Em tratamento</span>
                             <span class="legend-chip"><span class="legend-dot urgent" aria-hidden="true"></span>Urgente</span>
+                            <span class="legend-chip"><span class="legend-dot history" aria-hidden="true"></span>Histórico anterior</span>
                           </div>
                           <div class="plan-card">
                             <div class="section-heading">
@@ -2233,7 +2671,10 @@
                           </div>
                         </div>
                         <div class="treatment-side">
-                          <div class="selected-tooth-card">
+                          <div class="plan-approved-notice" id="planApprovedNotice" hidden>
+                            Plano aprovado pelo paciente. A montagem de novos procedimentos fica bloqueada; use o checklist de cada procedimento na tabela ao lado para registrar o andamento. Use "Reabrir plano para edição" para voltar a editar.
+                          </div>
+                          <div class="selected-tooth-card" id="selectedToothCard">
                             <div class="section-heading">
                               <div>
                                 <strong>Dente selecionado</strong>
@@ -2248,13 +2689,14 @@
                               <button class="face-button" type="button" data-face="D">Distal</button>
                               <button class="face-button" type="button" data-face="O">Oclusal</button>
                               <button class="face-button" type="button" data-face="Raiz">Raiz</button>
+                              <button class="face-button" type="button" data-face="Gengiva">Gengiva</button>
                             </div>
                             <div class="selected-tooth-summary" id="selectedToothSummary">
                               <strong>Nenhum dente selecionado</strong>
                               <span class="muted">Clique em um dente para ver procedimentos planejados nesta consulta.</span>
                             </div>
                           </div>
-                          <div class="procedure-card">
+                          <div class="procedure-card" id="procedureCard">
                             <div>
                               <strong>Procedimento sugerido</strong>
                               <p class="muted" id="procedureContextHint">Sem dente selecionado: aparecem procedimentos gerais do consultório.</p>
@@ -2272,13 +2714,28 @@
                               <input id="treatmentValue" type="number" min="0" step="10" inputmode="decimal" placeholder="0,00" />
                             </div>
                             <div class="field">
-                              <label for="treatmentStatus">Status do procedimento</label>
+                              <label for="treatmentStatus">Andamento</label>
                               <select id="treatmentStatus">
-                                <option value="planned">Planejado</option>
-                                <option value="care">Em tratamento</option>
-                                <option value="urgent">Urgente</option>
+                                <option value="planejado">Planejado</option>
+                                <option value="aprovado">Aprovado</option>
+                                <option value="em_andamento">Em andamento</option>
+                                <option value="realizado">Realizado</option>
+                                <option value="cancelado">Cancelado</option>
                               </select>
-                              <span class="hint">Você decide a prioridade clínica, não o sistema.</span>
+                              <span class="hint">Andamento de aprovação/execução. Severidade clínica é um campo separado, abaixo.</span>
+                            </div>
+                            <label class="check-item">
+                              <input id="treatmentUrgent" type="checkbox" />
+                              Urgente (severidade clínica)
+                            </label>
+                            <label class="check-item">
+                              <input id="treatmentAlreadyDone" type="checkbox" />
+                              Já foi realizado antes (histórico/exame inicial)
+                            </label>
+                            <div class="field" id="treatmentExecutionDateField" hidden>
+                              <label for="treatmentExecutionDate">Data aproximada</label>
+                              <input id="treatmentExecutionDate" type="date" />
+                              <span class="hint">Deixe em branco se não souber a data exata.</span>
                             </div>
                             <div class="field">
                               <label for="treatmentNotes">Observação clínica</label>
@@ -2319,6 +2776,25 @@
                   </div>
                 </div>
 
+              </div>
+
+              <div id="orcamentosTab" class="dashboard-tab">
+                <div class="kicker">Gestão</div>
+                <h2>Orçamentos pendentes</h2>
+                <p class="lead">Planos de tratamento já enviados ao paciente (PDF ou WhatsApp) que ainda aguardam aprovação, em todos os pacientes deste consultório.</p>
+
+                <div class="schedule-card primary">
+                  <div class="card-topline">
+                    <div>
+                      <div class="kicker">Pendentes · consultório atual</div>
+                      <strong>Aguardando resposta do paciente</strong>
+                    </div>
+                    <span class="card-mark" id="orcamentosPendentesCount">0</span>
+                  </div>
+                  <p class="muted" id="orcamentosPendentesEmpty">Nenhum orçamento pendente no momento. Planos enviados e ainda sem aprovação aparecem aqui.</p>
+                  <ul class="agenda-list" id="orcamentosPendentesList" aria-live="polite" hidden></ul>
+                  <div class="inline-feedback" id="orcamentosFeedback" role="status"></div>
+                </div>
               </div>
 
               <div id="clinicTab" class="dashboard-tab">
@@ -2601,6 +3077,7 @@
     const views = {
       loading: document.querySelector("#loadingView"),
       login: document.querySelector("#loginView"),
+      mfaChallenge: document.querySelector("#mfaChallengeView"),
       onboarding: document.querySelector("#onboardingView"),
       dashboard: document.querySelector("#dashboardView")
     };
@@ -2610,6 +3087,27 @@
     const signOutButton = document.querySelector("#signOutButton");
     const loginStatus = document.querySelector("#loginStatus");
     const onboardingStatus = document.querySelector("#onboardingStatus");
+    const mfaChallengeForm = document.querySelector("#mfaChallengeForm");
+    const mfaChallengeCode = document.querySelector("#mfaChallengeCode");
+    const mfaChallengeStatus = document.querySelector("#mfaChallengeStatus");
+    const mfaCard = document.querySelector("#mfaCard");
+    const mfaInactiveState = document.querySelector("#mfaInactiveState");
+    const mfaActiveState = document.querySelector("#mfaActiveState");
+    const mfaActiveStatus = document.querySelector("#mfaActiveStatus");
+    const mfaEnableButton = document.querySelector("#mfaEnableButton");
+    const mfaDisableButton = document.querySelector("#mfaDisableButton");
+    const mfaEnrollPanel = document.querySelector("#mfaEnrollPanel");
+    const mfaQrImage = document.querySelector("#mfaQrImage");
+    const mfaSecretText = document.querySelector("#mfaSecretText");
+    const mfaEnrollCode = document.querySelector("#mfaEnrollCode");
+    const mfaEnrollStatus = document.querySelector("#mfaEnrollStatus");
+    const mfaConfirmEnrollButton = document.querySelector("#mfaConfirmEnrollButton");
+    const mfaCancelEnrollButton = document.querySelector("#mfaCancelEnrollButton");
+    const mfaDisableChallengePanel = document.querySelector("#mfaDisableChallengePanel");
+    const mfaDisableChallengeCode = document.querySelector("#mfaDisableChallengeCode");
+    const mfaDisableChallengeStatus = document.querySelector("#mfaDisableChallengeStatus");
+    const mfaConfirmDisableButton = document.querySelector("#mfaConfirmDisableButton");
+    const mfaCancelDisableButton = document.querySelector("#mfaCancelDisableButton");
     const patientForm = document.querySelector("#patientForm");
     const patientStatus = document.querySelector("#patientStatus");
     const patientSearch = document.querySelector("#patientSearch");
@@ -2620,12 +3118,49 @@
     const consultationButton = document.querySelector("#consultationButton");
     const consultationPanel = document.querySelector("#consultationPanel");
     const newTreatmentPanel = document.querySelector("#newTreatmentPanel");
+    const consultationGuardFeedback = document.querySelector("#consultationGuardFeedback");
     const togglePatientDetails = document.querySelector("#togglePatientDetails");
     const patientDetailsPanel = document.querySelector("#patientDetailsPanel");
     const summarySharedList = document.querySelector("#summarySharedList");
+    const summaryEnviosEmpty = document.querySelector("#summaryEnviosEmpty");
+    const summaryEnviosList = document.querySelector("#summaryEnviosList");
     const sharePatientForm = document.querySelector("#sharePatientForm");
     const shareColleagueSelect = document.querySelector("#shareColleagueSelect");
     const shareColleagueStatus = document.querySelector("#shareColleagueStatus");
+    const whatsappConsentCheckbox = document.querySelector("#whatsappConsentCheckbox");
+    const whatsappConsentDate = document.querySelector("#whatsappConsentDate");
+    const editAnamneseButton = document.querySelector("#editAnamneseButton");
+    const anamneseEditForm = document.querySelector("#anamneseEditForm");
+    const anamneseEditQueixa = document.querySelector("#anamneseEditQueixa");
+    const anamneseEditAlergias = document.querySelector("#anamneseEditAlergias");
+    const anamneseEditMedicamentos = document.querySelector("#anamneseEditMedicamentos");
+    const anamneseEditHistorico = document.querySelector("#anamneseEditHistorico");
+    const anamneseEditDiabetes = document.querySelector("#anamneseEditDiabetes");
+    const anamneseEditHipertensao = document.querySelector("#anamneseEditHipertensao");
+    const anamneseEditCardiopatia = document.querySelector("#anamneseEditCardiopatia");
+    const anamneseEditGestante = document.querySelector("#anamneseEditGestante");
+    const anamneseEditSangramento = document.querySelector("#anamneseEditSangramento");
+    const anamneseEditSaveButton = document.querySelector("#anamneseEditSaveButton");
+    const anamneseEditCancelButton = document.querySelector("#anamneseEditCancelButton");
+    const anamneseFeedback = document.querySelector("#anamneseFeedback");
+    const exportPatientDataButton = document.querySelector("#exportPatientDataButton");
+    const dashboardAgendaList = document.querySelector("#dashboardAgendaList");
+    const dashboardAgendaEmpty = document.querySelector("#dashboardAgendaEmpty");
+    const dashboardAgendaCount = document.querySelector("#dashboardAgendaCount");
+    const dashboardFinanceiroPeriod = document.querySelector("#dashboardFinanceiroPeriod");
+    const dashboardFinanceiroTotal = document.querySelector("#dashboardFinanceiroTotal");
+    const dashboardFinanceiroEmpty = document.querySelector("#dashboardFinanceiroEmpty");
+    const dashboardFinanceiroList = document.querySelector("#dashboardFinanceiroList");
+    const agendaForm = document.querySelector("#agendaForm");
+    const agendaInicio = document.querySelector("#agendaInicio");
+    const agendaFim = document.querySelector("#agendaFim");
+    const agendaTipo = document.querySelector("#agendaTipo");
+    const agendaConfirmadoWhatsapp = document.querySelector("#agendaConfirmadoWhatsapp");
+    const agendaObservacoes = document.querySelector("#agendaObservacoes");
+    const agendaSubmitButton = document.querySelector("#agendaSubmitButton");
+    const agendaFeedback = document.querySelector("#agendaFeedback");
+    const agendaListEmpty = document.querySelector("#agendaListEmpty");
+    const agendaPatientList = document.querySelector("#agendaPatientList");
     const toothGrid = document.querySelector("#toothGrid");
     const faceGrid = document.querySelector("#faceGrid");
     const pediatricToggle = document.querySelector("#pediatricToggle");
@@ -2636,9 +3171,26 @@
     const treatmentPriceRule = document.querySelector("#treatmentPriceRule");
     const treatmentValue = document.querySelector("#treatmentValue");
     const treatmentStatus = document.querySelector("#treatmentStatus");
+    const treatmentUrgent = document.querySelector("#treatmentUrgent");
+    const treatmentAlreadyDone = document.querySelector("#treatmentAlreadyDone");
+    const treatmentExecutionDateField = document.querySelector("#treatmentExecutionDateField");
+    const treatmentExecutionDate = document.querySelector("#treatmentExecutionDate");
     const treatmentNotes = document.querySelector("#treatmentNotes");
     const procedureContextHint = document.querySelector("#procedureContextHint");
     const addTreatmentItem = document.querySelector("#addTreatmentItem");
+    const treatmentLayout = document.querySelector("#treatmentLayout");
+    const treatmentPlanBar = document.querySelector("#treatmentPlanBar");
+    const treatmentPlanStatusBadge = document.querySelector("#treatmentPlanStatusBadge");
+    const treatmentPlanOwnerNote = document.querySelector("#treatmentPlanOwnerNote");
+    const assumeTreatmentPlanButton = document.querySelector("#assumeTreatmentPlanButton");
+    const approveTreatmentPlanButton = document.querySelector("#approveTreatmentPlanButton");
+    const reopenTreatmentPlanButton = document.querySelector("#reopenTreatmentPlanButton");
+    const planApprovedNotice = document.querySelector("#planApprovedNotice");
+    const selectedToothCard = document.querySelector("#selectedToothCard");
+    const procedureCard = document.querySelector("#procedureCard");
+    const treatmentPlanChooser = document.querySelector("#treatmentPlanChooser");
+    const treatmentPlanList = document.querySelector("#treatmentPlanList");
+    const summaryTreatmentStatus = document.querySelector("#summaryTreatmentStatus");
     const quoteList = document.querySelector("#quoteList");
     const quoteItemsCount = document.querySelector("#quoteItemsCount");
     const quoteTotal = document.querySelector("#quoteTotal");
@@ -2653,7 +3205,13 @@
     const quoteActionStatus = document.querySelector("#quoteActionStatus");
     const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
     const patientTab = document.querySelector("#patientTab");
+    const orcamentosTab = document.querySelector("#orcamentosTab");
     const clinicTab = document.querySelector("#clinicTab");
+    const dashboardOrcamentosPendentesSummary = document.querySelector("#dashboardOrcamentosPendentesSummary");
+    const orcamentosPendentesCount = document.querySelector("#orcamentosPendentesCount");
+    const orcamentosPendentesEmpty = document.querySelector("#orcamentosPendentesEmpty");
+    const orcamentosPendentesList = document.querySelector("#orcamentosPendentesList");
+    const orcamentosFeedback = document.querySelector("#orcamentosFeedback");
     const procedureManagerSection = document.querySelector("#procedureManagerSection");
     const openProcedureManager = document.querySelector("#openProcedureManager");
     const focusProcedurePrices = document.querySelector("#focusProcedurePrices");
@@ -2678,10 +3236,25 @@
     let treatmentItems = [];
     let editingTreatmentIndex = null;
     let highlightedTreatmentIndex = null;
+    let patientTreatmentPlans = [];
+    let patientEnvios = [];
+    let currentPatientAnamnese = null;
+    let patientAgendamentos = [];
+    let dashboardAgenda = [];
+    let dashboardFinanceiroItems = [];
+    let dashboardFinanceiroPeriodFilter = "mes";
+    let dashboardOrcamentosPendentes = [];
+    let currentTreatmentPlan = null;
+    let treatmentPlanLocked = false;
+    let treatmentPlanOwnerLocked = false;
+    let treatmentSessionId = 0;
     let procedures = [];
     let priceRules = [];
     let procedureStorageMode = "local";
     let onboardingMode = "completo";
+    let loginMfaFactorId = null;
+    let mfaEnrollFactorId = null;
+    let mfaActiveFactorId = null;
 
     const defaultProcedures = [
       {
@@ -2845,7 +3418,33 @@
         return;
       }
 
+      await proceedPastAuth();
+    }
+
+    // Verifica se a sessão atual já cumpriu o segundo fator (aal2) quando o
+    // profissional tem um fator TOTP verificado. currentLevel !== nextLevel
+    // com nextLevel "aal2" é exatamente o sinal do Supabase de "fator
+    // verificado existe, mas esta sessão ainda não passou pelo desafio".
+    // Profissionais sem fator algum têm currentLevel === nextLevel sempre
+    // (ambos "aal1") e seguem direto, sem nenhuma tela nova.
+    async function proceedPastAuth() {
+      const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!error && data && data.currentLevel === "aal1" && data.nextLevel === "aal2") {
+        const challengeStarted = await prepareMfaLoginChallenge();
+        if (challengeStarted) return;
+      }
       await loadProfile();
+    }
+
+    async function prepareMfaLoginChallenge() {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      const factor = !error && data ? (data.totp || []).find((f) => f.status === "verified") : null;
+      if (!factor) return false;
+      loginMfaFactorId = factor.id;
+      mfaChallengeForm.reset();
+      clearStatus(mfaChallengeStatus);
+      showView("mfaChallenge");
+      return true;
     }
 
     async function loadProfile() {
@@ -2939,6 +3538,10 @@
       await loadProcedureCatalog();
       await loadConsultorioColegas();
       await loadPatients();
+      await loadDashboardAgenda();
+      await loadDashboardFinanceiro();
+      await loadDashboardOrcamentosPendentes();
+      await refreshMfaStatus();
       showDashboardTab("home");
       showView("dashboard");
     }
@@ -2962,7 +3565,7 @@
       if (!currentProfissional?.id || !currentConsultorio?.id) return;
       const { data, error } = await supabase
         .from("paciente_consultorios")
-        .select("pacientes(id, nome, telefone, email, cpf, data_nascimento, observacoes, criado_em, arquivado_em)")
+        .select("pacientes(id, nome, telefone, email, cpf, data_nascimento, observacoes, consentimento_whatsapp_em, criado_em, arquivado_em)")
         .eq("consultorio_id", currentConsultorio.id)
         .eq("ativo", true);
 
@@ -3003,6 +3606,7 @@
         consultorio_uuid: currentConsultorio.id
       });
 
+      if (selectedPatientId !== patientId) return;
       const linked = (error ? [] : data || []).filter((profissional) => profissional.id !== currentProfissional?.id);
 
       summarySharedList.innerHTML = linked.length
@@ -3023,6 +3627,661 @@
         shareColleagueSelect.disabled = false;
         sharePatientForm.querySelector("button").disabled = false;
       }
+    }
+
+    const PLAN_ITEM_COLUMNS = "id, plano_tratamento_id, procedimento_id, regra_preco_procedimento_id, numero_dente, faces_dente, procedimento_nome, regra_preco_nome, valor_estimado, valor_final, observacao, status, urgente, ordem, data_execucao, registrado_como_historico, criado_em";
+
+    async function loadPatientTreatmentPlans(patientId) {
+      if (!patientId || !currentConsultorio?.id) return;
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em, itens_plano_tratamento(${PLAN_ITEM_COLUMNS})`)
+        .eq("paciente_id", patientId)
+        .eq("consultorio_id", currentConsultorio.id)
+        .order("criado_em", { ascending: false });
+
+      if (selectedPatientId !== patientId) return;
+      patientTreatmentPlans = error ? [] : (data || []);
+      renderTreatmentStatusSummary();
+    }
+
+    function getOpenTreatmentPlans() {
+      return patientTreatmentPlans.filter((plan) => !["concluido", "cancelado"].includes(plan.status));
+    }
+
+    function getActiveItemsOfPlan(plan) {
+      return (plan.itens_plano_tratamento || []).filter((item) => item.status !== "cancelado");
+    }
+
+    async function loadPatientEnvios(patientId) {
+      if (!patientId) return;
+      const planIds = patientTreatmentPlans.map((plan) => plan.id);
+      if (!planIds.length) {
+        if (selectedPatientId === patientId) { patientEnvios = []; renderPatientEnvios(); }
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("envios_plano_tratamento")
+        .select("id, plano_tratamento_id, profissional_id, canal, valor_total, quantidade_itens, destinatario_telefone, criado_em")
+        .in("plano_tratamento_id", planIds)
+        .order("criado_em", { ascending: false })
+        .limit(20);
+
+      if (selectedPatientId !== patientId) return;
+      patientEnvios = error ? [] : (data || []);
+      renderPatientEnvios();
+    }
+
+    function renderPatientEnvios() {
+      if (!summaryEnviosList || !summaryEnviosEmpty) return;
+      if (!patientEnvios.length) {
+        summaryEnviosEmpty.hidden = false;
+        summaryEnviosList.hidden = true;
+        summaryEnviosList.innerHTML = "";
+        return;
+      }
+      summaryEnviosEmpty.hidden = true;
+      summaryEnviosList.hidden = false;
+      summaryEnviosList.innerHTML = patientEnvios.map((envio) => {
+        const canalLabel = envio.canal === "whatsapp" ? "WhatsApp" : "PDF";
+        const quando = new Date(envio.criado_em).toLocaleString("pt-BR");
+        const destinatario = envio.canal === "whatsapp" && envio.destinatario_telefone
+          ? ` · para ${escapeHtml(formatPhone(envio.destinatario_telefone))}`
+          : "";
+        return `
+        <li>
+          <span class="envio-canal">${canalLabel}</span>
+          <span class="muted">${envio.quantidade_itens} ${envio.quantidade_itens === 1 ? "item" : "itens"} · ${escapeHtml(formatCurrency(envio.valor_total))}${destinatario} · ${escapeHtml(quando)}</span>
+        </li>
+      `;
+      }).join("");
+    }
+
+    const AGENDA_COLUMNS = "id, paciente_id, consultorio_id, profissional_id, data_hora_inicio, data_hora_fim, tipo, status, observacoes, confirmado_por_whatsapp, criado_em";
+
+    function getAgendaStatusLabel(status) {
+      const labels = {
+        agendado: "Agendado",
+        confirmado: "Confirmado",
+        realizado: "Realizado",
+        cancelado: "Cancelado",
+        faltou: "Faltou"
+      };
+      return labels[status] || status;
+    }
+
+    function canEditAgendamento(agendamento) {
+      return agendamento.profissional_id === currentProfissional?.id;
+    }
+
+    function formatAgendaDate(iso) {
+      return new Date(iso).toLocaleDateString("pt-BR");
+    }
+
+    function formatAgendaTime(iso) {
+      return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function setAgendaFeedback(message, type = "success") {
+      if (!agendaFeedback) return;
+      agendaFeedback.className = `inline-feedback show ${type}`;
+      agendaFeedback.textContent = message;
+    }
+
+    function clearAgendaFeedback() {
+      if (!agendaFeedback) return;
+      agendaFeedback.className = "inline-feedback";
+      agendaFeedback.textContent = "";
+    }
+
+    // Guarda defensiva: mesmo com o CSS correto, se algum caminho futuro
+    // deixar o painel do paciente visível sem selectedPatientId (estado
+    // dessincronizado), estes botões não devem abrir nem enviar nada.
+    function setConsultationGuardFeedback(message) {
+      if (!consultationGuardFeedback) return;
+      consultationGuardFeedback.className = "inline-feedback show warning";
+      consultationGuardFeedback.textContent = message;
+    }
+
+    function clearConsultationGuardFeedback() {
+      if (!consultationGuardFeedback) return;
+      consultationGuardFeedback.className = "inline-feedback";
+      consultationGuardFeedback.textContent = "";
+    }
+
+    function resetAgendaSection() {
+      // Muda o paciente aberto: qualquer escrita assincrona de um agendamento
+      // do paciente anterior nao deve mais atualizar esta secao (guarda via
+      // selectedPatientId, igual aos outros carregadores desta ficha).
+      patientAgendamentos = [];
+      if (agendaForm) agendaForm.reset();
+      clearAgendaFeedback();
+      renderPatientAgendamentos();
+    }
+
+    async function loadDashboardAgenda() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const endWindow = new Date(startOfToday);
+      endWindow.setDate(endWindow.getDate() + 7);
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .select(AGENDA_COLUMNS)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id)
+        .neq("status", "cancelado")
+        .gte("data_hora_inicio", startOfToday.toISOString())
+        .lt("data_hora_inicio", endWindow.toISOString())
+        .order("data_hora_inicio", { ascending: true });
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      dashboardAgenda = error ? [] : (data || []);
+      renderDashboardAgenda();
+    }
+
+    function renderDashboardAgenda() {
+      if (!dashboardAgendaList || !dashboardAgendaEmpty) return;
+      if (!dashboardAgenda.length) {
+        dashboardAgendaList.hidden = true;
+        dashboardAgendaList.innerHTML = "";
+        dashboardAgendaEmpty.hidden = false;
+        dashboardAgendaCount.textContent = "0";
+        return;
+      }
+      dashboardAgendaEmpty.hidden = true;
+      dashboardAgendaList.hidden = false;
+      dashboardAgendaCount.textContent = String(dashboardAgenda.length);
+      dashboardAgendaList.innerHTML = dashboardAgenda.map((item) => {
+        const patient = currentPatients.find((candidate) => candidate.id === item.paciente_id);
+        const patientName = patient ? patient.nome : "Paciente";
+        return `
+        <li class="agenda-row">
+          <div class="agenda-row-time">
+            <strong>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</strong>
+            <span class="muted">${escapeHtml(formatAgendaTime(item.data_hora_inicio))}</span>
+          </div>
+          <button class="agenda-patient-link" type="button" data-open-agenda-patient="${escapeHtml(item.paciente_id)}">${escapeHtml(patientName)}</button>
+          <span class="muted">${escapeHtml(item.tipo || "—")}</span>
+          <span class="badge">${escapeHtml(getAgendaStatusLabel(item.status))}</span>
+          ${item.confirmado_por_whatsapp ? `<span class="badge">Confirmado via WhatsApp</span>` : ""}
+        </li>
+      `;
+      }).join("");
+    }
+
+    // Itens ganham consultorio_id/profissional_id so por heranca do plano
+    // (itens_plano_tratamento nao carrega essas colunas), por isso o escopo
+    // atual/profissional entra como filtro no plano, e os itens vem embutidos.
+    async function loadDashboardFinanceiro() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const profissionalAtLoad = currentProfissional.id;
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, consultorio_id, profissional_id, itens_plano_tratamento(${PLAN_ITEM_COLUMNS})`)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id);
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtLoad) return;
+      dashboardFinanceiroItems = error ? [] : (data || []).flatMap((plan) => plan.itens_plano_tratamento || []);
+      renderDashboardFinanceiro();
+    }
+
+    function isDateWithinFinanceiroPeriod(rawDate, period) {
+      if (period === "tudo") return true;
+      if (!rawDate) return false;
+      const date = new Date(rawDate.length === 10 ? `${rawDate}T00:00:00` : rawDate);
+      if (Number.isNaN(date.getTime())) return false;
+      const now = new Date();
+      if (period === "hoje") return date.toDateString() === now.toDateString();
+      if (period === "semana") {
+        const startOfWeek = new Date(now);
+        startOfWeek.setHours(0, 0, 0, 0);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        return date >= startOfWeek;
+      }
+      if (period === "mes") return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+      return true;
+    }
+
+    function renderDashboardFinanceiro() {
+      if (!dashboardFinanceiroList || !dashboardFinanceiroEmpty || !dashboardFinanceiroTotal) return;
+
+      const earned = dashboardFinanceiroItems.filter((row) =>
+        row.status === "realizado" && !row.registrado_como_historico
+        && isDateWithinFinanceiroPeriod(row.data_execucao ?? row.criado_em, dashboardFinanceiroPeriodFilter)
+      );
+
+      const groups = new Map();
+      for (const row of earned) {
+        const nome = row.procedimento_nome || "Procedimento";
+        const valor = Number(row.valor_final ?? row.valor_estimado ?? 0);
+        const entry = groups.get(nome) || { nome, quantidade: 0, total: 0 };
+        entry.quantidade += 1;
+        entry.total += valor;
+        groups.set(nome, entry);
+      }
+      const grupos = [...groups.values()].sort((a, b) => b.total - a.total);
+      const totalGeral = grupos.reduce((soma, grupo) => soma + grupo.total, 0);
+
+      dashboardFinanceiroTotal.textContent = formatCurrency(totalGeral);
+
+      if (!grupos.length) {
+        dashboardFinanceiroList.hidden = true;
+        dashboardFinanceiroList.innerHTML = "";
+        dashboardFinanceiroEmpty.hidden = false;
+        return;
+      }
+      dashboardFinanceiroEmpty.hidden = true;
+      dashboardFinanceiroList.hidden = false;
+      dashboardFinanceiroList.innerHTML = grupos.map((grupo) => `
+        <li>
+          <strong>${escapeHtml(grupo.nome)}</strong>
+          <span class="muted">${grupo.quantidade} ${grupo.quantidade === 1 ? "item" : "itens"}</span>
+          <span class="badge">${escapeHtml(formatCurrency(grupo.total))}</span>
+        </li>
+      `).join("");
+    }
+
+    // "Orçamento pendente" = plano ainda em rascunho (nunca aprovado, nunca
+    // cancelado - o filtro de status já exclui os dois) que já foi enviado ao
+    // paciente ao menos uma vez. Um rascunho que nunca foi enviado ainda é
+    // trabalho em elaboração do dentista, não está "aguardando resposta" de
+    // ninguém, então fica de fora desta lista.
+    async function loadDashboardOrcamentosPendentes() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const profissionalAtLoad = currentProfissional.id;
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, valor_total_estimado, criado_em, envios_plano_tratamento(id, canal, criado_em)`)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id)
+        .eq("status", "rascunho");
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtLoad) return;
+
+      const planos = error ? [] : (data || []);
+      dashboardOrcamentosPendentes = planos.filter((plano) => (plano.envios_plano_tratamento || []).length > 0);
+      renderDashboardOrcamentosPendentes();
+    }
+
+    // Resume os envios de um plano em uma linha curta. Quando o(s) envio(s)
+    // mais recente(s) aconteceram no mesmo dia (ex.: gerou o PDF e depois já
+    // mandou pelo WhatsApp na sequência), junta os canais numa frase só -
+    // "Enviado em dd/mm/aaaa via PDF e WhatsApp" - em vez de uma linha por
+    // canal, que ficaria repetitivo para o caso mais comum.
+    function summarizeOrcamentoEnvios(envios) {
+      if (!envios || !envios.length) return "Nunca enviado";
+      const ordenados = [...envios].sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+      const diaMaisRecente = new Date(ordenados[0].criado_em).toDateString();
+      const canaisNoDia = new Set();
+      for (const envio of ordenados) {
+        if (new Date(envio.criado_em).toDateString() !== diaMaisRecente) break;
+        canaisNoDia.add(envio.canal);
+      }
+      const canalLabels = ["pdf", "whatsapp"].filter((canal) => canaisNoDia.has(canal)).map((canal) => (canal === "whatsapp" ? "WhatsApp" : "PDF"));
+      const quando = new Date(ordenados[0].criado_em).toLocaleDateString("pt-BR");
+      return `Enviado em ${quando} via ${canalLabels.join(" e ")}`;
+    }
+
+    function setOrcamentosFeedback(message, type = "success") {
+      if (!orcamentosFeedback) return;
+      orcamentosFeedback.className = `inline-feedback show ${type}`;
+      orcamentosFeedback.textContent = message;
+    }
+
+    function clearOrcamentosFeedback() {
+      if (!orcamentosFeedback) return;
+      orcamentosFeedback.className = "inline-feedback";
+      orcamentosFeedback.textContent = "";
+    }
+
+    function renderDashboardOrcamentosPendentes() {
+      if (dashboardOrcamentosPendentesSummary) {
+        dashboardOrcamentosPendentesSummary.textContent = dashboardOrcamentosPendentes.length
+          ? `${dashboardOrcamentosPendentes.length} pendente${dashboardOrcamentosPendentes.length === 1 ? "" : "s"}`
+          : "Nenhum pendente";
+      }
+      if (!orcamentosPendentesList || !orcamentosPendentesEmpty || !orcamentosPendentesCount) return;
+      orcamentosPendentesCount.textContent = String(dashboardOrcamentosPendentes.length);
+
+      if (!dashboardOrcamentosPendentes.length) {
+        orcamentosPendentesList.hidden = true;
+        orcamentosPendentesList.innerHTML = "";
+        orcamentosPendentesEmpty.hidden = false;
+        return;
+      }
+      orcamentosPendentesEmpty.hidden = true;
+      orcamentosPendentesList.hidden = false;
+      const ordenados = [...dashboardOrcamentosPendentes].sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+      orcamentosPendentesList.innerHTML = ordenados.map((plano) => {
+        const paciente = currentPatients.find((candidate) => candidate.id === plano.paciente_id);
+        const patientName = paciente ? paciente.nome : "Paciente";
+        return `
+        <li>
+          <button class="agenda-patient-link" type="button" data-open-orcamento-patient="${escapeHtml(plano.paciente_id)}">${escapeHtml(patientName)}</button>
+          <span class="muted">${escapeHtml(summarizeOrcamentoEnvios(plano.envios_plano_tratamento))}</span>
+          <span class="badge">${escapeHtml(formatCurrency(plano.valor_total_estimado))}</span>
+          <button class="mini-button" type="button" data-approve-orcamento-plano="${escapeHtml(plano.id)}">Marcar como aprovado</button>
+        </li>
+      `;
+      }).join("");
+    }
+
+    async function loadPatientAgendamentos(patientId) {
+      if (!patientId || !currentConsultorio?.id) return;
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .select(AGENDA_COLUMNS)
+        .eq("paciente_id", patientId)
+        .eq("consultorio_id", currentConsultorio.id)
+        .order("data_hora_inicio", { ascending: false });
+
+      if (selectedPatientId !== patientId) return;
+      patientAgendamentos = error ? [] : (data || []);
+      renderPatientAgendamentos();
+    }
+
+    function renderPatientAgendamentos() {
+      if (!agendaPatientList || !agendaListEmpty) return;
+      if (!patientAgendamentos.length) {
+        agendaPatientList.hidden = true;
+        agendaPatientList.innerHTML = "";
+        agendaListEmpty.hidden = false;
+        return;
+      }
+      agendaListEmpty.hidden = true;
+      agendaPatientList.hidden = false;
+      agendaPatientList.innerHTML = patientAgendamentos.map((item) => {
+        const isOwner = canEditAgendamento(item);
+        const ownerNote = isOwner ? "" : ` · ${escapeHtml(consultorioColegas.find((colega) => colega.id === item.profissional_id)?.nome || "outro profissional")}`;
+        const fimLabel = item.data_hora_fim ? ` – ${escapeHtml(formatAgendaTime(item.data_hora_fim))}` : "";
+        return `
+        <li data-agenda-id="${escapeHtml(item.id)}">
+          <div class="agenda-row-time">
+            <strong>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</strong>
+            <span class="muted">${escapeHtml(formatAgendaTime(item.data_hora_inicio))}${fimLabel}</span>
+          </div>
+          <span class="muted">${escapeHtml(item.tipo || "—")}${ownerNote}</span>
+          <select data-agenda-status="${escapeHtml(item.id)}" ${isOwner ? "" : "disabled"}>
+            <option value="agendado" ${item.status === "agendado" ? "selected" : ""}>Agendado</option>
+            <option value="confirmado" ${item.status === "confirmado" ? "selected" : ""}>Confirmado</option>
+            <option value="realizado" ${item.status === "realizado" ? "selected" : ""}>Realizado</option>
+            <option value="cancelado" ${item.status === "cancelado" ? "selected" : ""}>Cancelado</option>
+            <option value="faltou" ${item.status === "faltou" ? "selected" : ""}>Faltou</option>
+          </select>
+          ${item.confirmado_por_whatsapp ? `<span class="badge">Confirmado via WhatsApp</span>` : ""}
+          ${item.observacoes ? `<span class="muted">${escapeHtml(item.observacoes)}</span>` : ""}
+          <button class="mini-button" type="button" data-agenda-cancel="${escapeHtml(item.id)}" ${isOwner && item.status !== "cancelado" ? "" : "disabled"}>Cancelar</button>
+        </li>
+      `;
+      }).join("");
+    }
+
+    async function logEnvioOrcamento(canal, extra = {}) {
+      if (!currentTreatmentPlan?.id || !currentProfissional?.id) return;
+      const total = treatmentItems.reduce((sum, item) => sum + item.value, 0);
+      const payload = {
+        plano_tratamento_id: currentTreatmentPlan.id,
+        profissional_id: currentProfissional.id,
+        canal,
+        valor_total: total,
+        quantidade_itens: treatmentItems.length,
+        item_ids: treatmentItems.map((item) => item.dbId).filter(Boolean),
+        ...extra
+      };
+
+      const { data, error } = await supabase
+        .from("envios_plano_tratamento")
+        .insert(payload)
+        .select("id, plano_tratamento_id, profissional_id, canal, valor_total, quantidade_itens, destinatario_telefone, criado_em")
+        .single();
+
+      if (error) return;
+      if (currentTreatmentPlan.paciente_id === selectedPatientId) {
+        patientEnvios.unshift(data);
+        renderPatientEnvios();
+      }
+    }
+
+    function renderTreatmentStatusSummary() {
+      if (!summaryTreatmentStatus) return;
+      if (!patientTreatmentPlans.length) {
+        summaryTreatmentStatus.textContent = "Ainda sem tratamento ativo. Aqui entram procedimentos planejados, status e orçamento.";
+        return;
+      }
+      const openPlans = getOpenTreatmentPlans();
+      if (!openPlans.length) {
+        summaryTreatmentStatus.textContent = `${patientTreatmentPlans.length} ${patientTreatmentPlans.length === 1 ? "plano" : "planos"} no histórico, nenhum em aberto no momento.`;
+        return;
+      }
+      const totalItems = openPlans.reduce((sum, plan) => sum + getActiveItemsOfPlan(plan).length, 0);
+      summaryTreatmentStatus.textContent = `${openPlans.length} ${openPlans.length === 1 ? "plano em aberto" : "planos em aberto"} · ${totalItems} ${totalItems === 1 ? "procedimento planejado" : "procedimentos planejados"}.`;
+    }
+
+    function getPlanStatusLabel(status) {
+      const labels = {
+        rascunho: "Rascunho",
+        apresentado: "Apresentado",
+        aprovado_parcial: "Aprovado parcialmente",
+        aprovado: "Aprovado",
+        em_execucao: "Em execução",
+        concluido: "Concluído",
+        cancelado: "Cancelado",
+        substituido: "Substituído"
+      };
+      return labels[status] || status;
+    }
+
+    function getItemStatusLabel(status) {
+      const labels = {
+        planejado: "Planejado",
+        aprovado: "Aprovado",
+        em_andamento: "Em andamento",
+        realizado: "Realizado",
+        cancelado: "Cancelado"
+      };
+      return labels[status] || status;
+    }
+
+    function todayIsoDate() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function nextOrdemForPlan(plan) {
+      const existing = (plan?.itens_plano_tratamento || []).map((row) => row.ordem || 0);
+      return existing.length ? Math.max(...existing) + 1 : 1;
+    }
+
+    async function syncPlanTotal(plan) {
+      if (!plan) return;
+      const total = (plan.itens_plano_tratamento || [])
+        .filter((row) => row.status !== "cancelado")
+        .reduce((sum, row) => sum + Number(row.valor_final ?? row.valor_estimado ?? 0), 0);
+      const { error } = await supabase.from("planos_tratamento").update({ valor_total_estimado: total }).eq("id", plan.id);
+      if (!error) plan.valor_total_estimado = total;
+    }
+
+    async function refreshCurrentPlanOwnership() {
+      if (!currentTreatmentPlan) return;
+      const { data } = await supabase
+        .from("planos_tratamento")
+        .select("id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em")
+        .eq("id", currentTreatmentPlan.id)
+        .maybeSingle();
+      if (!data) return;
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+    }
+
+    function mapDbItemToUiItem(row) {
+      const faces = Array.isArray(row.faces_dente) ? row.faces_dente : [];
+      return {
+        dbId: row.id,
+        ordem: row.ordem || 1,
+        tooth: row.numero_dente || "",
+        faces,
+        face: faces.length ? faces.join(", ") : "geral",
+        procedure: row.procedimento_nome,
+        procedureId: row.procedimento_id || "",
+        priceRuleId: row.regra_preco_procedimento_id || "",
+        priceRuleName: row.regra_preco_nome || "Valor manual",
+        value: Number(row.valor_final ?? row.valor_estimado ?? 0),
+        status: row.status || "planejado",
+        urgente: Boolean(row.urgente),
+        notes: row.observacao || "",
+        dataExecucao: row.data_execucao || null,
+        registradoComoHistorico: Boolean(row.registrado_como_historico),
+        criadoEm: row.criado_em || null
+      };
+    }
+
+    function canEditCurrentPlan() {
+      if (!currentTreatmentPlan) return true;
+      return currentTreatmentPlan.profissional_id === currentProfissional?.id;
+    }
+
+    // Unica transicao de planos_tratamento.status coberta hoje: rascunho <->
+    // aprovado (ver approveTreatmentPlanButton/reopenTreatmentPlanButton).
+    // Qualquer outro valor da constraint (apresentado, aprovado_parcial,
+    // em_execucao, concluido, cancelado, substituido) ainda nao tem fluxo no
+    // app, então "aprovado" aqui é tratado como "não é mais rascunho".
+    function isCurrentPlanApproved() {
+      return Boolean(currentTreatmentPlan && currentTreatmentPlan.status !== "rascunho");
+    }
+
+    function renderTreatmentPlanBar() {
+      if (!currentTreatmentPlan) {
+        treatmentPlanBar.hidden = true;
+        treatmentPlanLocked = false;
+        treatmentPlanOwnerLocked = false;
+        selectedToothCard.hidden = false;
+        procedureCard.hidden = false;
+        planApprovedNotice.hidden = true;
+      } else {
+        treatmentPlanBar.hidden = false;
+        treatmentPlanStatusBadge.textContent = getPlanStatusLabel(currentTreatmentPlan.status);
+        const isOwner = canEditCurrentPlan();
+        const isApproved = isCurrentPlanApproved();
+        treatmentPlanOwnerLocked = !isOwner;
+        // Trava a montagem (form de novo item + editar/excluir de cada item)
+        // tanto por dono quanto por aprovação: uma vez aprovado, nem o próprio
+        // dono monta mais itens por ali - o checklist de andamento (gate por
+        // treatmentPlanOwnerLocked, não por isso) passa a ser o único controle.
+        treatmentPlanLocked = !isOwner || isApproved;
+        if (isOwner) {
+          treatmentPlanOwnerNote.textContent = "";
+          assumeTreatmentPlanButton.hidden = true;
+        } else {
+          const ownerName = consultorioColegas.find((colega) => colega.id === currentTreatmentPlan.profissional_id)?.nome || "outro profissional do consultório";
+          treatmentPlanOwnerNote.textContent = `Plano conduzido por ${ownerName}. Assuma para editar.`;
+          assumeTreatmentPlanButton.hidden = false;
+        }
+        approveTreatmentPlanButton.hidden = isApproved;
+        approveTreatmentPlanButton.disabled = !isOwner;
+        reopenTreatmentPlanButton.hidden = !isApproved;
+        reopenTreatmentPlanButton.disabled = !isOwner;
+        selectedToothCard.hidden = isApproved;
+        procedureCard.hidden = isApproved;
+        planApprovedNotice.hidden = !isApproved;
+      }
+      // Sempre reavalia os botões de ação, mesmo sem plano atual: evita o botão
+      // "Adicionar ao plano" ficar travado com o treatmentPlanLocked de um plano
+      // bloqueado que acabou de sair de cena (troca de paciente/fluxo).
+      renderProcedureOptions(treatmentProcedure.value);
+      renderQuote();
+    }
+
+    function renderTreatmentPlanChooser(plans) {
+      treatmentPlanChooser.hidden = false;
+      treatmentLayout.hidden = true;
+      treatmentPlanBar.hidden = true;
+      treatmentPlanList.innerHTML = plans.map((plan) => {
+        const itemCount = getActiveItemsOfPlan(plan).length;
+        return `
+        <button class="mini-button treatment-plan-option" type="button" data-plan-id="${plan.id}">
+          <strong>${escapeHtml(plan.titulo || "Plano de tratamento")}</strong>
+          <span class="muted">${escapeHtml(getPlanStatusLabel(plan.status))} · ${itemCount} ${itemCount === 1 ? "item" : "itens"}${plan.profissional_id !== currentProfissional?.id ? " · de outro profissional" : ""}</span>
+        </button>
+      `;
+      }).join("");
+    }
+
+    function selectTreatmentPlan(plan) {
+      currentTreatmentPlan = plan;
+      treatmentPlanChooser.hidden = true;
+      treatmentLayout.hidden = false;
+      const items = getActiveItemsOfPlan(plan)
+        .slice()
+        .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+        .map(mapDbItemToUiItem);
+      resetTreatmentDraft(items);
+      renderTreatmentPlanBar();
+    }
+
+    async function ensureTreatmentPlan() {
+      if (currentTreatmentPlan) return currentTreatmentPlan;
+      if (!selectedPatientId || !currentConsultorio?.id || !currentProfissional?.id) return null;
+
+      const sessionAtStart = treatmentSessionId;
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .insert({
+          paciente_id: selectedPatientId,
+          consultorio_id: currentConsultorio.id,
+          profissional_id: currentProfissional.id,
+          titulo: "Plano de tratamento",
+          status: "rascunho"
+        })
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível criar o plano de tratamento.", "warning");
+        return null;
+      }
+      // Se o dentista já trocou de paciente/fluxo enquanto o insert estava em
+      // voo, o plano foi criado corretamente no banco, mas não deve mais ser
+      // amarrado ao estado da tela atual (evita vazar plano de outro contexto).
+      if (sessionAtStart !== treatmentSessionId) return null;
+
+      currentTreatmentPlan = { ...data, itens_plano_tratamento: [] };
+      patientTreatmentPlans.unshift(currentTreatmentPlan);
+      renderTreatmentPlanBar();
+      renderTreatmentStatusSummary();
+      return currentTreatmentPlan;
+    }
+
+    async function openContinueTreatmentFlow() {
+      currentTreatmentPlan = null;
+      const openPlans = getOpenTreatmentPlans();
+
+      if (!openPlans.length) {
+        treatmentPlanChooser.hidden = true;
+        treatmentLayout.hidden = false;
+        resetTreatmentDraft();
+        renderTreatmentPlanBar();
+        setTreatmentFeedback('Nenhum plano em aberto para este paciente. Use "Nova consulta" para começar um novo.', "warning");
+        return;
+      }
+
+      if (openPlans.length === 1) {
+        selectTreatmentPlan(openPlans[0]);
+        return;
+      }
+
+      renderTreatmentPlanChooser(openPlans);
     }
 
     function renderPatientList() {
@@ -3099,39 +4358,73 @@
       document.querySelector("#summaryPatientEmail").textContent = patient.email || "-";
       document.querySelector("#summaryPatientCpf").textContent = formatCpf(patient.cpf || "") || "-";
       document.querySelector("#summaryPatientNotes").textContent = patient.observacoes || "Sem observações administrativas.";
+      renderWhatsappConsent(patient);
       document.querySelector("#summaryAnamneseStatus").textContent = "Verificando anamnese...";
       document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
       patientSummary.classList.remove("details-open");
+      clearConsultationGuardFeedback();
       togglePatientDetails.disabled = false;
       togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
       document.querySelectorAll("[data-consultation-action]").forEach((button) => button.classList.remove("active"));
+      currentTreatmentPlan = null;
+      treatmentPlanChooser.hidden = true;
+      treatmentLayout.hidden = false;
       resetTreatmentDraft();
+      renderTreatmentPlanBar();
+      patientEnvios = [];
+      renderPatientEnvios();
+      resetAgendaSection();
+      resetAnamneseEditSection();
       await loadPatientAnamnese(patient.id);
       await loadPatientSharing(patient.id);
+      await loadPatientTreatmentPlans(patient.id);
+      await loadPatientEnvios(patient.id);
+      await loadPatientAgendamentos(patient.id);
       patientSummary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    async function loadPatientAnamnese(patientId) {
-      const { data, error } = await supabase
-        .from("anamneses")
-        .select("queixa_principal, alergias, medicamentos_uso_continuo, historico_medico, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, preenchida_em, atualizado_em")
-        .eq("paciente_id", patientId)
-        .order("preenchida_em", { ascending: false, nullsFirst: false })
-        .limit(1)
-        .maybeSingle();
+    const ANAMNESE_SUMMARY_COLUMNS = "id, queixa_principal, alergias, medicamentos_uso_continuo, historico_medico, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, preenchida_em, atualizado_em";
 
-      if (error) {
-        document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
-        document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
-        return;
-      }
+    function resetAnamneseEditSection() {
+      // Muda o paciente aberto: fecha e limpa o formulario de edicao de
+      // anamnese para nao vazar rascunho de um paciente para outro (mesma
+      // guarda de selectedPatientId usada pelos outros carregadores desta
+      // ficha).
+      currentPatientAnamnese = null;
+      anamneseEditForm.classList.remove("active");
+      anamneseEditForm.reset();
+      clearAnamneseFeedback();
+    }
 
+    function fillAnamneseEditForm(data) {
+      anamneseEditQueixa.value = data?.queixa_principal || "";
+      anamneseEditAlergias.value = data?.alergias || "";
+      anamneseEditMedicamentos.value = data?.medicamentos_uso_continuo || "";
+      anamneseEditHistorico.value = data?.historico_medico || "";
+      anamneseEditDiabetes.checked = Boolean(data?.possui_diabetes);
+      anamneseEditHipertensao.checked = Boolean(data?.possui_hipertensao);
+      anamneseEditCardiopatia.checked = Boolean(data?.possui_cardiopatia);
+      anamneseEditGestante.checked = Boolean(data?.gestante);
+      anamneseEditSangramento.checked = Boolean(data?.sangramento_excessivo);
+    }
+
+    function setAnamneseFeedback(message, type = "success") {
+      anamneseFeedback.className = `inline-feedback show ${type}`;
+      anamneseFeedback.textContent = message;
+    }
+
+    function clearAnamneseFeedback() {
+      anamneseFeedback.className = "inline-feedback";
+      anamneseFeedback.textContent = "";
+    }
+
+    function renderAnamneseSummary(data) {
       if (!data) {
         document.querySelector("#summaryAnamneseStatus").textContent = "Sem anamnese cadastrada";
-        document.querySelector("#summaryAnamneseDetails").textContent = "Se o dentista quiser preencher depois, isso deve ficar em Meu consultório > Pacientes > Anamnese.";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Use o botão \"Editar anamnese\" logo abaixo para registrar agora.";
         return;
       }
 
@@ -3153,6 +4446,60 @@
       document.querySelector("#summaryAnamneseDetails").textContent = details.length
         ? details.join(" · ")
         : "Anamnese existe, mas sem observações de destaque.";
+    }
+
+    async function loadPatientAnamnese(patientId) {
+      const { data, error } = await supabase
+        .from("anamneses")
+        .select(ANAMNESE_SUMMARY_COLUMNS)
+        .eq("paciente_id", patientId)
+        .order("preenchida_em", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (selectedPatientId !== patientId) return;
+      if (error) {
+        currentPatientAnamnese = null;
+        document.querySelector("#summaryAnamneseStatus").textContent = "Não foi possível carregar a anamnese";
+        document.querySelector("#summaryAnamneseDetails").textContent = "Tente abrir a ficha novamente.";
+        return;
+      }
+
+      currentPatientAnamnese = data;
+      renderAnamneseSummary(data);
+    }
+
+    function renderWhatsappConsent(patient) {
+      whatsappConsentCheckbox.disabled = false;
+      whatsappConsentCheckbox.checked = Boolean(patient.consentimento_whatsapp_em);
+      whatsappConsentDate.textContent = patient.consentimento_whatsapp_em
+        ? `Consentiu em ${new Date(patient.consentimento_whatsapp_em).toLocaleDateString("pt-BR")}`
+        : "";
+    }
+
+    async function handleWhatsappConsentChange() {
+      const patient = getSelectedPatient();
+      if (!patient) return;
+      const patientId = patient.id;
+      const previousValue = patient.consentimento_whatsapp_em;
+      const novoValor = whatsappConsentCheckbox.checked ? new Date().toISOString() : null;
+      whatsappConsentCheckbox.disabled = true;
+
+      const { error } = await supabase
+        .from("pacientes")
+        .update({ consentimento_whatsapp_em: novoValor })
+        .eq("id", patientId);
+
+      if (error) {
+        if (selectedPatientId === patientId) {
+          whatsappConsentCheckbox.disabled = false;
+          whatsappConsentCheckbox.checked = Boolean(previousValue);
+        }
+        return;
+      }
+
+      patient.consentimento_whatsapp_em = novoValor;
+      if (selectedPatientId === patientId) renderWhatsappConsent(patient);
     }
 
     function escapeHtml(value) {
@@ -3201,9 +4548,11 @@
     function showDashboardTab(name) {
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
+      orcamentosTab.classList.toggle("active", name === "orcamentos");
       clinicTab.classList.toggle("active", name === "clinic");
       if (name === "home") setActiveNav(".nav-item[data-open-home]", "Dashboard");
       if (name === "patient") setActiveNav(".nav-item[data-open-patient]", "Pacientes");
+      if (name === "orcamentos") setActiveNav(".nav-item[data-open-orcamentos]", "Orçamentos");
       if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
     }
 
@@ -3327,7 +4676,7 @@
         return;
       }
 
-      addTreatmentItem.disabled = false;
+      addTreatmentItem.disabled = treatmentPlanLocked;
       treatmentProcedure.innerHTML = available.map((procedure) => `
         <option value="${escapeHtml(procedure.id)}">${escapeHtml(procedure.nome)}</option>
       `).join("");
@@ -3545,25 +4894,32 @@
       setProcedureStatus(statusMessage, statusType);
     }
 
-    function resetTreatmentDraft() {
+    function resetTreatmentDraft(items = []) {
+      // Muda o contexto do rascunho (novo paciente, novo fluxo, novo plano
+      // escolhido): qualquer escrita assíncrona iniciada antes disso (criar
+      // plano, adicionar/editar/excluir item, assumir plano) passa a ser
+      // considerada obsoleta e não deve mais alterar o estado desta tela.
+      treatmentSessionId += 1;
       selectedTooth = "";
       selectedFaces = [];
-      treatmentItems = [];
+      treatmentItems = items;
       editingTreatmentIndex = null;
       highlightedTreatmentIndex = null;
       selectedToothLabel.textContent = "--";
       toothGrid.querySelectorAll(".tooth-node").forEach((button) => {
-        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi", "has-plan", "has-care", "has-urgent");
+        button.classList.remove("active", "face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi", "has-plan", "has-care", "has-urgent", "has-history");
       });
       faceGrid.querySelectorAll(".face-button").forEach((button) => button.classList.remove("active"));
       renderSelectedToothSummary();
-      renderProcedureOptions();
       treatmentNotes.value = "";
-      treatmentStatus.value = "planned";
+      treatmentStatus.value = "planejado";
+      treatmentUrgent.checked = false;
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       addTreatmentItem.textContent = "Adicionar ao plano";
       clearTreatmentFeedback();
       clearQuoteAction();
-      renderQuote();
     }
 
     function setTreatmentFeedback(message, type = "success") {
@@ -3592,17 +4948,25 @@
       return `face-${String(face || "").toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
     }
 
-    function getTreatmentVisualStatus(item) {
-      return item.status || "planned";
-    }
-
-    function getStatusLabel(status) {
-      const labels = { planned: "Planejado", care: "Em tratamento", urgent: "Urgente" };
-      return labels[status] || labels.planned;
-    }
-
     function getToothItems(tooth) {
       return treatmentItems.filter((item) => item.tooth === tooth);
+    }
+
+    function getToothHistory(tooth) {
+      if (!tooth) return [];
+      const currentIds = new Set(treatmentItems.filter((item) => item.dbId).map((item) => item.dbId));
+      return patientTreatmentPlans
+        .flatMap((plan) => plan.itens_plano_tratamento || [])
+        .filter((row) => row.numero_dente === tooth && row.status !== "cancelado" && !currentIds.has(row.id))
+        .map(mapDbItemToUiItem)
+        .sort((a, b) => new Date(a.dataExecucao || a.criadoEm || 0) - new Date(b.dataExecucao || b.criadoEm || 0));
+    }
+
+    function formatItemDate(item) {
+      const raw = item.dataExecucao || item.criadoEm;
+      if (!raw) return "data não informada";
+      const date = new Date(raw.length === 10 ? `${raw}T00:00:00` : raw);
+      return date.toLocaleDateString("pt-BR");
     }
 
     function renderSelectedToothSummary() {
@@ -3615,34 +4979,53 @@
       }
 
       const items = getToothItems(selectedTooth);
-      if (!items.length) {
-        selectedToothSummary.innerHTML = `
+      const history = getToothHistory(selectedTooth);
+
+      const currentBlock = items.length
+        ? `
+          <strong>Dente ${escapeHtml(selectedTooth)} · ${items.length} ${items.length === 1 ? "procedimento" : "procedimentos"} nesta consulta</strong>
+          <ul>
+            ${items.map((item) => `<li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")}</li>`).join("")}
+          </ul>
+        `
+        : `
           <strong>Dente ${escapeHtml(selectedTooth)}</strong>
           <span class="muted">Sem procedimento planejado nesta consulta.</span>
         `;
-        return;
-      }
 
-      selectedToothSummary.innerHTML = `
-        <strong>Dente ${escapeHtml(selectedTooth)} · ${items.length} ${items.length === 1 ? "procedimento" : "procedimentos"}</strong>
-        <ul>
-          ${items.map((item) => `
-            <li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")}</li>
-          `).join("")}
-        </ul>
-      `;
+      const historyBlock = history.length
+        ? `
+          <div class="tooth-history">
+            <span class="muted">Histórico anterior neste dente:</span>
+            <ul>
+              ${history.map((item) => `
+                <li>${escapeHtml(item.procedure)} · Face ${escapeHtml(item.face || "geral")} · ${escapeHtml(getItemStatusLabel(item.status))} · ${escapeHtml(formatItemDate(item))}</li>
+              `).join("")}
+            </ul>
+          </div>
+        `
+        : "";
+
+      selectedToothSummary.innerHTML = currentBlock + historyBlock;
     }
 
     function updateSelectedToothVisual() {
       const faceClasses = ["face-v", "face-lp", "face-m", "face-d", "face-o", "face-raiz", "face-multi"];
-      const statusClasses = ["has-plan", "has-care", "has-urgent"];
+      const statusClasses = ["has-plan", "has-care", "has-urgent", "has-history"];
+      const currentIds = new Set(treatmentItems.filter((item) => item.dbId).map((item) => item.dbId));
+      const historicalToothSet = new Set(
+        patientTreatmentPlans
+          .flatMap((plan) => plan.itens_plano_tratamento || [])
+          .filter((row) => row.numero_dente && row.status !== "cancelado" && !currentIds.has(row.id))
+          .map((row) => row.numero_dente)
+      );
       toothGrid.querySelectorAll(".tooth-node").forEach((node) => {
         const isActive = node.dataset.tooth === selectedTooth;
         const plannedItems = getToothItems(node.dataset.tooth);
         const plannedFaces = plannedItems.flatMap((item) => Array.isArray(item.faces) ? item.faces : []);
         const visualFaces = isActive && selectedFaces.length ? selectedFaces : plannedFaces;
-        const hasUrgent = plannedItems.some((item) => getTreatmentVisualStatus(item) === "urgent");
-        const hasCare = plannedItems.some((item) => getTreatmentVisualStatus(item) === "care");
+        const hasUrgent = plannedItems.some((item) => item.urgente);
+        const hasCare = plannedItems.some((item) => item.status === "em_andamento");
         node.classList.toggle("active", isActive);
         node.classList.remove(...faceClasses);
         node.classList.remove(...statusClasses);
@@ -3650,6 +5033,8 @@
           node.classList.add("has-plan");
           if (hasCare) node.classList.add("has-care");
           if (hasUrgent) node.classList.add("has-urgent");
+        } else if (historicalToothSet.has(node.dataset.tooth)) {
+          node.classList.add("has-history");
         }
         visualFaces.forEach((face) => node.classList.add(faceClass(face)));
         if (visualFaces.length > 1) node.classList.add("face-multi");
@@ -3789,6 +5174,37 @@
       `;
     }
 
+    // Checklist rápido de andamento (Pendente/Iniciado/Feito) para marcar
+    // progresso durante a execução, sem abrir o formulário completo de edição
+    // (que tem campos de procedimento/dente/face pensados para MONTAR o plano,
+    // não para checar o que já foi feito). "Pendente" agrupa os dois status de
+    // pré-execução (planejado/aprovado); ver renderItemStatusToggle e o
+    // listener de clique em treatmentPlanRows para a lógica de reversão.
+    //
+    // Só é chamada (ver renderQuote) quando o plano já saiu de "rascunho": não
+    // há andamento de execução para checar antes de o paciente aprovar o
+    // plano, então enquanto rascunho a coluna mostra um badge simples no
+    // lugar deste controle. O gate aqui é só por dono (treatmentPlanOwnerLocked),
+    // não por treatmentPlanLocked: este é justamente o controle que continua
+    // ativo para o dono depois que a montagem normal do plano é travada.
+    function renderItemStatusToggle(item, index) {
+      const isPendente = item.status === "planejado" || item.status === "aprovado";
+      const isIniciado = item.status === "em_andamento";
+      const isFeito = item.status === "realizado";
+      const segments = [
+        ["pendente", "Pendente", isPendente],
+        ["iniciado", "Iniciado", isIniciado],
+        ["feito", "Feito", isFeito]
+      ];
+      return `
+        <div class="status-toggle" role="group" aria-label="Andamento do procedimento">
+          ${segments.map(([value, label, active]) => `
+            <button class="status-toggle-btn${active ? " active" : ""}" type="button" data-status-toggle="${value}" data-item-index="${index}" ${(treatmentPlanOwnerLocked || active) ? "disabled" : ""}>${label}</button>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function renderQuote() {
       quoteItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
       planItemsCount.textContent = `${treatmentItems.length} ${treatmentItems.length === 1 ? "item" : "itens"}`;
@@ -3817,12 +5233,15 @@
             ${item.notes ? `<div class="muted">${escapeHtml(item.notes)}</div>` : ""}
           </td>
           <td>${escapeHtml(formatCurrency(item.value))}</td>
-          <td><span class="badge">${getStatusLabel(getTreatmentVisualStatus(item))}</span></td>
           <td>
-            <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento">
+            ${isCurrentPlanApproved() ? renderItemStatusToggle(item, index) : `<span class="badge">${escapeHtml(getItemStatusLabel(item.status))}</span>`}
+            ${item.urgente ? `<span class="badge badge-urgent">Urgente</span>` : ""}
+          </td>
+          <td>
+            <button class="icon-action" type="button" data-edit-treatment="${index}" aria-label="Editar procedimento" ${treatmentPlanLocked ? "disabled" : ""}>
               <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             </button>
-            <button class="icon-action delete" type="button" data-delete-treatment="${index}" aria-label="Excluir procedimento">
+            <button class="icon-action delete" type="button" data-delete-treatment="${index}" aria-label="Excluir procedimento" ${treatmentPlanLocked ? "disabled" : ""}>
               <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
             </button>
           </td>
@@ -3853,7 +5272,7 @@
         items: treatmentItems.map((item, index) => ({
           ...item,
           index: index + 1,
-          status: getStatusLabel(getTreatmentVisualStatus(item))
+          status: getItemStatusLabel(item.status) + (item.urgente ? " · Urgente" : "")
         }))
       };
     }
@@ -3898,7 +5317,7 @@
       whatsappMessage.focus();
     }
 
-    function openWhatsapp() {
+    async function openWhatsapp() {
       const patient = getSelectedPatient();
       const phoneDigits = onlyDigits(patient?.telefone || "");
       if (!patient) {
@@ -3913,6 +5332,7 @@
       const url = `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(whatsappMessage.value.trim())}`;
       window.open(url, "_blank", "noopener,noreferrer");
       setQuoteAction("WhatsApp Web aberto em nova aba. Confirme o envio por la.");
+      await logEnvioOrcamento("whatsapp", { destinatario_telefone: phoneDigits });
     }
 
     function buildPrintableQuoteHtml() {
@@ -3942,22 +5362,34 @@
   <title>Plano de tratamento - ${escapeHtml(patientName)}</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; }
-    header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; }
-    img { width: 170px; height: auto; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; word-break: break-word; overflow-wrap: break-word; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; break-inside: avoid; page-break-inside: avoid; }
+    img { width: 170px; max-width: 100%; height: auto; }
     h1 { font-size: 24px; margin: 0 0 6px; color: #0f3d5e; }
-    h2 { font-size: 15px; margin: 22px 0 10px; color: #0f3d5e; }
+    h2 { font-size: 15px; margin: 22px 0 10px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
     p { margin: 3px 0; }
     .muted { color: #71838d; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
-    .box { border: 1px solid #d8e7ea; border-radius: 10px; padding: 10px; background: #fbfdff; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; break-inside: avoid; page-break-inside: avoid; }
+    .box { border: 1px solid #d8e7ea; border-radius: 10px; padding: 10px; background: #fbfdff; min-width: 0; }
     .box strong { display: block; color: #0f3d5e; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border-bottom: 1px solid #d8e7ea; padding: 10px 8px; text-align: left; vertical-align: top; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+    th:nth-child(1), td:nth-child(1) { width: 6%; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; }
+    th:nth-child(3), td:nth-child(3) { width: 10%; }
+    th:nth-child(4), td:nth-child(4) { width: 40%; }
+    th:nth-child(5), td:nth-child(5) { width: 14%; }
+    th:nth-child(6), td:nth-child(6) { width: 20%; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { border-bottom: 1px solid #d8e7ea; padding: 10px 8px; text-align: left; vertical-align: top; overflow-wrap: break-word; }
     th { background: #eef9f7; color: #0f3d5e; font-size: 12px; text-transform: uppercase; }
-    .total { margin-top: 18px; padding: 14px; border-radius: 12px; background: #0f3d5e; color: #ffffff; display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; }
-    .note { margin-top: 18px; border-left: 4px solid #14b8a6; padding: 10px 12px; color: #435766; background: #f7fdfc; }
-    @media print { body { padding: 18mm; } }
+    .total { margin-top: 18px; padding: 14px; border-radius: 12px; background: #0f3d5e; color: #ffffff; display: flex; justify-content: space-between; gap: 12px; font-size: 18px; font-weight: 800; break-inside: avoid; page-break-inside: avoid; }
+    .note { margin-top: 18px; border-left: 4px solid #14b8a6; padding: 10px 12px; color: #435766; background: #f7fdfc; break-inside: avoid; page-break-inside: avoid; }
+    @media print {
+      body { padding: 18mm; }
+      .total, .note, header, .grid { break-inside: avoid; page-break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -3998,7 +5430,7 @@
 </html>`;
     }
 
-    function printQuote() {
+    async function printQuote() {
       if (!treatmentItems.length) {
         setQuoteAction("Adicione ao menos um procedimento ao plano.", "warning");
         return;
@@ -4012,6 +5444,219 @@
       printWindow.document.write(buildPrintableQuoteHtml());
       printWindow.document.close();
       setQuoteAction("Previa de impressao aberta. Use salvar como PDF no navegador.");
+      await logEnvioOrcamento("pdf");
+    }
+
+    const ANAMNESE_EXPORT_COLUMNS = "queixa_principal, historico_medico, alergias, medicamentos_uso_continuo, doencas_sistemicas, possui_diabetes, possui_hipertensao, possui_cardiopatia, gestante, sangramento_excessivo, observacoes_clinicas, preenchida_em, criado_em";
+
+    async function loadAnamneseForExport(patientId) {
+      const { data, error } = await supabase
+        .from("anamneses")
+        .select(ANAMNESE_EXPORT_COLUMNS)
+        .eq("paciente_id", patientId)
+        .order("preenchida_em", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+      return error ? null : data;
+    }
+
+    function formatTimestampBR(value) {
+      if (!value) return "-";
+      const date = new Date(value.length === 10 ? `${value}T00:00:00` : value);
+      if (Number.isNaN(date.getTime())) return "-";
+      return date.toLocaleString("pt-BR");
+    }
+
+    // Reaproveita o CSS de impressao ja endurecido em buildPrintableQuoteHtml
+    // (table-layout fixo, larguras explicitas via colgroup, quebras de pagina
+    // seguras) - aqui sem enfase de preco/marca porque o objetivo e completude
+    // dos dados (LGPD acesso/portabilidade), nao a apresentacao do orcamento.
+    function buildPatientExportHtml(patient, anamnese, plans, agendamentos, envios) {
+      const generatedAt = new Date().toLocaleString("pt-BR");
+
+      const anamneseRows = anamnese ? [
+        ["Queixa principal", anamnese.queixa_principal],
+        ["Alergias", anamnese.alergias],
+        ["Medicamentos em uso", anamnese.medicamentos_uso_continuo],
+        ["Histórico médico relevante", anamnese.historico_medico],
+        ["Doenças sistêmicas", anamnese.doencas_sistemicas],
+        ["Observações clínicas", anamnese.observacoes_clinicas],
+        ["Gestante", anamnese.gestante ? "Sim" : "Não"],
+        ["Sangramento excessivo", anamnese.sangramento_excessivo ? "Sim" : "Não"],
+        ["Diabetes", anamnese.possui_diabetes ? "Sim" : "Não"],
+        ["Hipertensão", anamnese.possui_hipertensao ? "Sim" : "Não"],
+        ["Cardiopatia", anamnese.possui_cardiopatia ? "Sim" : "Não"],
+        ["Preenchida em", formatTimestampBR(anamnese.preenchida_em)]
+      ] : [];
+
+      const anamneseHtml = anamnese
+        ? `<table>
+            <colgroup><col style="width:35%"><col style="width:65%"></colgroup>
+            <tbody>
+              ${anamneseRows.map(([label, value]) => `
+                <tr><td><strong>${escapeHtml(label)}</strong></td><td>${escapeHtml(value || "-")}</td></tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhuma anamnese cadastrada para este paciente.</p>`;
+
+      const plansHtml = plans.length
+        ? plans.map((plan) => {
+            const items = plan.itens_plano_tratamento || [];
+            const itemRows = items.length
+              ? items.map((item) => `
+                  <tr>
+                    <td>${escapeHtml(item.numero_dente || "-")}</td>
+                    <td>${escapeHtml((item.faces_dente || []).join(", ") || "-")}</td>
+                    <td>${escapeHtml(item.procedimento_nome || "-")}</td>
+                    <td>${escapeHtml(getItemStatusLabel(item.status))}</td>
+                    <td>${escapeHtml(formatCurrency(item.valor_final ?? item.valor_estimado ?? 0))}</td>
+                    <td>${escapeHtml(formatTimestampBR(item.data_execucao || item.criado_em))}</td>
+                  </tr>
+                `).join("")
+              : `<tr><td colspan="6">Nenhum procedimento neste plano.</td></tr>`;
+            return `
+              <section class="plan-block">
+                <h3>${escapeHtml(plan.titulo || "Plano de tratamento")} <span class="muted">— ${escapeHtml(getPlanStatusLabel(plan.status))}</span></h3>
+                <p class="muted">Criado em ${escapeHtml(formatTimestampBR(plan.criado_em))} · Total estimado ${escapeHtml(formatCurrency(plan.valor_total_estimado || 0))}${plan.observacoes ? ` · ${escapeHtml(plan.observacoes)}` : ""}</p>
+                <table>
+                  <colgroup>
+                    <col style="width:8%"><col style="width:12%"><col style="width:32%">
+                    <col style="width:14%"><col style="width:14%"><col style="width:20%">
+                  </colgroup>
+                  <thead>
+                    <tr><th>Dente</th><th>Face</th><th>Procedimento</th><th>Status</th><th>Valor</th><th>Data</th></tr>
+                  </thead>
+                  <tbody>${itemRows}</tbody>
+                </table>
+              </section>
+            `;
+          }).join("")
+        : `<p class="muted">Nenhum plano de tratamento registrado para este paciente.</p>`;
+
+      const agendaHtml = agendamentos.length
+        ? `<table>
+            <colgroup>
+              <col style="width:14%"><col style="width:10%"><col style="width:16%">
+              <col style="width:14%"><col style="width:14%"><col style="width:32%">
+            </colgroup>
+            <thead>
+              <tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Status</th><th>Confirmado via WhatsApp</th><th>Observação</th></tr>
+            </thead>
+            <tbody>
+              ${agendamentos.map((item) => `
+                <tr>
+                  <td>${escapeHtml(formatAgendaDate(item.data_hora_inicio))}</td>
+                  <td>${escapeHtml(formatAgendaTime(item.data_hora_inicio))}</td>
+                  <td>${escapeHtml(item.tipo || "-")}</td>
+                  <td>${escapeHtml(getAgendaStatusLabel(item.status))}</td>
+                  <td>${item.confirmado_por_whatsapp ? "Sim" : "Não"}</td>
+                  <td>${escapeHtml(item.observacoes || "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhum agendamento registrado para este paciente.</p>`;
+
+      const enviosHtml = envios.length
+        ? `<table>
+            <colgroup>
+              <col style="width:22%"><col style="width:16%"><col style="width:18%">
+              <col style="width:18%"><col style="width:26%">
+            </colgroup>
+            <thead>
+              <tr><th>Data</th><th>Canal</th><th>Valor</th><th>Itens</th><th>Telefone</th></tr>
+            </thead>
+            <tbody>
+              ${envios.map((envio) => `
+                <tr>
+                  <td>${escapeHtml(formatTimestampBR(envio.criado_em))}</td>
+                  <td>${envio.canal === "whatsapp" ? "WhatsApp" : "PDF"}</td>
+                  <td>${escapeHtml(formatCurrency(envio.valor_total))}</td>
+                  <td>${envio.quantidade_itens}</td>
+                  <td>${escapeHtml(envio.destinatario_telefone ? formatPhone(envio.destinatario_telefone) : "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : `<p class="muted">Nenhum envio de orçamento registrado para este paciente.</p>`;
+
+      return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Dados pessoais - ${escapeHtml(patient.nome)}</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { font-family: Inter, Arial, sans-serif; color: #102033; margin: 0; padding: 28px; word-break: break-word; overflow-wrap: break-word; }
+    header { border-bottom: 2px solid #d8e7ea; padding-bottom: 18px; margin-bottom: 22px; break-inside: avoid; page-break-inside: avoid; }
+    h1 { font-size: 22px; margin: 0 0 6px; color: #0f3d5e; }
+    h2 { font-size: 15px; margin: 26px 0 10px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
+    h3 { font-size: 13px; margin: 16px 0 4px; color: #0f3d5e; break-after: avoid; page-break-after: avoid; }
+    p { margin: 3px 0; }
+    .muted { color: #71838d; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { border-bottom: 1px solid #d8e7ea; padding: 8px 6px; text-align: left; vertical-align: top; overflow-wrap: break-word; font-size: 12px; }
+    th { background: #eef9f7; color: #0f3d5e; text-transform: uppercase; font-size: 11px; }
+    .plan-block { break-inside: avoid; page-break-inside: avoid; margin-bottom: 14px; }
+    section { margin-bottom: 10px; }
+    @media print {
+      body { padding: 18mm; }
+      header, .plan-block { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dados pessoais — ${escapeHtml(patient.nome)}</h1>
+    <p class="muted">Exportado em ${escapeHtml(generatedAt)} · ${escapeHtml(currentConsultorio?.nome || "Consultório")}</p>
+  </header>
+
+  <h2>Dados pessoais</h2>
+  <table>
+    <colgroup><col style="width:35%"><col style="width:65%"></colgroup>
+    <tbody>
+      <tr><td><strong>Nome</strong></td><td>${escapeHtml(patient.nome)}</td></tr>
+      <tr><td><strong>Telefone</strong></td><td>${escapeHtml(formatPhone(patient.telefone || "") || "-")}</td></tr>
+      <tr><td><strong>E-mail</strong></td><td>${escapeHtml(patient.email || "-")}</td></tr>
+      <tr><td><strong>CPF</strong></td><td>${escapeHtml(formatCpf(patient.cpf || "") || "-")}</td></tr>
+      <tr><td><strong>Data de nascimento</strong></td><td>${escapeHtml(patient.data_nascimento ? formatDate(patient.data_nascimento) : "-")}</td></tr>
+      <tr><td><strong>Observações</strong></td><td>${escapeHtml(patient.observacoes || "-")}</td></tr>
+      <tr><td><strong>Cadastrado em</strong></td><td>${escapeHtml(formatTimestampBR(patient.criado_em))}</td></tr>
+      <tr><td><strong>Consentimento WhatsApp</strong></td><td>${patient.consentimento_whatsapp_em ? escapeHtml(`Consentiu em ${formatTimestampBR(patient.consentimento_whatsapp_em)}`) : "Sem consentimento registrado"}</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Anamnese</h2>
+  ${anamneseHtml}
+
+  <h2>Planos de tratamento</h2>
+  ${plansHtml}
+
+  <h2>Agendamentos</h2>
+  ${agendaHtml}
+
+  <h2>Histórico de envios de orçamento</h2>
+  ${enviosHtml}
+
+  <script>window.addEventListener("load", () => window.print());<\/script>
+</body>
+</html>`;
+    }
+
+    async function exportPatientData() {
+      const patient = getSelectedPatient();
+      if (!patient) return;
+      const anamnese = await loadAnamneseForExport(patient.id);
+      if (selectedPatientId !== patient.id) return;
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) return;
+      printWindow.document.open();
+      printWindow.document.write(buildPatientExportHtml(patient, anamnese, patientTreatmentPlans, patientAgendamentos, patientEnvios));
+      printWindow.document.close();
     }
 
     loginForm.addEventListener("submit", async (event) => {
@@ -4035,7 +5680,7 @@
       }
 
       currentUser = data.user;
-      await loadProfile();
+      await proceedPastAuth();
     });
 
     onboardingForm.addEventListener("submit", async (event) => {
@@ -4119,6 +5764,214 @@
       }
     });
 
+    // ============================================================
+    // Verificação em duas etapas (MFA/TOTP) - opcional, ver docs/2fa_recuperacao.md
+    // ============================================================
+
+    // Sincroniza o card "Segurança da conta" com o estado real de fatores no
+    // Supabase (não confia em nenhuma flag local): sempre re-consulta
+    // listFactors() e também fecha qualquer painel de desafio/matrícula que
+    // tenha ficado aberto de uma interação anterior.
+    async function refreshMfaStatus() {
+      const { data, error } = await supabase.auth.mfa.listFactors();
+      const verified = !error && data ? (data.totp || []).find((f) => f.status === "verified") : null;
+      mfaActiveFactorId = verified ? verified.id : null;
+      mfaEnrollFactorId = null;
+
+      mfaEnrollPanel.hidden = true;
+      mfaDisableChallengePanel.hidden = true;
+      mfaEnrollCode.value = "";
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaEnrollStatus);
+      clearStatus(mfaDisableChallengeStatus);
+      clearStatus(mfaActiveStatus);
+
+      mfaInactiveState.hidden = !!mfaActiveFactorId;
+      mfaActiveState.hidden = !mfaActiveFactorId;
+    }
+
+    // Reseta toda a UI de MFA para o estado inicial (usado no sign-out, para
+    // não vazar QR code/estado de matrícula de um profissional para a
+    // próxima sessão que fizer login na mesma aba).
+    function resetMfaUiState() {
+      loginMfaFactorId = null;
+      mfaEnrollFactorId = null;
+      mfaActiveFactorId = null;
+      mfaChallengeForm.reset();
+      clearStatus(mfaChallengeStatus);
+      mfaEnrollPanel.hidden = true;
+      mfaDisableChallengePanel.hidden = true;
+      mfaActiveState.hidden = true;
+      mfaInactiveState.hidden = false;
+      mfaEnrollCode.value = "";
+      mfaDisableChallengeCode.value = "";
+      mfaQrImage.removeAttribute("src");
+      mfaSecretText.textContent = "";
+      clearStatus(mfaEnrollStatus);
+      clearStatus(mfaDisableChallengeStatus);
+      clearStatus(mfaActiveStatus);
+    }
+
+    mfaChallengeForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus(mfaChallengeStatus);
+      const submit = mfaChallengeForm.querySelector("button[type='submit']");
+      submit.disabled = true;
+      submit.textContent = "Confirmando...";
+      try {
+        const code = mfaChallengeCode.value.trim();
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: loginMfaFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: loginMfaFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        loginMfaFactorId = null;
+        mfaChallengeForm.reset();
+        await loadProfile();
+      } catch (error) {
+        setStatus(mfaChallengeStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = "Confirmar";
+      }
+    });
+
+    mfaEnableButton.addEventListener("click", async () => {
+      clearStatus(mfaEnrollStatus);
+      mfaEnableButton.disabled = true;
+      mfaEnableButton.textContent = "Preparando...";
+      try {
+        // Uma tentativa de ativação anterior pode ter sido abandonada (aba
+        // fechada antes de confirmar o código): o Supabase deixa um fator
+        // "unverified" pendurado, e chamar enroll() de novo nessas condições
+        // pode falhar. Limpa qualquer fator não verificado antes de começar.
+        const { data: listData } = await supabase.auth.mfa.listFactors();
+        const stale = (listData?.totp || []).filter((f) => f.status !== "verified");
+        for (const factor of stale) {
+          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        }
+
+        const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "OdontoFlow" });
+        if (error) throw error;
+
+        mfaEnrollFactorId = data.id;
+        const qrSvg = data.totp?.qr_code || "";
+        mfaQrImage.src = qrSvg.startsWith("data:") ? qrSvg : `data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`;
+        mfaSecretText.textContent = data.totp?.secret || "";
+        mfaEnrollCode.value = "";
+        clearStatus(mfaEnrollStatus);
+        mfaInactiveState.hidden = true;
+        mfaEnrollPanel.hidden = false;
+        mfaEnrollCode.focus();
+      } catch (error) {
+        setStatus(mfaEnrollStatus, "error", error.message || "Não foi possível iniciar a ativação agora.");
+      } finally {
+        mfaEnableButton.disabled = false;
+        mfaEnableButton.textContent = "Ativar verificação em duas etapas";
+      }
+    });
+
+    mfaConfirmEnrollButton.addEventListener("click", async () => {
+      clearStatus(mfaEnrollStatus);
+      const code = mfaEnrollCode.value.trim();
+      if (!/^\d{6}$/.test(code)) {
+        setStatus(mfaEnrollStatus, "error", "Digite o código de 6 dígitos do aplicativo autenticador.");
+        return;
+      }
+      mfaConfirmEnrollButton.disabled = true;
+      mfaConfirmEnrollButton.textContent = "Confirmando...";
+      try {
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaEnrollFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: mfaEnrollFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        mfaEnrollFactorId = null;
+        await refreshMfaStatus();
+      } catch (error) {
+        setStatus(mfaEnrollStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        mfaConfirmEnrollButton.disabled = false;
+        mfaConfirmEnrollButton.textContent = "Confirmar código";
+      }
+    });
+
+    mfaCancelEnrollButton.addEventListener("click", async () => {
+      const factorId = mfaEnrollFactorId;
+      mfaEnrollFactorId = null;
+      mfaEnrollPanel.hidden = true;
+      mfaInactiveState.hidden = false;
+      mfaEnrollCode.value = "";
+      clearStatus(mfaEnrollStatus);
+      if (factorId) {
+        await supabase.auth.mfa.unenroll({ factorId }).catch(() => {});
+      }
+    });
+
+    mfaDisableButton.addEventListener("click", async () => {
+      clearStatus(mfaActiveStatus);
+      const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!error && data && data.currentLevel === "aal2") {
+        mfaDisableButton.disabled = true;
+        mfaDisableButton.textContent = "Desativando...";
+        try {
+          const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: mfaActiveFactorId });
+          if (unenrollError) throw unenrollError;
+          await refreshMfaStatus();
+        } catch (err) {
+          setStatus(mfaActiveStatus, "error", err.message || "Não foi possível desativar agora.");
+        } finally {
+          mfaDisableButton.disabled = false;
+          mfaDisableButton.textContent = "Desativar";
+        }
+        return;
+      }
+
+      // Sessão ainda em aal1: o Supabase exige aal2 para remover um fator
+      // verificado, então pede um desafio primeiro em vez de mostrar o erro
+      // cru da API.
+      mfaActiveState.hidden = true;
+      mfaDisableChallengePanel.hidden = false;
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaDisableChallengeStatus);
+      mfaDisableChallengeCode.focus();
+    });
+
+    mfaConfirmDisableButton.addEventListener("click", async () => {
+      clearStatus(mfaDisableChallengeStatus);
+      const code = mfaDisableChallengeCode.value.trim();
+      if (!/^\d{6}$/.test(code)) {
+        setStatus(mfaDisableChallengeStatus, "error", "Digite o código de 6 dígitos do aplicativo autenticador.");
+        return;
+      }
+      mfaConfirmDisableButton.disabled = true;
+      mfaConfirmDisableButton.textContent = "Confirmando...";
+      try {
+        const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: mfaActiveFactorId });
+        if (challengeError) throw challengeError;
+        const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: mfaActiveFactorId, challengeId: challengeData.id, code });
+        if (verifyError) throw verifyError;
+
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: mfaActiveFactorId });
+        if (unenrollError) throw unenrollError;
+
+        mfaDisableChallengePanel.hidden = true;
+        await refreshMfaStatus();
+      } catch (error) {
+        setStatus(mfaDisableChallengeStatus, "error", error.message || "Código inválido. Tente novamente.");
+      } finally {
+        mfaConfirmDisableButton.disabled = false;
+        mfaConfirmDisableButton.textContent = "Confirmar e desativar";
+      }
+    });
+
+    mfaCancelDisableButton.addEventListener("click", () => {
+      mfaDisableChallengePanel.hidden = true;
+      mfaActiveState.hidden = false;
+      mfaDisableChallengeCode.value = "";
+      clearStatus(mfaDisableChallengeStatus);
+    });
+
     signOutButton.addEventListener("click", async () => {
       await supabase.auth.signOut();
       currentUser = null;
@@ -4126,6 +5979,20 @@
       currentConsultorio = null;
       currentPatients = [];
       consultorioColegas = [];
+      dashboardAgenda = [];
+      renderDashboardAgenda();
+      resetAgendaSection();
+      // Sem isso, o filtro de período (e o botão marcado como ativo) do card
+      // financeiro sobrevivia à troca de sessão: um profissional saía com
+      // "Tudo" selecionado e o próximo já entrava vendo os próprios ganhos
+      // filtrados por essa escolha alheia, em vez do padrão "Este mês".
+      dashboardFinanceiroItems = [];
+      dashboardFinanceiroPeriodFilter = "mes";
+      dashboardFinanceiroPeriod.querySelectorAll(".period-toggle-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.financeiroPeriod === "mes");
+      });
+      renderDashboardFinanceiro();
+      resetMfaUiState();
       loginForm.reset();
       onboardingForm.reset();
       patientForm.reset();
@@ -4142,6 +6009,11 @@
         clearStatus(patientStatus);
         showDashboardTab("home");
         closeMobileMenu();
+        const scrollTargetSelector = button.dataset.scrollTarget;
+        if (scrollTargetSelector) {
+          const scrollTarget = document.querySelector(scrollTargetSelector);
+          if (scrollTarget) scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
 
@@ -4155,6 +6027,15 @@
           clinicPatientFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
           document.querySelector("#pacienteNome").focus();
         }
+      });
+    });
+
+    document.querySelectorAll("[data-open-orcamentos]").forEach((button) => {
+      button.addEventListener("click", () => {
+        clearStatus(patientStatus);
+        clearOrcamentosFeedback();
+        showDashboardTab("orcamentos");
+        closeMobileMenu();
       });
     });
 
@@ -4218,6 +6099,7 @@
       togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
+      clearConsultationGuardFeedback();
       renderPatientList();
     });
 
@@ -4230,6 +6112,71 @@
       const card = event.target.closest("[data-patient-id]");
       if (!card) return;
       await showPatientSummary(card.dataset.patientId);
+    });
+
+    editAnamneseButton.addEventListener("click", () => {
+      const isOpening = !anamneseEditForm.classList.contains("active");
+      if (isOpening) fillAnamneseEditForm(currentPatientAnamnese);
+      anamneseEditForm.classList.toggle("active", isOpening);
+      clearAnamneseFeedback();
+    });
+
+    anamneseEditCancelButton.addEventListener("click", () => {
+      anamneseEditForm.classList.remove("active");
+      clearAnamneseFeedback();
+    });
+
+    anamneseEditForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const patient = getSelectedPatient();
+      if (!patient || !currentProfissional?.id) return;
+
+      const patientId = selectedPatientId;
+      const existing = currentPatientAnamnese;
+      anamneseEditSaveButton.disabled = true;
+      setAnamneseFeedback("Salvando...");
+
+      const anamnese = {
+        queixa_principal: anamneseEditQueixa.value.trim() || null,
+        historico_medico: anamneseEditHistorico.value.trim() || null,
+        alergias: anamneseEditAlergias.value.trim() || null,
+        medicamentos_uso_continuo: anamneseEditMedicamentos.value.trim() || null,
+        possui_diabetes: anamneseEditDiabetes.checked,
+        possui_hipertensao: anamneseEditHipertensao.checked,
+        possui_cardiopatia: anamneseEditCardiopatia.checked,
+        gestante: anamneseEditGestante.checked,
+        sangramento_excessivo: anamneseEditSangramento.checked
+      };
+
+      // Se ja existe uma linha de anamnese para este paciente, atualiza-a
+      // (o payload nunca inclui profissional_id, entao a RLS reavalia o
+      // check contra o profissional_id ja gravado na linha - mesma
+      // disciplina de "dono nao muda no update" usada em planos_tratamento).
+      // Sem linha existente (paciente cadastrado sem anamnese, ou anamnese
+      // nunca preenchida), insere uma nova.
+      const query = existing?.id
+        ? supabase.from("anamneses").update({ ...anamnese, preenchida_em: new Date().toISOString() }).eq("id", existing.id)
+        : supabase.from("anamneses").insert({
+            paciente_id: patient.id,
+            profissional_id: currentProfissional.id,
+            ...anamnese,
+            preenchida_em: new Date().toISOString()
+          });
+
+      const { data, error } = await query.select(ANAMNESE_SUMMARY_COLUMNS).single();
+
+      if (selectedPatientId !== patientId) return;
+      anamneseEditSaveButton.disabled = false;
+
+      if (error) {
+        setAnamneseFeedback("Não foi possível salvar a anamnese.", "warning");
+        return;
+      }
+
+      currentPatientAnamnese = data;
+      renderAnamneseSummary(data);
+      anamneseEditForm.classList.remove("active");
+      setAnamneseFeedback("Anamnese atualizada.");
     });
 
     sharePatientForm.addEventListener("submit", async (event) => {
@@ -4263,6 +6210,186 @@
       await loadPatientSharing(patient.id);
     });
 
+    agendaForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const patient = getSelectedPatient();
+      if (!patient || !currentConsultorio?.id || !currentProfissional?.id || !agendaInicio.value) return;
+
+      const patientId = selectedPatientId;
+      agendaSubmitButton.disabled = true;
+      clearAgendaFeedback();
+
+      const payload = {
+        paciente_id: patient.id,
+        consultorio_id: currentConsultorio.id,
+        profissional_id: currentProfissional.id,
+        data_hora_inicio: new Date(agendaInicio.value).toISOString(),
+        data_hora_fim: agendaFim.value ? new Date(agendaFim.value).toISOString() : null,
+        tipo: agendaTipo.value.trim() || null,
+        observacoes: agendaObservacoes.value.trim() || null,
+        confirmado_por_whatsapp: agendaConfirmadoWhatsapp.checked
+      };
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .insert(payload)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+      agendaSubmitButton.disabled = false;
+
+      if (error) {
+        setAgendaFeedback("Não foi possível salvar este agendamento.", "warning");
+        return;
+      }
+
+      patientAgendamentos.unshift(data);
+      renderPatientAgendamentos();
+      agendaForm.reset();
+      setAgendaFeedback("Agendamento criado.");
+      await loadDashboardAgenda();
+    });
+
+    agendaPatientList.addEventListener("change", async (event) => {
+      const select = event.target.closest("[data-agenda-status]");
+      if (!select) return;
+      const id = select.dataset.agendaStatus;
+      const current = patientAgendamentos.find((item) => item.id === id);
+      if (!current) return;
+
+      const patientId = selectedPatientId;
+      const previousStatus = current.status;
+      select.disabled = true;
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .update({ status: select.value })
+        .eq("id", id)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+
+      if (error) {
+        select.disabled = false;
+        select.value = previousStatus;
+        setAgendaFeedback("Não foi possível atualizar o status deste agendamento.", "warning");
+        return;
+      }
+
+      const index = patientAgendamentos.findIndex((item) => item.id === id);
+      if (index >= 0) patientAgendamentos[index] = data;
+      renderPatientAgendamentos();
+      await loadDashboardAgenda();
+    });
+
+    agendaPatientList.addEventListener("click", async (event) => {
+      const cancelButton = event.target.closest("[data-agenda-cancel]");
+      if (!cancelButton) return;
+      const id = cancelButton.dataset.agendaCancel;
+
+      const patientId = selectedPatientId;
+      cancelButton.disabled = true;
+
+      const { data, error } = await supabase
+        .from("agendamentos")
+        .update({ status: "cancelado" })
+        .eq("id", id)
+        .select(AGENDA_COLUMNS)
+        .single();
+
+      if (selectedPatientId !== patientId) return;
+
+      if (error) {
+        cancelButton.disabled = false;
+        setAgendaFeedback("Não foi possível cancelar este agendamento.", "warning");
+        return;
+      }
+
+      const index = patientAgendamentos.findIndex((item) => item.id === id);
+      if (index >= 0) patientAgendamentos[index] = data;
+      renderPatientAgendamentos();
+      await loadDashboardAgenda();
+    });
+
+    dashboardAgendaList.addEventListener("click", async (event) => {
+      const link = event.target.closest("[data-open-agenda-patient]");
+      if (!link) return;
+      showDashboardTab("patient");
+      closeMobileMenu();
+      await showPatientSummary(link.dataset.openAgendaPatient);
+    });
+
+    orcamentosPendentesList.addEventListener("click", async (event) => {
+      const link = event.target.closest("[data-open-orcamento-patient]");
+      if (link) {
+        showDashboardTab("patient");
+        closeMobileMenu();
+        await showPatientSummary(link.dataset.openOrcamentoPatient);
+        return;
+      }
+
+      const approveButton = event.target.closest("[data-approve-orcamento-plano]");
+      if (!approveButton) return;
+      const planId = approveButton.dataset.approveOrcamentoPlano;
+      if (!dashboardOrcamentosPendentes.some((plano) => plano.id === planId)) return;
+
+      // Mesmo texto e mesma disciplina de confirmação do botão "Paciente
+      // aprovou o tratamento" na ficha do paciente (approveTreatmentPlanButton):
+      // um clique acidental aqui é tão consequente quanto lá.
+      const confirmado = window.confirm("Confirmar que o paciente aprovou este plano de tratamento? A montagem de novos procedimentos ficará bloqueada até reabrir o plano.");
+      if (!confirmado) return;
+      if (!dashboardOrcamentosPendentes.some((plano) => plano.id === planId)) return;
+
+      const consultorioAtClick = currentConsultorio?.id;
+      const profissionalAtClick = currentProfissional?.id;
+      approveButton.disabled = true;
+      approveButton.textContent = "Aprovando...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "aprovado" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      // Contexto (consultório/profissional) pode ter mudado enquanto o UPDATE
+      // estava em voo: o plano já foi aprovado de verdade no banco, mas esta
+      // lista pode não ser mais sobre o mesmo escopo.
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtClick) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtClick) return;
+
+      if (error) {
+        approveButton.disabled = false;
+        approveButton.textContent = "Marcar como aprovado";
+        setOrcamentosFeedback("Não foi possível registrar a aprovação deste plano.", "warning");
+        return;
+      }
+
+      // Mantém a ficha do paciente em sincronia, caso esteja aberta.
+      const openPlanIndex = patientTreatmentPlans.findIndex((plano) => plano.id === data.id);
+      if (openPlanIndex >= 0) patientTreatmentPlans[openPlanIndex] = { ...patientTreatmentPlans[openPlanIndex], ...data };
+      if (currentTreatmentPlan?.id === data.id) {
+        currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+        renderTreatmentPlanBar();
+      }
+
+      dashboardOrcamentosPendentes = dashboardOrcamentosPendentes.filter((plano) => plano.id !== planId);
+      renderDashboardOrcamentosPendentes();
+      setOrcamentosFeedback("Plano marcado como aprovado pelo paciente.");
+    });
+
+    dashboardFinanceiroPeriod.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-financeiro-period]");
+      if (!button) return;
+      dashboardFinanceiroPeriodFilter = button.dataset.financeiroPeriod;
+      dashboardFinanceiroPeriod.querySelectorAll(".period-toggle-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn === button);
+      });
+      renderDashboardFinanceiro();
+    });
+
     document.querySelector("#cancelPatientForm").addEventListener("click", () => {
       clearStatus(patientStatus);
       patientForm.reset();
@@ -4272,6 +6399,10 @@
     });
 
     consultationButton.addEventListener("click", () => {
+      if (!selectedPatientId) {
+        setConsultationGuardFeedback("Selecione um paciente antes de iniciar o atendimento.");
+        return;
+      }
       consultationPanel.classList.toggle("active");
       if (consultationPanel.classList.contains("active")) {
         consultationPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -4292,7 +6423,11 @@
     });
 
     document.querySelectorAll("[data-consultation-action]").forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", async () => {
+        if (!selectedPatientId) {
+          setConsultationGuardFeedback("Selecione um paciente antes de continuar.");
+          return;
+        }
         const action = button.dataset.consultationAction;
         if (action === "history") {
           patientSummary.classList.add("details-open");
@@ -4306,12 +6441,146 @@
         document.querySelector("#newTreatmentPanel strong").textContent = action === "continue" ? "Retomar plano do paciente" : "Montar plano inicial";
         newTreatmentPanel.classList.add("active");
         newTreatmentPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+        if (action === "new") {
+          currentTreatmentPlan = null;
+          treatmentPlanChooser.hidden = true;
+          treatmentLayout.hidden = false;
+          resetTreatmentDraft();
+          renderTreatmentPlanBar();
+        } else if (action === "continue") {
+          await openContinueTreatmentFlow();
+        }
       });
+    });
+
+    treatmentPlanList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-plan-id]");
+      if (!button) return;
+      const plan = patientTreatmentPlans.find((item) => item.id === button.dataset.planId);
+      if (plan) selectTreatmentPlan(plan);
+    });
+
+    assumeTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan) return;
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
+      assumeTreatmentPlanButton.disabled = true;
+      assumeTreatmentPlanButton.textContent = "Assumindo...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ profissional_id: currentProfissional.id })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      assumeTreatmentPlanButton.disabled = false;
+      assumeTreatmentPlanButton.textContent = "Assumir este plano";
+
+      // O dentista pode ter trocado de paciente/fluxo enquanto o UPDATE estava
+      // em voo: o plano já foi assumido de verdade no banco, mas não deve mais
+      // sobrescrever o estado de uma tela que já é sobre outra coisa.
+      if (sessionAtClick !== treatmentSessionId) return;
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível assumir este plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano assumido. Você já pode editar os procedimentos.");
+    });
+
+    approveTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan || treatmentPlanOwnerLocked) return;
+      if (!getActiveItemsOfPlan(currentTreatmentPlan).length) {
+        setTreatmentFeedback("Adicione ao menos um procedimento ao plano antes de marcar como aprovado pelo paciente.", "warning");
+        return;
+      }
+
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
+      const confirmado = window.confirm("Confirmar que o paciente aprovou este plano de tratamento? A montagem de novos procedimentos ficará bloqueada até reabrir o plano.");
+      if (!confirmado || sessionAtClick !== treatmentSessionId) return;
+
+      approveTreatmentPlanButton.disabled = true;
+      approveTreatmentPlanButton.textContent = "Aprovando...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "aprovado" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      approveTreatmentPlanButton.disabled = false;
+      approveTreatmentPlanButton.textContent = "Paciente aprovou o tratamento";
+
+      // Mesma guarda de sessão do restante dos writes do plano: se o dentista
+      // já trocou de paciente/fluxo enquanto o UPDATE estava em voo, o plano
+      // foi aprovado de verdade no banco, mas a tela atual é sobre outra coisa.
+      if (sessionAtClick !== treatmentSessionId) return;
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível registrar a aprovação do plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano marcado como aprovado pelo paciente. Use o checklist de cada procedimento para registrar o andamento.");
+      // Este plano pode estar na lista de Orçamentos pendentes (Dashboard);
+      // recarrega para tirá-lo de lá sem exigir um reload da página.
+      dashboardOrcamentosPendentes = dashboardOrcamentosPendentes.filter((plano) => plano.id !== data.id);
+      renderDashboardOrcamentosPendentes();
+    });
+
+    reopenTreatmentPlanButton.addEventListener("click", async () => {
+      if (!currentTreatmentPlan || treatmentPlanOwnerLocked) return;
+      const sessionAtClick = treatmentSessionId;
+      const planId = currentTreatmentPlan.id;
+      const confirmado = window.confirm("Reabrir este plano para edição? O andamento já registrado em cada procedimento (checklist) não será alterado.");
+      if (!confirmado || sessionAtClick !== treatmentSessionId) return;
+
+      reopenTreatmentPlanButton.disabled = true;
+      reopenTreatmentPlanButton.textContent = "Reabrindo...";
+
+      // Só toca planos_tratamento.status: nenhum item de itens_plano_tratamento
+      // é lido ou escrito aqui, então status/data_execucao já marcados no
+      // checklist sobrevivem intactos a um reabrir-e-aprovar-de-novo.
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "rascunho" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      reopenTreatmentPlanButton.disabled = false;
+      reopenTreatmentPlanButton.textContent = "Reabrir plano para edição";
+
+      if (sessionAtClick !== treatmentSessionId) return;
+
+      if (error) {
+        setTreatmentFeedback("Não foi possível reabrir este plano.", "warning");
+        return;
+      }
+
+      currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+      const planIndex = patientTreatmentPlans.findIndex((plan) => plan.id === data.id);
+      if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
+      renderTreatmentPlanBar();
+      setTreatmentFeedback("Plano reaberto para edição. O andamento já registrado em cada procedimento foi mantido.");
     });
 
     toothGrid.addEventListener("click", (event) => {
       const button = event.target.closest("[data-tooth]");
-      if (!button) return;
+      if (!button || isCurrentPlanApproved()) return;
       if (selectedTooth === button.dataset.tooth) {
         selectedTooth = "";
         selectedFaces = [];
@@ -4369,7 +6638,39 @@
       treatmentValue.value = rule?.valor ?? "";
     });
 
-    addTreatmentItem.addEventListener("click", () => {
+    treatmentAlreadyDone.addEventListener("change", () => {
+      treatmentExecutionDateField.hidden = !treatmentAlreadyDone.checked;
+      if (treatmentAlreadyDone.checked) treatmentStatus.value = "realizado";
+    });
+
+    function buildItemPayload(item, planId) {
+      return {
+        plano_tratamento_id: planId,
+        procedimento_id: item.procedureId || null,
+        regra_preco_procedimento_id: item.priceRuleId || null,
+        numero_dente: item.tooth || null,
+        faces_dente: item.faces && item.faces.length ? item.faces : [],
+        procedimento_nome: item.procedure,
+        regra_preco_nome: item.priceRuleName || null,
+        valor_estimado: item.value,
+        valor_final: item.value,
+        observacao: item.notes || null,
+        status: item.status,
+        urgente: item.urgente,
+        ordem: item.ordem,
+        data_execucao: item.dataExecucao || null,
+        registrado_como_historico: Boolean(item.registradoComoHistorico)
+      };
+    }
+
+    addTreatmentItem.addEventListener("click", async () => {
+      if (treatmentPlanLocked) {
+        setTreatmentFeedback(isCurrentPlanApproved()
+          ? "Este plano já foi aprovado pelo paciente. Reabra-o para adicionar ou editar procedimentos."
+          : "Assuma este plano antes de adicionar ou editar procedimentos.", "warning");
+        return;
+      }
+
       const selectedProcedure = procedures.find((procedure) => procedure.id === treatmentProcedure.value);
       const selectedRule = priceRules.find((rule) => rule.id === treatmentPriceRule.value);
       if (!selectedProcedure) {
@@ -4386,8 +6687,12 @@
         return;
       }
 
+      const sessionAtClick = treatmentSessionId;
       const value = Number(treatmentValue.value || 0);
+      const editingItem = editingTreatmentIndex === null ? null : treatmentItems[editingTreatmentIndex];
       const nextItem = {
+        dbId: editingItem?.dbId,
+        ordem: editingItem?.ordem,
         tooth: selectedProcedure.exige_dente ? selectedTooth : "",
         faces: [...selectedFaces],
         face: selectedProcedure.exige_face && selectedFaces.length ? selectedFaces.join(", ") : "geral",
@@ -4397,23 +6702,111 @@
         priceRuleName: selectedRule?.nome_regra || "Valor manual",
         value,
         status: treatmentStatus.value,
-        notes: treatmentNotes.value.trim()
+        urgente: treatmentUrgent.checked,
+        notes: treatmentNotes.value.trim(),
+        // Editar um item preserva a data_execucao gravada, mesmo quando ela é
+        // nula (ex.: "já realizado antes" salvo sem data por não se saber a
+        // exata): usar "||" aqui reabriria essa data a cada edição só porque o
+        // status continua "realizado", reescrevendo silenciosamente um dado
+        // que o dentista deixou em branco de propósito.
+        dataExecucao: editingItem
+          ? (editingItem.dataExecucao ?? null)
+          : (treatmentAlreadyDone.checked ? (treatmentExecutionDate.value || null)
+            : (treatmentStatus.value === "realizado" ? todayIsoDate() : null)),
+        // Mesmo motivo do dataExecucao acima: editar um item por qualquer
+        // outro motivo nao pode reescrever silenciosamente esta origem so
+        // porque o checkbox "Ja foi realizado antes" esta desmarcado no form
+        // (ele nunca vem marcado ao reabrir um item existente para edicao).
+        registradoComoHistorico: editingItem
+          ? Boolean(editingItem.registradoComoHistorico)
+          : treatmentAlreadyDone.checked
       };
 
-      if (editingTreatmentIndex === null) {
-        treatmentItems.push(nextItem);
-        highlightedTreatmentIndex = treatmentItems.length - 1;
-        setTreatmentFeedback("Procedimento adicionado ao plano.");
-      } else {
-        highlightedTreatmentIndex = editingTreatmentIndex;
-        treatmentItems[editingTreatmentIndex] = nextItem;
-        editingTreatmentIndex = null;
-        addTreatmentItem.textContent = "Adicionar ao plano";
-        setTreatmentFeedback("Procedimento atualizado no plano.");
+      addTreatmentItem.disabled = true;
+
+      const plan = await ensureTreatmentPlan();
+      if (sessionAtClick !== treatmentSessionId) return;
+      if (!plan) {
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        return;
       }
 
+      if (editingTreatmentIndex === null) {
+        nextItem.ordem = nextOrdemForPlan(plan);
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .insert(buildItemPayload(nextItem, plan.id))
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        if (error) {
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(isCurrentPlanApproved()
+            ? "Este plano foi aprovado pelo paciente. Reabra-o para continuar editando."
+            : (treatmentPlanLocked
+              ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+              : "Não foi possível salvar este procedimento no plano."), "warning");
+          return;
+        }
+
+        const savedItem = mapDbItemToUiItem(data);
+        treatmentItems.push(savedItem);
+        plan.itens_plano_tratamento = plan.itens_plano_tratamento || [];
+        plan.itens_plano_tratamento.push(data);
+        highlightedTreatmentIndex = treatmentItems.length - 1;
+        setTreatmentFeedback("Procedimento adicionado ao plano.");
+        await syncPlanTotal(plan);
+      } else {
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update(buildItemPayload(nextItem, plan.id))
+          .eq("id", nextItem.dbId)
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
+        addTreatmentItem.disabled = treatmentPlanLocked;
+        if (error) {
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(isCurrentPlanApproved()
+            ? "Este plano foi aprovado pelo paciente. Reabra-o para continuar editando."
+            : (treatmentPlanLocked
+              ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+              : "Não foi possível salvar a alteração deste procedimento."), "warning");
+          return;
+        }
+
+        const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
+        if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex] = data;
+
+        // Usa a referência do item (não o índice capturado no clique) porque o
+        // array pode ter sido reordenado por uma exclusão concorrente enquanto
+        // este update estava em voo.
+        const currentIndex = treatmentItems.indexOf(editingItem);
+        if (currentIndex !== -1) {
+          if (data.status === "cancelado") {
+            treatmentItems.splice(currentIndex, 1);
+            setTreatmentFeedback("Procedimento marcado como cancelado e removido do plano ativo.", "warning");
+          } else {
+            highlightedTreatmentIndex = currentIndex;
+            treatmentItems[currentIndex] = mapDbItemToUiItem(data);
+            setTreatmentFeedback("Procedimento atualizado no plano.");
+          }
+        }
+        editingTreatmentIndex = null;
+        addTreatmentItem.textContent = "Adicionar ao plano";
+        await syncPlanTotal(plan);
+      }
+
+      renderTreatmentStatusSummary();
       treatmentNotes.value = "";
-      treatmentStatus.value = "planned";
+      treatmentStatus.value = "planejado";
+      treatmentUrgent.checked = false;
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       clearQuoteAction();
       renderQuote();
       updateSelectedToothVisual();
@@ -4423,33 +6816,125 @@
       }, 1400);
     });
 
-    treatmentPlanRows.addEventListener("click", (event) => {
+    treatmentPlanRows.addEventListener("click", async (event) => {
       const editButton = event.target.closest("[data-edit-treatment]");
       const deleteButton = event.target.closest("[data-delete-treatment]");
+      const statusToggleButton = event.target.closest("[data-status-toggle]");
 
-      if (deleteButton) {
-        const index = Number(deleteButton.dataset.deleteTreatment);
-        const removed = treatmentItems[index];
-        treatmentItems.splice(index, 1);
-        if (editingTreatmentIndex === index) {
-          editingTreatmentIndex = null;
-          addTreatmentItem.textContent = "Adicionar ao plano";
+      if (statusToggleButton) {
+        if (treatmentPlanOwnerLocked) return;
+        const index = Number(statusToggleButton.dataset.itemIndex);
+        const item = treatmentItems[index];
+        if (!item) return;
+
+        const segment = statusToggleButton.dataset.statusToggle;
+        let nextStatus = null;
+        if (segment === "iniciado" && item.status !== "em_andamento") nextStatus = "em_andamento";
+        else if (segment === "feito" && item.status !== "realizado") nextStatus = "realizado";
+        // "Pendente" só é alvo de escrita quando vem de iniciado/realizado: o
+        // item já chegou a ser executado, então "não feito" aqui volta para
+        // aprovado (aprovação do procedimento em si), não para planejado (que
+        // regrediria a aprovação clínica já dada). Clicar em Pendente estando
+        // em planejado/aprovado é no-op (o botão já vem desabilitado por já
+        // estar ativo, mas a checagem fica aqui também por segurança).
+        else if (segment === "pendente" && (item.status === "em_andamento" || item.status === "realizado")) nextStatus = "aprovado";
+        if (!nextStatus) return;
+
+        const sessionAtClick = treatmentSessionId;
+        const plan = currentTreatmentPlan;
+        const toggleGroup = statusToggleButton.closest(".status-toggle");
+        toggleGroup?.querySelectorAll("button").forEach((btn) => { btn.disabled = true; });
+
+        const payload = { status: nextStatus };
+        // Mesma regra de auto-stamp usada ao criar um item novo já como
+        // "realizado" (ver todayIsoDate/nextItem acima): só carimba a data de
+        // hoje se ainda não houver data_execucao gravada, nunca sobrescreve
+        // uma data já existente (backdatada ou de uma marcação anterior).
+        if (nextStatus === "realizado" && !item.dataExecucao) {
+          payload.data_execucao = todayIsoDate();
         }
-        if (editingTreatmentIndex !== null && editingTreatmentIndex > index) {
-          editingTreatmentIndex -= 1;
+
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update(payload)
+          .eq("id", item.dbId)
+          .select(PLAN_ITEM_COLUMNS)
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
+
+        if (error) {
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback(treatmentPlanOwnerLocked
+            ? "Este plano foi assumido por outro profissional. Assuma novamente para continuar editando."
+            : "Não foi possível atualizar o andamento deste procedimento.", "warning");
+          return;
         }
-        highlightedTreatmentIndex = null;
-        setTreatmentFeedback(
-          removed ? `Procedimento removido: ${removed.procedure}.` : "Procedimento removido.",
-          "warning"
-        );
-        clearQuoteAction();
+
+        const currentIndex = treatmentItems.indexOf(item);
+        if (currentIndex === -1) return;
+        treatmentItems[currentIndex] = mapDbItemToUiItem(data);
+        if (plan) {
+          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
+          if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex] = data;
+        }
+        setTreatmentFeedback(`Andamento atualizado: ${getItemStatusLabel(nextStatus)}.`);
         renderQuote();
-        updateSelectedToothVisual();
         return;
       }
 
-      if (!editButton) return;
+      if (deleteButton) {
+        if (treatmentPlanLocked) return;
+        const index = Number(deleteButton.dataset.deleteTreatment);
+        const removed = treatmentItems[index];
+        if (!removed) return;
+
+        const sessionAtClick = treatmentSessionId;
+        const plan = currentTreatmentPlan;
+        deleteButton.disabled = true;
+        const { data, error } = await supabase
+          .from("itens_plano_tratamento")
+          .update({ status: "cancelado" })
+          .eq("id", removed.dbId)
+          .select("id, status")
+          .single();
+
+        if (sessionAtClick !== treatmentSessionId) return;
+
+        if (error) {
+          deleteButton.disabled = false;
+          await refreshCurrentPlanOwnership();
+          setTreatmentFeedback("Não foi possível remover este procedimento.", "warning");
+          return;
+        }
+
+        // Localiza pela referência do item, não pelo índice capturado no
+        // clique: outra exclusão pode ter resolvido primeiro e reindexado o
+        // array enquanto este UPDATE estava em voo.
+        const currentIndex = treatmentItems.indexOf(removed);
+        if (currentIndex === -1) return;
+        treatmentItems.splice(currentIndex, 1);
+        if (plan) {
+          const planItemIndex = (plan.itens_plano_tratamento || []).findIndex((row) => row.id === data.id);
+          if (planItemIndex >= 0) plan.itens_plano_tratamento[planItemIndex].status = "cancelado";
+        }
+        if (editingTreatmentIndex === currentIndex) {
+          editingTreatmentIndex = null;
+          addTreatmentItem.textContent = "Adicionar ao plano";
+        } else if (editingTreatmentIndex !== null && editingTreatmentIndex > currentIndex) {
+          editingTreatmentIndex -= 1;
+        }
+        highlightedTreatmentIndex = null;
+        setTreatmentFeedback(`Procedimento removido: ${removed.procedure}.`, "warning");
+        renderTreatmentStatusSummary();
+        clearQuoteAction();
+        renderQuote();
+        updateSelectedToothVisual();
+        await syncPlanTotal(plan);
+        return;
+      }
+
+      if (!editButton || treatmentPlanLocked) return;
       const index = Number(editButton.dataset.editTreatment);
       const item = treatmentItems[index];
       if (!item) return;
@@ -4467,8 +6952,16 @@
       const procedureId = item.procedureId || procedures.find((procedure) => procedure.nome === item.procedure)?.id || "";
       renderProcedureOptions(procedureId, item.priceRuleId);
       treatmentValue.value = item.value;
-      treatmentStatus.value = item.status || "planned";
+      treatmentStatus.value = item.status || "planejado";
+      treatmentUrgent.checked = Boolean(item.urgente);
       treatmentNotes.value = item.notes || "";
+      // dataExecucao de um item existente é preservada na gravação (buildItemPayload
+      // usa editingItem?.dataExecucao), então o rascunho do checkbox/data não deve
+      // sobreviver de uma edição para outra: sem isso, marcar "já realizado" num item
+      // e trocar de item antes de salvar vazava esse estado para o item errado.
+      treatmentAlreadyDone.checked = false;
+      treatmentExecutionDateField.hidden = true;
+      treatmentExecutionDate.value = "";
       addTreatmentItem.textContent = "Salvar alteração";
       highlightedTreatmentIndex = index;
       setTreatmentFeedback("Editando procedimento selecionado. Ajuste os dados e salve a alteração.");
@@ -4479,6 +6972,8 @@
     prepareWhatsappButton.addEventListener("click", prepareWhatsappMessage);
     openWhatsappButton.addEventListener("click", openWhatsapp);
     printQuoteButton.addEventListener("click", printQuote);
+    exportPatientDataButton.addEventListener("click", exportPatientData);
+    whatsappConsentCheckbox.addEventListener("change", handleWhatsappConsentChange);
     whatsappMessage.addEventListener("input", () => {
       openWhatsappButton.disabled = !treatmentItems.length || !whatsappMessage.value.trim();
     });
@@ -4612,6 +7107,7 @@
 
     renderToothGrid();
     resetTreatmentDraft();
+    renderTreatmentPlanBar();
     loadSession();
   </script>
 </body>
