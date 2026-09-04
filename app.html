@@ -2274,9 +2274,9 @@
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></span>
                     <span>Financeiro</span>
                   </button>
-                  <button class="nav-item" type="button" disabled>
+                  <button class="nav-item" type="button" data-open-orcamentos>
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 11h6"/><path d="M9 15h6"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8l4 4v12a2 2 0 0 1-2 2z"/></svg></span>
-                    <span>Orçamentos</span><small>em breve</small>
+                    <span>Orçamentos</span>
                   </button>
                   <button class="nav-item" type="button" data-open-clinic>
                     <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
@@ -2356,9 +2356,9 @@
                       <strong>Cadastrar paciente</strong>
                       <span>Cadastro administrativo em Meu consultório.</span>
                     </button>
-                    <button class="button action-card" type="button" disabled>
+                    <button class="button action-card" type="button" data-open-orcamentos>
                       <strong>Orçamentos pendentes</strong>
-                      <span>Futuro: planos enviados e ainda não respondidos.</span>
+                      <span id="dashboardOrcamentosPendentesSummary">Nenhum pendente</span>
                     </button>
                   </div>
                 </div>
@@ -2778,6 +2778,25 @@
 
               </div>
 
+              <div id="orcamentosTab" class="dashboard-tab">
+                <div class="kicker">Gestão</div>
+                <h2>Orçamentos pendentes</h2>
+                <p class="lead">Planos de tratamento já enviados ao paciente (PDF ou WhatsApp) que ainda aguardam aprovação, em todos os pacientes deste consultório.</p>
+
+                <div class="schedule-card primary">
+                  <div class="card-topline">
+                    <div>
+                      <div class="kicker">Pendentes · consultório atual</div>
+                      <strong>Aguardando resposta do paciente</strong>
+                    </div>
+                    <span class="card-mark" id="orcamentosPendentesCount">0</span>
+                  </div>
+                  <p class="muted" id="orcamentosPendentesEmpty">Nenhum orçamento pendente no momento. Planos enviados e ainda sem aprovação aparecem aqui.</p>
+                  <ul class="agenda-list" id="orcamentosPendentesList" aria-live="polite" hidden></ul>
+                  <div class="inline-feedback" id="orcamentosFeedback" role="status"></div>
+                </div>
+              </div>
+
               <div id="clinicTab" class="dashboard-tab">
                 <div class="kicker">Meu consultório</div>
                 <h2>Organize a base do OdontoFlow</h2>
@@ -3186,7 +3205,13 @@
     const quoteActionStatus = document.querySelector("#quoteActionStatus");
     const dashboardHomeTab = document.querySelector("#dashboardHomeTab");
     const patientTab = document.querySelector("#patientTab");
+    const orcamentosTab = document.querySelector("#orcamentosTab");
     const clinicTab = document.querySelector("#clinicTab");
+    const dashboardOrcamentosPendentesSummary = document.querySelector("#dashboardOrcamentosPendentesSummary");
+    const orcamentosPendentesCount = document.querySelector("#orcamentosPendentesCount");
+    const orcamentosPendentesEmpty = document.querySelector("#orcamentosPendentesEmpty");
+    const orcamentosPendentesList = document.querySelector("#orcamentosPendentesList");
+    const orcamentosFeedback = document.querySelector("#orcamentosFeedback");
     const procedureManagerSection = document.querySelector("#procedureManagerSection");
     const openProcedureManager = document.querySelector("#openProcedureManager");
     const focusProcedurePrices = document.querySelector("#focusProcedurePrices");
@@ -3218,6 +3243,7 @@
     let dashboardAgenda = [];
     let dashboardFinanceiroItems = [];
     let dashboardFinanceiroPeriodFilter = "mes";
+    let dashboardOrcamentosPendentes = [];
     let currentTreatmentPlan = null;
     let treatmentPlanLocked = false;
     let treatmentPlanOwnerLocked = false;
@@ -3514,6 +3540,7 @@
       await loadPatients();
       await loadDashboardAgenda();
       await loadDashboardFinanceiro();
+      await loadDashboardOrcamentosPendentes();
       await refreshMfaStatus();
       showDashboardTab("home");
       showView("dashboard");
@@ -3860,6 +3887,94 @@
           <span class="badge">${escapeHtml(formatCurrency(grupo.total))}</span>
         </li>
       `).join("");
+    }
+
+    // "Orçamento pendente" = plano ainda em rascunho (nunca aprovado, nunca
+    // cancelado - o filtro de status já exclui os dois) que já foi enviado ao
+    // paciente ao menos uma vez. Um rascunho que nunca foi enviado ainda é
+    // trabalho em elaboração do dentista, não está "aguardando resposta" de
+    // ninguém, então fica de fora desta lista.
+    async function loadDashboardOrcamentosPendentes() {
+      if (!currentProfissional?.id || !currentConsultorio?.id) return;
+      const consultorioAtLoad = currentConsultorio.id;
+      const profissionalAtLoad = currentProfissional.id;
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, valor_total_estimado, criado_em, envios_plano_tratamento(id, canal, criado_em)`)
+        .eq("consultorio_id", currentConsultorio.id)
+        .eq("profissional_id", currentProfissional.id)
+        .eq("status", "rascunho");
+
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtLoad) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtLoad) return;
+
+      const planos = error ? [] : (data || []);
+      dashboardOrcamentosPendentes = planos.filter((plano) => (plano.envios_plano_tratamento || []).length > 0);
+      renderDashboardOrcamentosPendentes();
+    }
+
+    // Resume os envios de um plano em uma linha curta. Quando o(s) envio(s)
+    // mais recente(s) aconteceram no mesmo dia (ex.: gerou o PDF e depois já
+    // mandou pelo WhatsApp na sequência), junta os canais numa frase só -
+    // "Enviado em dd/mm/aaaa via PDF e WhatsApp" - em vez de uma linha por
+    // canal, que ficaria repetitivo para o caso mais comum.
+    function summarizeOrcamentoEnvios(envios) {
+      if (!envios || !envios.length) return "Nunca enviado";
+      const ordenados = [...envios].sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+      const diaMaisRecente = new Date(ordenados[0].criado_em).toDateString();
+      const canaisNoDia = new Set();
+      for (const envio of ordenados) {
+        if (new Date(envio.criado_em).toDateString() !== diaMaisRecente) break;
+        canaisNoDia.add(envio.canal);
+      }
+      const canalLabels = ["pdf", "whatsapp"].filter((canal) => canaisNoDia.has(canal)).map((canal) => (canal === "whatsapp" ? "WhatsApp" : "PDF"));
+      const quando = new Date(ordenados[0].criado_em).toLocaleDateString("pt-BR");
+      return `Enviado em ${quando} via ${canalLabels.join(" e ")}`;
+    }
+
+    function setOrcamentosFeedback(message, type = "success") {
+      if (!orcamentosFeedback) return;
+      orcamentosFeedback.className = `inline-feedback show ${type}`;
+      orcamentosFeedback.textContent = message;
+    }
+
+    function clearOrcamentosFeedback() {
+      if (!orcamentosFeedback) return;
+      orcamentosFeedback.className = "inline-feedback";
+      orcamentosFeedback.textContent = "";
+    }
+
+    function renderDashboardOrcamentosPendentes() {
+      if (dashboardOrcamentosPendentesSummary) {
+        dashboardOrcamentosPendentesSummary.textContent = dashboardOrcamentosPendentes.length
+          ? `${dashboardOrcamentosPendentes.length} pendente${dashboardOrcamentosPendentes.length === 1 ? "" : "s"}`
+          : "Nenhum pendente";
+      }
+      if (!orcamentosPendentesList || !orcamentosPendentesEmpty || !orcamentosPendentesCount) return;
+      orcamentosPendentesCount.textContent = String(dashboardOrcamentosPendentes.length);
+
+      if (!dashboardOrcamentosPendentes.length) {
+        orcamentosPendentesList.hidden = true;
+        orcamentosPendentesList.innerHTML = "";
+        orcamentosPendentesEmpty.hidden = false;
+        return;
+      }
+      orcamentosPendentesEmpty.hidden = true;
+      orcamentosPendentesList.hidden = false;
+      const ordenados = [...dashboardOrcamentosPendentes].sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+      orcamentosPendentesList.innerHTML = ordenados.map((plano) => {
+        const paciente = currentPatients.find((candidate) => candidate.id === plano.paciente_id);
+        const patientName = paciente ? paciente.nome : "Paciente";
+        return `
+        <li>
+          <button class="agenda-patient-link" type="button" data-open-orcamento-patient="${escapeHtml(plano.paciente_id)}">${escapeHtml(patientName)}</button>
+          <span class="muted">${escapeHtml(summarizeOrcamentoEnvios(plano.envios_plano_tratamento))}</span>
+          <span class="badge">${escapeHtml(formatCurrency(plano.valor_total_estimado))}</span>
+          <button class="mini-button" type="button" data-approve-orcamento-plano="${escapeHtml(plano.id)}">Marcar como aprovado</button>
+        </li>
+      `;
+      }).join("");
     }
 
     async function loadPatientAgendamentos(patientId) {
@@ -4433,9 +4548,11 @@
     function showDashboardTab(name) {
       dashboardHomeTab.classList.toggle("active", name === "home");
       patientTab.classList.toggle("active", name === "patient");
+      orcamentosTab.classList.toggle("active", name === "orcamentos");
       clinicTab.classList.toggle("active", name === "clinic");
       if (name === "home") setActiveNav(".nav-item[data-open-home]", "Dashboard");
       if (name === "patient") setActiveNav(".nav-item[data-open-patient]", "Pacientes");
+      if (name === "orcamentos") setActiveNav(".nav-item[data-open-orcamentos]", "Orçamentos");
       if (name === "clinic") setActiveNav(".nav-item[data-open-clinic]", "Meu consultório");
     }
 
@@ -5913,6 +6030,15 @@
       });
     });
 
+    document.querySelectorAll("[data-open-orcamentos]").forEach((button) => {
+      button.addEventListener("click", () => {
+        clearStatus(patientStatus);
+        clearOrcamentosFeedback();
+        showDashboardTab("orcamentos");
+        closeMobileMenu();
+      });
+    });
+
     openProcedureManager.addEventListener("click", () => {
       clearProcedureStatus();
       procedureManagerSection.classList.add("active");
@@ -6195,6 +6321,65 @@
       await showPatientSummary(link.dataset.openAgendaPatient);
     });
 
+    orcamentosPendentesList.addEventListener("click", async (event) => {
+      const link = event.target.closest("[data-open-orcamento-patient]");
+      if (link) {
+        showDashboardTab("patient");
+        closeMobileMenu();
+        await showPatientSummary(link.dataset.openOrcamentoPatient);
+        return;
+      }
+
+      const approveButton = event.target.closest("[data-approve-orcamento-plano]");
+      if (!approveButton) return;
+      const planId = approveButton.dataset.approveOrcamentoPlano;
+      if (!dashboardOrcamentosPendentes.some((plano) => plano.id === planId)) return;
+
+      // Mesmo texto e mesma disciplina de confirmação do botão "Paciente
+      // aprovou o tratamento" na ficha do paciente (approveTreatmentPlanButton):
+      // um clique acidental aqui é tão consequente quanto lá.
+      const confirmado = window.confirm("Confirmar que o paciente aprovou este plano de tratamento? A montagem de novos procedimentos ficará bloqueada até reabrir o plano.");
+      if (!confirmado) return;
+      if (!dashboardOrcamentosPendentes.some((plano) => plano.id === planId)) return;
+
+      const consultorioAtClick = currentConsultorio?.id;
+      const profissionalAtClick = currentProfissional?.id;
+      approveButton.disabled = true;
+      approveButton.textContent = "Aprovando...";
+
+      const { data, error } = await supabase
+        .from("planos_tratamento")
+        .update({ status: "aprovado" })
+        .eq("id", planId)
+        .select(`id, paciente_id, consultorio_id, profissional_id, titulo, status, observacoes, valor_total_estimado, criado_em`)
+        .single();
+
+      // Contexto (consultório/profissional) pode ter mudado enquanto o UPDATE
+      // estava em voo: o plano já foi aprovado de verdade no banco, mas esta
+      // lista pode não ser mais sobre o mesmo escopo.
+      if (!currentConsultorio || currentConsultorio.id !== consultorioAtClick) return;
+      if (!currentProfissional || currentProfissional.id !== profissionalAtClick) return;
+
+      if (error) {
+        approveButton.disabled = false;
+        approveButton.textContent = "Marcar como aprovado";
+        setOrcamentosFeedback("Não foi possível registrar a aprovação deste plano.", "warning");
+        return;
+      }
+
+      // Mantém a ficha do paciente em sincronia, caso esteja aberta.
+      const openPlanIndex = patientTreatmentPlans.findIndex((plano) => plano.id === data.id);
+      if (openPlanIndex >= 0) patientTreatmentPlans[openPlanIndex] = { ...patientTreatmentPlans[openPlanIndex], ...data };
+      if (currentTreatmentPlan?.id === data.id) {
+        currentTreatmentPlan = { ...currentTreatmentPlan, ...data };
+        renderTreatmentPlanBar();
+      }
+
+      dashboardOrcamentosPendentes = dashboardOrcamentosPendentes.filter((plano) => plano.id !== planId);
+      renderDashboardOrcamentosPendentes();
+      setOrcamentosFeedback("Plano marcado como aprovado pelo paciente.");
+    });
+
     dashboardFinanceiroPeriod.addEventListener("click", (event) => {
       const button = event.target.closest("[data-financeiro-period]");
       if (!button) return;
@@ -6350,6 +6535,10 @@
       if (planIndex >= 0) patientTreatmentPlans[planIndex] = { ...patientTreatmentPlans[planIndex], ...data };
       renderTreatmentPlanBar();
       setTreatmentFeedback("Plano marcado como aprovado pelo paciente. Use o checklist de cada procedimento para registrar o andamento.");
+      // Este plano pode estar na lista de Orçamentos pendentes (Dashboard);
+      // recarrega para tirá-lo de lá sem exigir um reload da página.
+      dashboardOrcamentosPendentes = dashboardOrcamentosPendentes.filter((plano) => plano.id !== data.id);
+      renderDashboardOrcamentosPendentes();
     });
 
     reopenTreatmentPlanButton.addEventListener("click", async () => {
