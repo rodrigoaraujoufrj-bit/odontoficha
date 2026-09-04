@@ -806,7 +806,7 @@
       border-radius: 16px;
       background: #ffffff;
       padding: 14px;
-      display: grid;
+      display: none;
       gap: 12px;
       margin-bottom: 18px;
       box-shadow: 0 10px 30px rgba(15, 61, 94, 0.045);
@@ -2542,6 +2542,7 @@
                       <button class="mini-button" type="button" data-open-history>Histórico</button>
                       <button class="mini-button" type="button" id="exportPatientDataButton">Exportar dados do paciente</button>
                     </div>
+                    <div class="inline-feedback" id="consultationGuardFeedback" role="status"></div>
                   </div>
                   <div class="consultation-panel" id="consultationPanel">
                     <div>
@@ -3064,6 +3065,7 @@
     const consultationButton = document.querySelector("#consultationButton");
     const consultationPanel = document.querySelector("#consultationPanel");
     const newTreatmentPanel = document.querySelector("#newTreatmentPanel");
+    const consultationGuardFeedback = document.querySelector("#consultationGuardFeedback");
     const togglePatientDetails = document.querySelector("#togglePatientDetails");
     const patientDetailsPanel = document.querySelector("#patientDetailsPanel");
     const summarySharedList = document.querySelector("#summarySharedList");
@@ -3657,6 +3659,21 @@
       agendaFeedback.textContent = "";
     }
 
+    // Guarda defensiva: mesmo com o CSS correto, se algum caminho futuro
+    // deixar o painel do paciente visível sem selectedPatientId (estado
+    // dessincronizado), estes botões não devem abrir nem enviar nada.
+    function setConsultationGuardFeedback(message) {
+      if (!consultationGuardFeedback) return;
+      consultationGuardFeedback.className = "inline-feedback show warning";
+      consultationGuardFeedback.textContent = message;
+    }
+
+    function clearConsultationGuardFeedback() {
+      if (!consultationGuardFeedback) return;
+      consultationGuardFeedback.className = "inline-feedback";
+      consultationGuardFeedback.textContent = "";
+    }
+
     function resetAgendaSection() {
       // Muda o paciente aberto: qualquer escrita assincrona de um agendamento
       // do paciente anterior nao deve mais atualizar esta secao (guarda via
@@ -4182,6 +4199,7 @@
       document.querySelector("#summaryAnamneseDetails").textContent = "Buscando as informações clínicas salvas para este paciente.";
       patientSummary.classList.add("active");
       patientSummary.classList.remove("details-open");
+      clearConsultationGuardFeedback();
       togglePatientDetails.disabled = false;
       togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
@@ -5859,6 +5877,7 @@
       togglePatientDetails.setAttribute("aria-expanded", "false");
       consultationPanel.classList.remove("active");
       newTreatmentPanel.classList.remove("active");
+      clearConsultationGuardFeedback();
       renderPatientList();
     });
 
@@ -6034,6 +6053,10 @@
     });
 
     consultationButton.addEventListener("click", () => {
+      if (!selectedPatientId) {
+        setConsultationGuardFeedback("Selecione um paciente antes de iniciar o atendimento.");
+        return;
+      }
       consultationPanel.classList.toggle("active");
       if (consultationPanel.classList.contains("active")) {
         consultationPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -6055,6 +6078,10 @@
 
     document.querySelectorAll("[data-consultation-action]").forEach((button) => {
       button.addEventListener("click", async () => {
+        if (!selectedPatientId) {
+          setConsultationGuardFeedback("Selecione um paciente antes de continuar.");
+          return;
+        }
         const action = button.dataset.consultationAction;
         if (action === "history") {
           patientSummary.classList.add("details-open");
